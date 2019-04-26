@@ -1,0 +1,1189 @@
+<!doctype html>
+<html>
+<head>
+<script src="https://hongru.github.io/proj/canvas2image/canvas2image.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+  <script src="js/tablesorter.js"></script>
+  <script src="js/canvas2svg.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+  <script>
+function to_image(){
+                var canvas = document.getElementById("myCanvas");
+                document.getElementById("canvasImg").src = canvas.toDataURL();
+                Canvas2Image.saveAsPNG(canvas);
+                document.getElementById("canvasImg").style.visibility = 'hidden';
+}
+
+function createOpenTypeGlyph(charname,unicode,path){
+    return new opentype.Glyph({
+        name: charname,
+        unicode: unicode.replace("0x",""),
+        advanceWidth: 650,
+        path: path
+    });
+}
+
+  function convertToSubstitution(str,n){
+        var ret=[]
+        for(var i = 0, len = str.length; i < len; i += n) {
+                ret.push(str.substr(i, n))
+        }
+        return ret;
+  }
+
+function buildSubstitution() {
+    var substitutions={}
+    console.log("Charnamelist: "+charnamelist)
+    for (var i = 0; i < charnamelist.length; i++) {
+        substitutions[convertToSubstitutionString(charnamelist[i].replace(" ","").toLowerCase(),1)]=charnamelist[i].replace(" ","").toLowerCase()
+    }
+    console.log(substitutions)
+    return substitutions;
+  }
+
+function createOpenFont(){
+    var svglist=[]
+	var codepointlist=[]
+	var charnamelist=[]
+	var counterr=0
+	$('.codebutton').each(function(i, obj) {
+		var paleo=paleoCodageToSVG($(this).text(),counterr);
+		var paleo=paleoCodageToOpenTypePath($(this).text())
+		counterr++;
+		//console.log(convertOutlineToType2({"outline":paleo}))
+		//console.log(i+" - "+$('.svg:nth-child('+i+')'))
+		console.log(paleo)
+		//$('.svg:nth-child('+i+')' ).html(paleo)
+		svglist.push(paleo)
+	});
+	$('.codepoint').each(function(i, obj) {
+		codepointlist.push($(this).text())
+	});
+	$('.transliteration').each(function(i, obj) {
+		charnamelist.push($(this).text())
+	});
+	console.log(svglist)
+	console.log(codepointlist)
+	console.log(charnamelist)
+	var glyphs=[]
+	var coun=0
+	for(svg in svglist){
+	    if(svg<charnamelist.length && svg<=codepointlist.length && svg<svglist.length){
+            glyphs.push(createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist[svg]))
+            //opentype.gsub.add(charnamelist[svg])
+        }
+        console.log(coun++)
+	}
+    //glyphs.push(createOpenTypeGlyph([0],codepointlist[0],svglist[0]))
+	console.log("Glyphs: "+glyphs)
+    font = new opentype.Font({familyName: 'OpenTypeSans', styleName: 'Medium', unitsPerEm: 1000, ascender: 800, descender: -200, glyphs: glyphs});
+    console.log(font.toTables());
+    for(svg in charnamelist){
+        var sub=convertToSubstitution(charnamelist[svg].replace(" ","").toLowerCase())
+        console.log(sub)
+        //font.substitution.addLigature({ "sub": convertToSubstitution(charnamelist[svg].replace(" ","").toLowerCase()), "by": charnamelist[svg] })
+    }
+    console.log(font.substitution)
+    var buffer = font.toArrayBuffer();
+    var font2 = opentype.parse(buffer);
+    document.getElementById('fontFamilyName').innerHTML = font2.names.fontFamily.en;
+     for (var i = 0; i < font2.glyphs.length; i++) {
+        var glyph = font2.glyphs.get(i);
+        var ctx = createGlyphCanvas(glyph, 150);
+        var x = 50;
+        var y = 120;
+        var fontSize = 72;
+        glyph.draw(ctx, x, y, fontSize);
+        glyph.drawPoints(ctx, x, y, fontSize);
+        glyph.drawMetrics(ctx, x, y, fontSize);
+    }
+    clearCanvas();
+}
+
+    function createGlyphCanvas(glyph, size) {
+        var canvasId, html, glyphsDiv, wrap, canvas, ctx;
+        canvasId = 'c' + glyph.index;
+        html = '<div class="wrapper" style="width:' + size + 'px"><canvas id="' + canvasId + '" width="' + size + '" height="' + size + '"></canvas><span>'+glyph.name+"[" + glyph.index+"]" + '</span></div>';
+        glyphsDiv = document.getElementById('glyphs');
+        wrap = document.createElement('div');
+        wrap.innerHTML = html;
+        glyphsDiv.appendChild(wrap);
+        canvas = document.getElementById(canvasId);
+        ctx = canvas.getContext('2d');
+        return ctx;
+    }
+
+function to_svg(){
+	svg=ctx2.getSerializedSvg(true)
+	saveTextAsFile(svg,"svg")
+	paleoCodageToSVG($('#canvasinput').val());
+}
+
+function createFont(){
+	svglist=[]
+	codepointlist=[]
+	charnamelist=[]
+	$('.codebutton').each(function(i, obj) {
+		paleo=paleoCodageToSVG($(this).text());
+		console.log(convertOutline({"outline":paleo}))
+		svglist.push(paleo)
+	});
+	$('.codepoint').each(function(i, obj) {
+		codepointlist.push($(this).text())
+	});
+	$('.transliteration').each(function(i, obj) {
+		charnamelist.push($(this).text())
+	});
+	console.log(svglist)
+	console.log(codepointlist)
+	console.log(charnamelist)
+}
+
+function saveTextAsFile(tosave,fileext)
+{
+    var a = document.createElement('a');
+    a.style = "display: none";  
+    var blob= new Blob([tosave], {type:'text/plain'});
+    var url = window.URL.createObjectURL(blob);
+    var filename = "cunei."+fileext;
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);  
+    }, 1000);
+}
+
+var curposx=30;
+var curposy=30;
+var strokelength=30;
+var wedgelength=10;
+var multiplier=1.5;
+var smallermultiplier=0.5
+var rotmultiplier=5;
+var scalemultiplier=1
+var scalemultiplierForStrokeLength=1
+var smaller=false;
+var mirror=false;
+var halfangle=false;
+var opentypestrokeWidth=5
+var ot=false;
+var font;
+var rot=0;
+var ctx3=new opentype.Path();
+var ctx2 = new C2S(70,100);
+
+
+function paleoCodageToOpenTypePath(paleoCode){
+        //ot=true;
+        ctx3=new opentype.Path();
+        ctx3.stroke="black"
+        ctx3.strokeWidth=2
+        strokeParser(paleoCode,true)
+        //ot=false;
+        return ctx3;
+}
+
+function paleoCodageToSVG(paleoCode,index){
+	//console.log(paleoCode)
+	strokeParser(paleoCode,false)
+    //console.log(ctx2.getSerializedSvg())
+	//ctx2.scale(10,10);
+	svghtml=ctx2.getSerializedSvg();
+    if(index){
+        console.log(index+" - "+svghtml)
+        //$('.svg :nth-child('+index+')' ).html(svghtml)
+        //var parser = new DOMParser();
+        //var dom = parser.parseFromString(svghtml, "text/xml");
+        console.log("Index: "+index)
+        var elem=$('.svgcontainer').eq(index)
+       // var container=elem.createChild('div')
+        //container.innerHTML=svghtml
+        elem.html(svghtml)
+        //$(dom).appendTo('.svg:nth-child('+index+')')
+        //document.getElementById('svg').appendChild(dom.documentElement);
+	}
+	//console.log(svghtml)
+	//console.log(svghtml.indexOf('d="')+" - "+svghtml.indexOf('"',svghtml.indexOf('d="')+3))
+	svghtml=svghtml.substring(svghtml.indexOf('d="')+3,svghtml.indexOf('"',svghtml.indexOf('d="')+3))
+	svghtml=svghtml.replace(/\.5/g,'')
+
+	return svghtml
+	//console.log(svghtml)
+}
+
+//var canvasSVGContext = new CanvasSVG.Deferred();
+//canvasSVGContext.wrapCanvas(document.getElementById("myCanvas"));
+function strokeParser(input,svgonly){
+    var ctx = document.getElementById("myCanvas").getContext("2d");
+	clearCanvas(true);
+    smaller=false;
+    mirror=false;
+    halfangle=false;
+	curposy=10;
+	curposx=10;
+    for (var i = 0; i < input.length; i++) {
+        switch(input.charAt(i)){
+                case "a":
+					scalemultiplier=1
+					scalemultiplierForStrokeLength=1
+					drawVerticalLine(curposx,curposy,ctx,true,false);
+					drawVerticalLine(curposx,curposy,ctx2,true,false);
+					if(svgonly){
+						scalemultiplier=15
+						scalemultiplierForStrokeLength=scalemultiplier
+						mirror=!mirror
+					}
+					ot=true;
+					drawVerticalLine(curposx,curposy,ctx3,true,false);
+					ot=false;
+					rot=0;
+                    break;
+                case "A":
+					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+					drawVerticalLine(curposx,curposy,ctx,true,true);
+					drawVerticalLine(curposx,curposy,ctx2,true,true);
+                    if(svgonly){
+						scalemultiplier=15
+						scalemultiplierForStrokeLength=scalemultiplier
+						mirror=!mirror
+					}
+					ot=true; 
+					drawVerticalLine(curposx,curposy,ctx3,true,true);
+					ot=false
+					rot=0;
+                    break;
+                case "b":
+					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+                        drawHorizontalLine(curposx,curposy,ctx,true,false);
+						drawHorizontalLine(curposx,curposy,ctx2,true,false);
+											if(svgonly){
+						scalemultiplier=15
+						scalemultiplierForStrokeLength=scalemultiplier
+						//mirror=!mirror
+					}
+						ot=true; //mirror=!mirror;
+						drawHorizontalLine(curposx,curposy,ctx3,true,false);
+						ot=false
+						rot=0;
+                        break;
+                case "B":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawHorizontalLine(curposx,curposy,ctx,true,true);
+					drawHorizontalLine(curposx,curposy,ctx2,true,true);
+										if(svgonly){
+						scalemultiplier=15
+						scalemultiplierForStrokeLength=scalemultiplier
+						
+					}
+						ot=true; //mirror=!mirror;
+						drawHorizontalLine(curposx,curposy,ctx3,true,true);
+						ot=false
+						rot=0;
+                        break;
+                case "c":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawDiagonalLine1(curposx,curposy,ctx,false);
+					drawDiagonalLine1(curposx,curposy,ctx2,false);
+										if(svgonly){
+						scalemultiplier=10
+						scalemultiplierForStrokeLength=0.25*scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawDiagonalLine1(curposx,curposy,ctx3,false);
+						ot=false
+						rot=0;
+                        break;
+                case "C":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawDiagonalLine1(curposx,curposy,ctx,true);
+					drawDiagonalLine1(curposx,curposy,ctx2,true);
+										if(svgonly){
+						scalemultiplier=10
+						scalemultiplierForStrokeLength=0.25*scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawDiagonalLine1(curposx,curposy,ctx3,true);
+						ot=false
+						rot=0;
+                        break;
+                case "d":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawDiagonalLine2(curposx,curposy,ctx,false);
+						drawDiagonalLine2(curposx,curposy,ctx2,false);
+											if(svgonly){
+						scalemultiplier=10
+						scalemultiplierForStrokeLength=0.25*scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawDiagonalLine2(curposx,curposy,ctx3,false);
+						ot=false
+						rot=0;
+                        break;
+                case "D":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawDiagonalLine2(curposx,curposy,ctx,true);
+						drawDiagonalLine2(curposx,curposy,ctx2,true);
+											if(svgonly){
+						scalemultiplier=10
+						scalemultiplierForStrokeLength=0.25*scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawDiagonalLine2(curposx,curposy,ctx3,true);
+						ot=false
+						rot=0;
+                        break;
+                case "e":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawDiagonalLine3(curposx,curposy,ctx,false);
+						drawDiagonalLine3(curposx,curposy,ctx2,false);
+											if(svgonly){
+						scalemultiplier=10
+						scalemultiplierForStrokeLength=0.25*scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawDiagonalLine3(curposx,curposy,ctx3,false);
+						ot=false
+						rot=0;
+                        break;
+                case "E":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawDiagonalLine3(curposx,curposy,ctx,true);
+                        drawDiagonalLine3(curposx,curposy,ctx2,true);
+										if(svgonly){
+						scalemultiplier=10
+						scalemultiplierForStrokeLength=0.25*scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawDiagonalLine3(curposx,curposy,ctx3,true);
+						ot=false
+						rot=0;
+                        break;
+                case "f":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawDiagonalLine4(curposx,curposy,ctx,false);
+						drawDiagonalLine4(curposx,curposy,ctx2,false);
+											if(svgonly){
+						scalemultiplier=10
+						scalemultiplierForStrokeLength=0.25*scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawDiagonalLine4(curposx,curposy,ctx3,false);
+						ot=false
+						rot=0;
+						break;
+                case "F":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawDiagonalLine4(curposx,curposy,ctx,true);
+						drawDiagonalLine4(curposx,curposy,ctx2,true);
+											if(svgonly){
+						scalemultiplier=10
+						scalemultiplierForStrokeLength=0.25*scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawDiagonalLine4(curposx,curposy,ctx3,true);
+						ot=false
+						rot=0;
+						break;
+                case "s":
+                        smaller=true;
+                        break;
+                case "w":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawWedge2(curposx,curposy,ctx,false);
+						drawWedge2(curposx,curposy,ctx2,false);
+											if(svgonly){
+						scalemultiplier=15
+						scalemultiplierForStrokeLength=scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawWedge2(curposx,curposy,ctx3,false);
+						ot=false
+						rot=0;
+                        break;
+                case "W":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawWedge2(curposx,curposy,ctx,true);
+						drawWedge2(curposx,curposy,ctx2,true);
+											if(svgonly){
+						scalemultiplier=15
+						scalemultiplierForStrokeLength=scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawWedge2(curposx,curposy,ctx3,true);
+						ot=false
+						rot=0;
+                        break;
+                case "w2":
+                					scalemultiplier=1
+                    scalemultiplierForStrokeLength=1
+						drawWedge(curposx,curposy,ctx);
+						drawWedge(curposx,curposy,ctx2);
+											if(svgonly){
+						scalemultiplier=15
+						scalemultiplierForStrokeLength=scalemultiplier
+						mirror=!mirror
+					}
+						ot=true; mirror=!mirror;
+						drawWedge(curposx,curposy,ctx3);
+						ot=false;
+						rot=0;
+                        break;
+                case "-":
+                        curposx+=10*scalemultiplier;
+                        curposy=10*scalemultiplier;
+                        break;
+                case "#":
+                        curposx+=5*scalemultiplier;
+                        curposy=10*scalemultiplier;
+                        break;
+                case ":": curposy+=7*scalemultiplier;
+                        break;
+                case "!": //mirror character
+                        mirror=true;
+                        break;
+                case "'": curposy=10*scalemultiplier;
+                        break;
+				case "\"": curposy=0*scalemultiplier;
+                        break;
+				case "~": curposx-=10*scalemultiplier;
+                        curposy=10*scalemultiplier;
+                        break;
+                case "/": curposy+=3.5*scalemultiplier;
+                    break;
+                case "|": halfangle=true;
+                        break;
+                case ";": curposy+=strokelength;
+                        break;
+                case ".": curposy+=7*scalemultiplier;
+                        curposx+=7*scalemultiplier;
+                        break;
+				case "<": 
+				        rot--;
+                        break;
+				case ">": 
+						rot++;
+                        break;
+                case "\\": curposy+=7*scalemultiplier;
+                        curposx-=7*scalemultiplier;
+                        break;
+                case ",": curposy-=7*scalemultiplier;
+                        curposx-=7*scalemultiplier;
+                        break;
+                case "_": curposx+=strokelength;
+                        curposy=10*scalemultiplier;
+                        break;
+                case " ": curposx+=1.5*strokelength*scalemultiplier;
+                        break;
+                default: 
+        }
+        //console.log(input.charAt(i));
+    }
+}
+
+function drawVerticalLine(start,starty,canvas,strokeparse,big){
+        if(strokeparse==false)
+            curposx+=10
+        if(big){
+            length=multiplier*scalemultiplierForStrokeLength*strokelength;
+            if(mirror){
+                        canvas.moveTo(start-5*scalemultiplier, starty+10*scalemultiplier+length); // start at top left corner of canvas
+                        canvas.lineTo(start+5*scalemultiplier, starty+10*scalemultiplier+length); // go 200px to right (x), straight line from 0 to 0
+                        canvas.lineTo(start, starty+length*scalemultiplier); // go to horizontal 100 (x) and vertical 200 (y)
+            }else{
+                        canvas.moveTo(start-5*scalemultiplier, starty+10*scalemultiplier); // start at top left corner of canvas
+                        canvas.lineTo(start+5*scalemultiplier, starty+10*scalemultiplier); // go 200px to right (x), straight line from 0 to 0
+                        canvas.lineTo(start, starty+20*scalemultiplier); // go to horizontal 100 (x) and vertical 200 (y)
+            }
+             if(!ot)
+                canvas.fill();
+        }else if(smaller){
+            length=0.5*scalemultiplierForStrokeLength*strokelength;
+            smaller=false;
+            if(mirror){
+                    canvas.moveTo(start-5*scalemultiplier, starty+5*scalemultiplier+length); // start at top left corner of canvas
+                    canvas.lineTo(start+5*scalemultiplier, starty+5*scalemultiplier+length); // go 200px to right (x), straight line from 0 to 0
+                    canvas.lineTo(start, starty+length*scalemultiplier); // go to horizontal 100 (x) and vertical 200 (y)
+            }else{ 
+                canvas.moveTo(start-5*scalemultiplier, starty+15*scalemultiplier); // start at top left corner of canvas
+                canvas.lineTo(start+5*scalemultiplier, starty+15*scalemultiplier); // go 200px to right (x), straight line from 0 to 0
+                canvas.lineTo(start, starty+20*scalemultiplier); // go to horizontal 100 (x) and vertical 200 (y)            
+            }
+            if(!ot)
+                canvas.fill();
+        }else{
+            length=scalemultiplierForStrokeLength*strokelength;
+            if(mirror){
+                        canvas.moveTo(start-5*scalemultiplier*1.5, starty+10*scalemultiplier*1.5+length); // start at top left corner of canvas
+                        canvas.lineTo(start+5*scalemultiplier*1.5, starty+10*scalemultiplier*1.5+length); // go 200px to right (x), straight line from 0 to 0
+                        canvas.lineTo(start, starty+10+length); // go to horizontal 100 (x) and vertical 200 (y)
+            }else{
+                        canvas.moveTo(start-5*scalemultiplier, starty+10*scalemultiplier); // start at top left corner of canvas
+                        canvas.lineTo(start+5*scalemultiplier, starty+10*scalemultiplier); // go 200px to right (x), straight line from 0 to 0
+                        canvas.lineTo(start, starty+20*scalemultiplier); // go to horizontal 100 (x) and vertical 200 (y)
+            }
+             if(!ot){
+                canvas.fill();
+            }
+        }
+        if(mirror){
+                     if(!ot){
+                        canvas.moveTo(start,starty);
+                        canvas.lineTo(start,starty+length);
+                        canvas.stroke();
+                    }else{
+                                canvas.moveTo(start-opentypestrokeWidth,starty);
+                                canvas.lineTo(start-opentypestrokeWidth,starty+length);
+                                canvas.lineTo(start+opentypestrokeWidth,starty+20*scalemultiplier+length);
+                                canvas.lineTo(start+opentypestrokeWidth,starty+20*scalemultiplier);
+                                canvas.lineTo(start-opentypestrokeWidth,starty);
+                    }
+            mirror=false;
+        }else{
+
+                     if(!ot){
+                        canvas.moveTo(start,starty+20*scalemultiplier);
+                        canvas.lineTo(start,starty+20*scalemultiplier+length);
+                        canvas.moveTo(start,starty+20*scalemultiplier);
+                        canvas.lineTo(start,starty+20*scalemultiplier+length);
+                        canvas.stroke();
+                    }else{
+                                canvas.moveTo(start-opentypestrokeWidth,starty+20*scalemultiplier);
+                                canvas.lineTo(start-opentypestrokeWidth,starty+20*scalemultiplier+length);
+                                canvas.lineTo(start+opentypestrokeWidth,starty+20*scalemultiplier+length);
+                                canvas.lineTo(start+opentypestrokeWidth,starty+20*scalemultiplier);
+                                canvas.lineTo(start-opentypestrokeWidth,starty+20*scalemultiplier);
+                    }
+        }
+
+}
+function drawHorizontalLine(start,starty,canvas,strokeparse,big){
+        if(strokeparse==false)
+            curposy+=10
+        if(big){
+            length=multiplier*scalemultiplierForStrokeLength*strokelength;
+            if(mirror){
+                        canvas.moveTo(start+10*scalemultiplier+length, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+                        canvas.lineTo(start+10*scalemultiplier+length, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
+                        canvas.lineTo(start+length, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
+            }else{
+                    canvas.moveTo(start-10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+                    canvas.lineTo(start-10*scalemultiplier, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
+                    canvas.lineTo(start, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
+            }
+             if(!ot)
+                canvas.fill(); // connect and fill
+        }else if(smaller){
+            length=smallermultiplier*scalemultiplierForStrokeLength*strokelength;
+            smaller=false;
+            if(mirror){
+                        canvas.moveTo(start+5*scalemultiplier+length, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+                        canvas.lineTo(start+5*scalemultiplier+length, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
+                        canvas.lineTo(start+length, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
+            }else{
+                        canvas.moveTo(start-5*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+                        canvas.lineTo(start-5*scalemultiplier, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
+                        canvas.lineTo(start, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
+            }
+            if(!ot)
+                canvas.fill(); // connect and fill
+        }else{
+            length=scalemultiplierForStrokeLength*strokelength;
+            if(mirror){
+                        canvas.moveTo(start+10*scalemultiplier+length, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+                        canvas.lineTo(start+10*scalemultiplier+length, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
+                        canvas.lineTo(start+length, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
+            }else{
+                        
+						if(rot>0){
+						   start2=Math.cos(rot)*length+10;
+						   starty2=Math.sin(rot)*length+10;
+						   canvas.moveTo(start+start2-10, starty+starty2+15); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+						   canvas.lineTo(start+start2-10, starty+starty2+25); // draw straight down (from 300,0) to 200px
+                           canvas.lineTo(start+start2, starty+starty2+20); // draw up toward right (100 half of 200)
+						}else{
+							canvas.moveTo(start-10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+							canvas.lineTo(start-10*scalemultiplier, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
+							canvas.lineTo(start, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
+						}
+
+            }
+            if(!ot)
+                canvas.fill(); // connect and fill
+        }
+        if(mirror){
+                 if(!ot){
+                    canvas.moveTo(start+length,starty+20*scalemultiplier);
+                    canvas.lineTo(start,starty+20*scalemultiplier);
+                    canvas.stroke();
+                }else{
+                                canvas.moveTo(start,starty+20*scalemultiplier-opentypestrokeWidth);
+                                canvas.lineTo(start+length,starty+20*scalemultiplier-opentypestrokeWidth);
+                                canvas.lineTo(start+length,starty+20*scalemultiplier+opentypestrokeWidth);
+                                canvas.lineTo(start,starty+20*scalemultiplier+opentypestrokeWidth);
+                                canvas.lineTo(start,starty+20*scalemultiplier-opentypestrokeWidth);
+                    }
+            mirror=false;
+        }else if(rot>0){
+				console.log(rot)
+				start2=Math.cos(Math.PI/2+rot)*length;
+				starty2=Math.sin(Math.PI/2+rot)*length;
+				canvas.moveTo(start+start2*scalemultiplier,starty+20*scalemultiplier);
+				canvas.lineTo(start+length,starty+starty2+20*scalemultiplier);
+                 if(!ot){
+                    canvas.stroke();
+                }else{
+                                canvas.moveTo(start+start2,starty+20*scalemultiplier-opentypestrokeWidth);
+                                canvas.lineTo(start+length,starty+20*scalemultiplier-opentypestrokeWidth);
+                                canvas.lineTo(start+length,starty+20*scalemultiplier+opentypestrokeWidth);
+                                canvas.lineTo(start,starty+20*scalemultiplier+opentypestrokeWidth);
+                                canvas.lineTo(start,starty+20*scalemultiplier-opentypestrokeWidth);
+                    }
+		}else{
+
+                 if(!ot){
+                canvas.moveTo(start,starty+20*scalemultiplier);
+                canvas.lineTo(start+length,starty+20*scalemultiplier);
+                 canvas.stroke();
+                 }
+                else{
+                                canvas.moveTo(start,starty+20*scalemultiplier-opentypestrokeWidth);
+                                canvas.lineTo(start+length,starty+20*scalemultiplier-opentypestrokeWidth);
+                                canvas.lineTo(start+length,starty+20*scalemultiplier+opentypestrokeWidth);
+                                canvas.lineTo(start,starty+20*scalemultiplier+opentypestrokeWidth);
+                                canvas.lineTo(start,starty+20*scalemultiplier-opentypestrokeWidth);
+                    }
+        }
+
+
+}
+function drawDiagonalLine1(start,starty,canvas,big){
+        if(big){
+            wlength=wedgelength
+			if(halfangle)
+                length=0.6*length
+            length=multiplier*strokelength;
+            canvas.moveTo(start+wlength-10*scalemultiplier, starty+wlength-10*scalemultiplier);
+            canvas.lineTo(start+wlength-10*scalemultiplier, starty-10*scalemultiplier);
+            canvas.lineTo(start-10, starty+wlength-10);
+        }else if(smaller){
+            length=smallermultiplier*strokelength;
+            wlength=wedgelength-5
+            canvas.moveTo(start+wlength-5*scalemultiplier, starty+wlength-5*scalemultiplier);
+            canvas.lineTo(start+wlength-5*scalemultiplier, starty-5*scalemultiplier);
+            canvas.lineTo(start-5*scalemultiplier, starty+wlength-5*scalemultiplier);
+            smaller=false;
+        }else{
+            length=scalemultiplierForStrokeLength*strokelength;
+			wlength=wedgelength
+            canvas.moveTo(start, starty);
+            canvas.lineTo(start-wedgelength*scalemultiplier, starty);
+            canvas.lineTo(start, starty-wedgelength*scalemultiplier);
+        }
+         if(!ot)
+            canvas.fill();
+        canvas.moveTo(start,starty);
+        if(halfangle){
+                canvas.lineTo(start+length,starty+0.6*length);
+        }else{
+                canvas.lineTo(start+length*scalemultiplier,starty+length*scalemultiplier);
+        }
+         if(!ot){
+            canvas.stroke();
+        }else{
+                canvas.moveTo(start,starty);
+                canvas.lineTo(start-opentypestrokeWidth,starty-opentypestrokeWidth+20*scalemultiplier);
+                canvas.lineTo(start-opentypestrokeWidth,starty-opentypestrokeWidth+20*scalemultiplier);
+                canvas.lineTo(start-opentypestrokeWidth,starty-opentypestrokeWidth+20*scalemultiplier+length);
+        }
+}
+
+function drawDiagonalLine2(start,starty,canvas,big){
+        if(big){
+            length=multiplier*strokelength;
+            if(halfangle)
+                length=0.6*length
+			canvas.moveTo(start, starty+length);
+			canvas.lineTo(start, starty+length+10);
+			canvas.lineTo(start-10, starty+length);
+			 if(!ot)
+                canvas.fill(); // connect and fill
+        }else if(smaller){
+			length=smallermultiplier*strokelength;
+            if(halfangle)
+                length=0.6*length
+			canvas.moveTo(start, starty+length);
+			canvas.lineTo(start, starty+length+5);
+			canvas.lineTo(start-5, starty+length);
+			smaller=false;
+		}else{
+             length=scalemultiplierForStrokeLength*strokelength;
+             if(halfangle)
+                length=0.6*length
+			canvas.moveTo(start, starty+length);
+			canvas.lineTo(start, starty+length+10);
+			canvas.lineTo(start-10, starty+length);
+        }
+         if(!ot)
+            canvas.fill();
+         if(!ot){
+            canvas.moveTo(start+length*scalemultiplier,starty);
+            canvas.lineTo(start,starty+length*scalemultiplier);
+            canvas.stroke();
+        }else{
+            canvas.moveTo(start+length*scalemultiplier,starty);
+            canvas.lineTo(start,starty+length*scalemultiplier);
+
+        }
+}
+
+function drawDiagonalLine3(start,starty,canvas,big){
+        if(big){
+            length=multiplier*strokelength;
+			canvas.moveTo(start+length,starty+length);
+			canvas.lineTo(start+length+wedgelength, starty+length);
+			canvas.lineTo(start+length, starty+length+wedgelength);
+        }else if(smaller){
+			length=smallermultiplier*strokelength;
+			canvas.moveTo(start+length,starty+length);
+			canvas.lineTo(start+length+wedgelength-5, starty+length);
+			canvas.lineTo(start+length, starty+length+wedgelength-5);
+			smaller=false;
+		}else{
+            length=scalemultiplierForStrokeLength*strokelength;
+			canvas.moveTo(start+length,starty+length);
+			canvas.lineTo(start+length+wedgelength*scalemultiplier, starty+length);
+			canvas.lineTo(start+length, starty+length+wedgelength*scalemultiplier);
+        }
+         if(!ot)
+            canvas.fill();
+		canvas.moveTo(start,starty);
+        canvas.lineTo(start+length,starty+length);
+         if(!ot){
+            canvas.moveTo(start,starty);
+            canvas.lineTo(start+length,starty+length);
+            canvas.stroke();
+        }else{
+            canvas.moveTo(start,starty);
+            canvas.lineTo(start+length-opentypestrokeWidth,starty+length+opentypestrokeWidth);
+            canvas.lineTo(start+length,starty+length);
+            canvas.lineTo(start,starty);
+        }
+}
+
+function drawDiagonalLine4(start,starty,canvas,big){
+        if(big){
+            length=multiplier*strokelength;
+			canvas.moveTo(start+length,starty);
+			canvas.lineTo(start+length, starty-wedgelength);
+			canvas.lineTo(start+length+wedgelength, starty);
+        }else if(smaller){
+			length=smallermultiplier*strokelength;
+			canvas.moveTo(start+length,starty);
+			canvas.lineTo(start+length, starty-wedgelength+5);
+			canvas.lineTo(start+length+wedgelength-5, starty);
+			smaller=false;
+		}else{
+            length=scalemultiplierForStrokeLength*strokelength;
+			canvas.moveTo(start+length,starty);
+			canvas.lineTo(start+length, starty-wedgelength);
+			canvas.lineTo(start+length+wedgelength, starty);
+        }
+         if(!ot)
+            canvas.fill();
+         if(!ot){
+            canvas.moveTo(start+length*scalemultiplier,starty);
+            canvas.lineTo(start,starty+length*scalemultiplier);
+            canvas.stroke();
+        }else{
+            canvas.moveTo(start+length*scalemultiplier,starty);
+            canvas.lineTo(start,starty+length*scalemultiplier);
+        }
+}
+
+function clearCanvas(strokeParser){
+    var c=document.getElementById("myCanvas");
+    c.width = c.width;
+	ctx2.clearRect(0,0,70,100);
+	//document.getElementById("canvas").width=document.getElementById("canvas").width
+    if(!strokeParser)
+        document.getElementById('canvasinput').value=""
+}
+
+
+
+function drawWedge(start,starty,canvas){
+        canvas.moveTo(start-10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+		canvas.lineTo(start-10*scalemultiplier, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
+		canvas.lineTo(start, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
+         if(!ot)
+            canvas.fill(); // connect and fill
+}
+
+function drawWedge2(start,starty,canvas,big){
+    if(big){
+        canvas.moveTo(start+10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
+		canvas.lineTo(start+10*scalemultiplier, starty+30*scalemultiplier); // draw straight down by 200px (200 + 200)
+		canvas.lineTo(start, starty+25*scalemultiplier); // draw up toward left (100 less than 300, so left)
+    }else{
+        canvas.moveTo(start+10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
+		canvas.lineTo(start+10*scalemultiplier, starty+25*scalemultiplier); // draw straight down by 200px (200 + 200)
+		canvas.lineTo(start, starty+20*scalemultiplier); // draw up toward left (100 less than 300, so left)
+    }
+     if(!ot)
+        canvas.fill();
+}
+
+function showCharacter(character){
+        strokeParser(character)
+        document.getElementById('canvasinput').value=character
+}
+</script>
+<style>
+        body {
+            font: 13px Helvetica, arial, freesans, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            margin: 0 0 50px 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 940px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #glyphs {
+            clear: both;
+        }
+
+        .wrapper {
+            float: left;
+            margin: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .wrapper span {
+            text-align: center;
+            background: #ddd;
+            display: block;
+        }
+    </style>
+<style>
+.table-wrapper-scroll-y {
+  display: block;
+  max-height: 500px;
+  max-width: 100%;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+</style>
+</head>
+<body>
+<table><tr><td valign="top">
+
+<canvas id="myCanvas" width="500" height="100" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+<img id="canvasImg"/>
+<br/>
+Stroke Order Input: <input type="text" id="canvasinput" onKeyUp="strokeParser(document.getElementById('canvasinput').value)"/><button id="clearcanvas" onClick="clearCanvas(false)">Clear Canvas</button>
+<button id="downloadImage" onClick="to_image()">Download Image</button><button id="downloadSVG" onClick="to_svg()">Download SVG</button><button id="createFont" onClick="createFont()">Create Font</button><br/>
+<br/>
+Tutorial:
+<ul>
+<li><b>a</b> <button id="vertical" onClick="showCharacter('a')">Vertical Stroke (a)</button><button id="D" onClick="showCharacter('A')">Big (A)</button>
+<button id="sa" onClick="showCharacter('sa')">Small (sa)</button></li>
+<li><b>b</b> <button id="horizontal" onClick="showCharacter('b')">Horizontal Stroke (b)</button>
+<button id="D" onClick="showCharacter('B')">Big (B)</button><button id="sb" onClick="showCharacter('sb')">Small (sb)</button></li>
+<li><b>c</b> <button id="diagonal1" onClick="showCharacter('c')">Diagonal Stroke1 (c)</button>
+<button id="C" onClick="showCharacter('C')">Big (C)</button><button id="sc" onClick="showCharacter('sc')">Small (sc)</button></li>
+<li><b>d</b> <button id="diagonal2" onClick="showCharacter('d')">Diagonal Stroke2 (d)</button>
+<button id="D" onClick="showCharacter('D')">Big (D)</button><button id="sd" onClick="showCharacter('sd')">Small (sd)</button></li>
+<li><b>e</b> <button id="diagonal3" onClick="showCharacter('e')">Diagonal Stroke3 (e)</button>
+<button id="E" onClick="showCharacter('E')">Big (E)</button><button id="se" onClick="showCharacter('se')">Small (se)</button></li>
+<li><b>f</b> <button id="diagonal4" onClick="showCharacter('f')">Diagonal Stroke4 (f)</button>
+<button id="F" onClick="showCharacter('F')">Big (F)</button><button id="sf" onClick="showCharacter('sf')">Small (sf)</button></li>
+<li><b>w</b> <button id="wedge" onClick="showCharacter('w')">Winkelhaken (w)</button><button id="F" onClick="showCharacter('W')">Big (W)</button></li><li><b>-</b> right of the current stroke passing through other strokes</li>
+<li><b>_</b> right of the current stroke NOT passing through other strokes</li>
+<li><b>:</b> under the current stroke passing through other strokes</li>
+<li><b>;</b> under the current stroke NOT passing through other strokes</li>
+<li><b>/</b> half the distance of <b>:</b> under the current stroke passing through other strokes </li>
+<li><b>.</b> diagonal right under the current stroke</li>
+<li><b>,</b> diagonal left above the current stroke</li>
+<li><b>s</b> smaller version of the stroke (e.g. sb, sc)</li>
+<li><b>!</b> mirrored version of the stroke (e.g. !a, !A, !sa)</li>
+<li><b>Whitespace</b> Enough distance to start a new character</li>
+</ul>
+</td><td>
+<span id="amount"></span>
+<div class="table-wrapper-scroll-y">
+<table align="center" id="examples" class="tablesorter">
+<thead>
+<tr><th>Sign</th><th>Code point</th><th>Transliteration</th><th>Borger</th><th>Comment</th><th>Code</th><th>SVG</th></tr><tr>
+</thead><tbody>
+<tr><td class="sign">𒀀</td><td class="codepoint">U+12000</td><td class="transliteration">A</td><td>839</td><td></td><td><button class="codebutton" onClick="showCharacter('a-a:a')">a-a:a</a></td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀁</td><td class="codepoint">U+12001</td><td class="transliteration">A x A</td><td>845</td><td>EDURU</td><td><button class="codebutton" onClick="showCharacter('a-a-a:a-a:a')">a-a-a:a-a:a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀂</td><td class="codepoint">U+12002</td><td class="transliteration">A x BAD</td><td>840</td><td>AGAM</td><td><button class="codebutton" onClick="showCharacter('a-b-w-a:a')">a-b-w-a:a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋰</td><td class="codepoint">U+122F0</td><td class="transliteration">TAB</td><td>209</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b')">b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌑</td><td class="codepoint">U+12311</td><td class="transliteration">U2</td><td>490</td><td></td><td><button class="codebutton" onClick="showCharacter('B::B-a-a-a-a')">B::B-a-a-a-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀾</td><td class="codepoint">U+1203E</td><td class="transliteration">AŠ2</td><td>548</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b-a')">b:b:b:b-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒇲</td><td class="codepoint">U+121F2</td><td class="transliteration">LAL</td><td>750</td><td></td><td><button class="codebutton" onClick="showCharacter('a-b')">a-b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁇</td><td class="codepoint">U+12047</td><td class="transliteration">BAR</td><td>121</td><td></td><td><button class="codebutton" onClick="showCharacter(';b-a')">;b-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒂃</td><td class="codepoint">U+12083</td><td class="transliteration">DUḪ</td><td>298</td><td>GAB, DU8, TUḪ</td><td><button class="codebutton" onClick="showCharacter('b:b_w:w-w:w-w:w-w:w')" >b:b_w:w-w:w-w:w-w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒂉</td><td class="codepoint">U+12089</td><td class="transliteration">DUR2</td><td>808</td><td>DURU2, DURUN, TUKUL, TUŠ</td><td><button class="codebutton" onClick="showCharacter('a-b;b-::b_a')">a-b;b-::b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃲</td><td class="codepoint">U+120F2</td><td class="transliteration">GAL</td><td>553</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b_a-:b')">b:b:b:b_a-:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒇹</td><td class="codepoint">U+121F9</td><td class="transliteration">LIMMU2</td><td>215</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b_b:b')">b:b_b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄩</td><td class="codepoint">U+12129</td><td class="transliteration">ḪA</td><td>856</td><td>KU6</td><td><button class="codebutton" onClick="showCharacter('a:a;w-a:a-w')">a:a;w-a:a-w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆳</td><td class="codepoint">U+121B3</td><td class="transliteration">KUR</td><td>578</td><td></td><td><button class="codebutton" onClick="showCharacter('w:w-w')">w:w-w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈦</td><td class="codepoint">U+12226</td><td class="transliteration">MAŠ</td><td>120</td><td></td><td><button class="codebutton" onClick="showCharacter(':b-a')">:b-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆜</td><td class="codepoint">U+1219C</td><td class="transliteration">KASKAL</td><td>302</td><td></td><td><button class="codebutton" onClick="showCharacter('::c\'d-::d\'c')">::c'd-::d'c</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆕</td><td class="codepoint">U+12195</td><td class="transliteration">KAK</td><td>379</td><td>GAG, DU3, RU2</td><td><button class="codebutton" onClick="showCharacter('a-c:d')">a-c:d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆚</td><td class="codepoint">U+1219A</td><td class="transliteration">KAM2</td><td>595</td><td></td><td><button class="codebutton" onClick="showCharacter('c:c-c:c:c-c')">c:c-c:c:c-c</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈛</td><td class="codepoint">U+1221B</td><td class="transliteration">LUḪ</td><td>494</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b_a-a-a-a')">b:b:b:b_a-a-a-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈠</td><td class="codepoint">U+12220</td><td class="transliteration">MA</td><td>552</td><td></td><td><button class="codebutton" onClick="showCharacter('b_a;b-:b_a')">b_a;b-:b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒉡</td><td class="codepoint">U+12261</td><td class="transliteration">NU</td><td>112</td><td></td><td><button class="codebutton" onClick="showCharacter(':B-A;d')">:B-A;d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀫</td><td class="codepoint">U+1202B</td><td class="transliteration">AMAR</td><td>695</td><td></td><td><button class="codebutton" onClick="showCharacter('w:w_b:b_w:w')">w:w_b:b_w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃵</td><td class="codepoint">U+120F5</td><td class="transliteration">GAM</td><td>576</td><td></td><td><button class="codebutton" onClick="showCharacter('c.c')">c.c</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒊸</td><td class="codepoint">U+122B8</td><td class="transliteration">ŠAB6</td><td></td><td></td><td><button class="codebutton" onClick="showCharacter(':b:b_b:b:b_:b')">b:b_b:b:b_:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄑</td><td class="codepoint">U+12111</td><td class="transliteration">GIŠ</td><td>469</td><td></td><td><button class="codebutton" onClick="showCharacter('b::b_a')">b::b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄨</td><td class="codepoint">U+12128</td><td class="transliteration">GURUŠ</td><td></td><td></td><td><button class="codebutton" onClick="showCharacter('b:::b-a--a')">b:::b-a--a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄷</td><td class="codepoint">U+12137</td><td class="transliteration">ḪU</td><td>132</td><td></td><td><button class="codebutton" onClick="showCharacter(':b-a-::w-a')">:b-a-::w-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄿</td><td class="codepoint">U+1213F</td><td class="transliteration">I</td><td>252</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b_/b:b')">b:b:b_/b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈨</td><td class="codepoint">U+12228</td><td class="transliteration">ME</td><td>753</td><td></td><td><button class="codebutton" onClick="showCharacter('a-:b')">a-:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈫</td><td class="codepoint">U+1222B</td><td class="transliteration">MIN</td><td>825</td><td></td><td><button class="codebutton" onClick="showCharacter('a-a')">a-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋙</td><td class="codepoint">U+122D9</td><td class="transliteration">ŠU2</td><td>869</td><td></td><td><button class="codebutton" onClick="showCharacter('a;w')">a;w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌷</td><td class="codepoint">U+12337</td><td class="transliteration">URU</td><td>071</td><td></td><td><button class="codebutton" onClick="showCharacter('::b::b-a--a')">::b::b-a--a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍝</td><td class="codepoint">U+1235D</td><td class="transliteration">ZA</td><td>851</td><td></td><td><button class="codebutton" onClick="showCharacter('a::a-a::a')">a::a-a::a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀸</td><td class="codepoint">U+12038</td><td class="transliteration">AŠ</td><td>001</td><td></td><td><button class="codebutton" onClick="showCharacter('b')">b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁹</td><td class="codepoint">U+12079</td><td class="transliteration">DIŠ</td><td>748</td><td></td><td><button class="codebutton" onClick="showCharacter('a')">a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄐</td><td class="codepoint">U+12110</td><td class="transliteration">GISAL</td><td>376</td><td></td><td><button class="codebutton" onClick="showCharacter('b;b_a:c:::d_b;b_a')">b;b_a:c:::d_b;b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄬</td><td class="codepoint">U+1212C</td><td class="transliteration">ḪAL</td><td>003</td><td></td><td><button class="codebutton" onClick="showCharacter('bc:d')">bc:d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃻</td><td class="codepoint">U+120FB</td><td class="transliteration">GAR</td><td>859</td><td></td><td><button class="codebutton" onClick="showCharacter('a-:sa-sa~~~;f')">a-:sa-sa~~~;f</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒅀</td><td class="codepoint">U+12140</td><td class="transliteration">I A</td><td></td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b_/b:b_a-a:a')">b:b:b_/b:b_a-a:a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒅆</td><td class="codepoint">U+12146</td><td class="transliteration">IGI</td><td>724</td><td></td><td><button class="codebutton" onClick="showCharacter(':W-a-:b')">:W-a-:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒅈</td><td class="codepoint">U+12148</td><td class="transliteration">IGI RI</td><td>726</td><td></td><td><button class="codebutton" onClick="showCharacter(':W-a-:b_-:b-a-a-:::w-a')">:w-a-:b_-:b-a-a-:::w-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈥</td><td class="codepoint">U+12225</td><td class="transliteration">MAR</td><td>483</td><td></td><td><button class="codebutton" onClick="showCharacter('b:::b_a-a-:b')">b:::b_a-a-:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈪</td><td class="codepoint">U+1222A</td><td class="transliteration">MI</td><td>681</td><td></td><td><button class="codebutton" onClick="showCharacter(':W_/b:b:b:b_b:b:b:b')">:W_/b:b:b:b_b:b:b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈬</td><td class="codepoint">U+1222C</td><td class="transliteration">MU</td><td>098</td><td></td><td><button class="codebutton" onClick="showCharacter(':B\'w::w-w::w--w::w')">:B'w::w-w::w--w::w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒉼</td><td class="codepoint">U+1227C</td><td class="transliteration">PAN</td><td>685</td><td></td><td><button class="codebutton" onClick="showCharacter('c_d_c_d')">c_d_c_d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒊩</td><td class="codepoint">U+122A9</td><td class="transliteration">SAL</td><td>883</td><td></td><td><button class="codebutton" onClick="showCharacter('a::bcb::d')">a::bcb::d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒊭</td><td class="codepoint">U+122AD</td><td class="transliteration">ŠA</td><td>566</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b_ac:::d_a')">b:b:b:b_ac:::d_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒊺</td><td class="codepoint">U+122BA</td><td class="transliteration">ŠE</td><td>579</td><td></td><td><button class="codebutton" onClick="showCharacter('W:W-w:w-w:w-w:w-W:W')">W:W-w:w-w:w-w:w-W:W</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌀</td><td class="codepoint">U+12300</td><td class="transliteration">TIL</td><td>114</td><td></td><td><button class="codebutton" onClick="showCharacter('bc')">bc</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈝</td><td class="codepoint">U+1221D</td><td class="transliteration">LUM</td><td>900</td><td></td><td><button class="codebutton" onClick="showCharacter('c:c:c_d:d:d_c:c:c')">c:c:c_d:d:d_c:c:c</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈣</td><td class="codepoint">U+12223</td><td class="transliteration">MA2</td><td>201</td><td></td><td><button class="codebutton" onClick="showCharacter('Bsa-;b\'::sa_a')">Bsa-;b'::sa_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁄</td><td class="codepoint">U+12044</td><td class="transliteration">BAL</td><td>005</td><td></td><td><button class="codebutton" onClick="showCharacter(':b-:b_:W-a-:b--/w:w')">:b-:b_:W-a-:b--/w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀹</td><td class="codepoint">U+12039</td><td class="transliteration">AŠ ZIDA tenû</td><td>575</td><td></td><td><button class="codebutton" onClick="showCharacter('c')">c</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀺</td><td class="codepoint">U+1203A</td><td class="transliteration">AŠ KABA tenû</td><td>647?</td><td></td><td><button class="codebutton" onClick="showCharacter('e')">e</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀼</td><td class="codepoint">U+1203C</td><td class="transliteration">AŠ / AŠ / AŠ</td><td>505</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b')">b:b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄧</td><td class="codepoint">U+12127</td><td class="transliteration">GURUN</td><td>503</td><td></td><td><button class="codebutton" onClick="showCharacter('b:::b_a;w-a;w-w:w')">b:::b_a;w-a;w-w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆦</td><td class="codepoint">U+121A6</td><td class="transliteration">KISAL</td><td>435</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b_a')">b:b:b:b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒉒</td><td class="codepoint">U+12252</td><td class="transliteration">NINDA2</td><td>316</td><td></td><td><button class="codebutton" onClick="showCharacter(':b:b_a-B;B')">:b:b_a-B;B</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒉺</td><td class="codepoint">U+1227A</td><td class="transliteration">PA</td><td>464</td><td></td><td><button class="codebutton" onClick="showCharacter('b:::b-a')">b:::b-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒉽</td><td class="codepoint">U+1227D</td><td class="transliteration">PAP</td><td>092</td><td></td><td><button class="codebutton" onClick="showCharacter('c:d')">c:d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒊬</td><td class="codepoint">U+122AC</td><td class="transliteration">SAR</td><td>541</td><td></td><td><button class="codebutton" onClick="showCharacter(':W:W:W-:W:W:W-:W:W:W-a-b;b_a')">:W:W:W-:W:W:W-:W:W:W-a-b;b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋂</td><td class="codepoint">U+122C2</td><td class="transliteration">ŠEŠLAM</td><td>100</td><td></td><td><button class="codebutton" onClick="showCharacter('c:b-a:a-a:a')">c:b-a:a-a:a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋃</td><td class="codepoint">U+122C3</td><td class="transliteration">ŠID</td><td>485</td><td></td><td><button class="codebutton" onClick="showCharacter('B:B:B:b-a-a;b_a')">B:B:B:b-a-a;b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋖</td><td class="codepoint">U+122D6</td><td class="transliteration">ŠITA</td><td>388</td><td></td><td><button class="codebutton" onClick="showCharacter('A:c;d_A')">A:c;d_A</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋗</td><td class="codepoint">U+122D7</td><td class="transliteration">ŠU</td><td>567</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b:b_a')">b:b:b:b:b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍞</td><td class="codepoint">U+1235E</td><td class="transliteration">ZA tenû</td><td>854</td><td></td><td><button class="codebutton" onClick="showCharacter('c.c-c.c')">c.c-c.c</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍭</td><td class="codepoint">U+1236D</td><td class="transliteration">ZUBUR</td><td>648</td><td></td><td><button class="codebutton" onClick="showCharacter('e:e:e')">e:e:e</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌍</td><td class="codepoint">U+1230D</td><td class="transliteration">U U U</td><td>711</td><td></td><td><button class="codebutton" onClick="showCharacter('W-W-W')">W-W-W</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌋</td><td class="codepoint">U+1230B</td><td class="transliteration">U</td><td>661</td><td></td><td><button class="codebutton" onClick="showCharacter('W')">W</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋻</td><td class="codepoint">U+122FB</td><td class="transliteration">TAR</td><td>009</td><td></td><td><button class="codebutton" onClick="showCharacter('c.ca')">c.ca</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋾</td><td class="codepoint">U+122FE</td><td class="transliteration">TI</td><td>118</td><td></td><td><button class="codebutton" onClick="showCharacter(':b_:w-a-:b')">:b_:w-a-:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀖</td><td class="codepoint">U+12016</td><td class="transliteration">AB2</td><td>672</td><td></td><td><button class="codebutton" onClick="showCharacter('W-c;d')">W-c;d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐀</td><td class="codepoint">U+12400</td><td class="transliteration">two AŠ</td><td>002</td><td></td><td><button class="codebutton" onClick="showCharacter('b-b')">b-b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐁</td><td class="codepoint">U+12401</td><td class="transliteration">three AŠ</td><td>004</td><td></td><td><button class="codebutton" onClick="showCharacter('b-b-b')">b-b-b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐂</td><td class="codepoint">U+12402</td><td class="transliteration">four AŠ</td><td>215</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b_b:b')">b:b_b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐃</td><td class="codepoint">U+12403</td><td class="transliteration">five AŠ</td><td>216</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b_b:b_b')">b:b_b:b_b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐄</td><td class="codepoint">U+12404</td><td class="transliteration">six AŠ</td><td>217</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b_b:b_b:b')">b:b_b:b_b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐅</td><td class="codepoint">U+12405</td><td class="transliteration">seven AŠ</td><td>218</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b_b:b_b:b_b')">b:b_b:b_b:b_b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐆</td><td class="codepoint">U+12406</td><td class="transliteration">eight AŠ</td><td>219</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b_b:b_b:b_b:b')">b:b_b:b_b:b_b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐇</td><td class="codepoint">U+12407</td><td class="transliteration">nine AŠ</td><td>220</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b_b:b_b:b_b:b_b')">b:b_b:b_b:b_b:b_b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐏</td><td class="codepoint">U+1240F</td><td class="transliteration">four U</td><td>713</td><td></td><td><button class="codebutton" onClick="showCharacter('w:w-w:w')">w:w-w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐐</td><td class="codepoint">U+12410</td><td class="transliteration">five U</td><td>714</td><td></td><td><button class="codebutton" onClick="showCharacter('w:w-w:w-w')">w:w-w:w-w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐑</td><td class="codepoint">U+12411</td><td class="transliteration">six U</td><td>715</td><td></td><td><button class="codebutton" onClick="showCharacter('w:w-w:w-w:w')">w:w-w:w-w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐒</td><td class="codepoint">U+12412</td><td class="transliteration">seven U</td><td>716</td><td></td><td><button class="codebutton" onClick="showCharacter('w:w-w:w-w:w-w')">w:w-w:w-w:w-w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐓</td><td class="codepoint">U+12413</td><td class="transliteration">eight U</td><td>717</td><td></td><td><button class="codebutton" onClick="showCharacter('w:w-w:w-w:w-w:w')">w:w-w:w-w:w-w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐔</td><td class="codepoint">U+12414</td><td class="transliteration">nine U</td><td>718</td><td></td><td><button class="codebutton" onClick="showCharacter('w:w-w:w-w:w-w:w-w')">w:w-w:w-w:w-w:w-w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑁</td><td class="codepoint">U+12441</td><td class="transliteration">IMIN3</td><td>537</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b_b:b:b_b')">b:b:b_b:b:b_b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑆</td><td class="codepoint">U+12446</td><td class="transliteration">ILIMMU</td><td>868</td><td></td><td><button class="codebutton" onClick="showCharacter('a:a:a-a:a:a-a:a:a')">a:a:a-a:a:a-a:a:a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑈</td><td class="codepoint">U+12448</td><td class="transliteration">ILIMMU4</td><td>577</td><td></td><td><button class="codebutton" onClick="showCharacter('w.w.w')">w.w.w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑃</td><td class="codepoint">U+12443</td><td class="transliteration">IMIN variant form</td><td>866</td><td></td><td><button class="codebutton" onClick="showCharacter('a:a-a:a-a:a-a')">a:a-a:a-a:a-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑅</td><td class="codepoint">U+12445</td><td class="transliteration">USSU3</td><td>538</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b_b:b:b_/b:b')">b:b:b_b:b:b_/b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑇</td><td class="codepoint">U+12447</td><td class="transliteration">ILIMMU3</td><td>539</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b_b:b:b_b:b:b')">b:b:b_b:b:b_b:b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐋</td><td class="codepoint">U+1240B</td><td class="transliteration">six DIŠ</td><td>862</td><td></td><td><button class="codebutton" onClick="showCharacter('a:a-a:a-a:a')">a:a-a:a-a:a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋥</td><td class="codepoint">U+122E5</td><td class="transliteration">SUD2</td><td>139</td><td></td><td><button class="codebutton" onClick="showCharacter(':b_a-a-:b')">:b_a-a-:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋡</td><td class="codepoint">U+122E1</td><td class="transliteration">SILA3</td><td>099</td><td></td><td><button class="codebutton" onClick="showCharacter('c;d_a')">c;d_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄞</td><td class="codepoint">U+1211E</td><td class="transliteration">GUD</td><td>472</td><td></td><td><button class="codebutton" onClick="showCharacter('b:::b_a:c::d')">b:::b_a:c::d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃾</td><td class="codepoint">U+120FE</td><td class="transliteration">GEŠTIN</td><td>212</td><td></td><td><button class="codebutton" onClick="showCharacter('b:::b\'::sa-::sa-W:::W-c;d')">b:::b'::sa-::sa-w:::w-c;d'</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄾</td><td class="codepoint">U+1213E</td><td class="transliteration">ḪUL2</td><td>877</td><td></td><td><button class="codebutton" onClick="showCharacter('a;w_b:b:b:b-b_a')">a;w_b:b:b:b-b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒅕</td><td class="codepoint">U+12155</td><td class="transliteration">IR</td><td>437</td><td></td><td><button class="codebutton" onClick="showCharacter('c;d-a-a-a')">c;d-a-a-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆗</td><td class="codepoint">U+12197</td><td class="transliteration">KAL</td><td>496</td><td></td><td><button class="codebutton" onClick="showCharacter('b:::b-a--a::a')">b:::b-a--a::a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆰</td><td class="codepoint">U+121B0</td><td class="transliteration">KUL</td><td>117</td><td></td><td><button class="codebutton" onClick="showCharacter('b-w-b-w:w')">b-w-b-w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀝</td><td class="codepoint">U+1201D</td><td class="transliteration">AK</td><td>127</td><td></td><td><button class="codebutton" onClick="showCharacter(':W_b:b:b:b--b:b:b:b_a-:bb')">:W_b:b:b:b--b:b:b:b_a-:bb</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁳</td><td class="codepoint">U+12073</td><td class="transliteration">DIB</td><td>813</td><td></td><td><button class="codebutton" onClick="showCharacter(':a-b::sb:sb::b-::sa--:a')">:a-b::sb:sb::b-::sa--:a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒐻</td><td class="codepoint">U+1243B</td><td class="transliteration">EŠ21</td><td>210</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b_b')">b:b_b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑗</td><td class="codepoint">U+12457</td><td class="transliteration">NIGIDAEŠ</td><td>850</td><td></td><td><button class="codebutton" onClick="showCharacter('a:a-a')">a:a-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑖</td><td class="codepoint">U+12456</td><td class="transliteration">NIGIDAMIN</td><td>847,848</td><td></td><td><button class="codebutton" onClick="showCharacter('a:a')">a:a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒅊</td><td class="codepoint">U+1214A</td><td class="transliteration">IGI gunû</td><td>564</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b\':W_a-:b')">b:b:b:b':W_a-:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑙</td><td class="codepoint">U+12459</td><td class="transliteration">EŠEMIN5 ("BI")</td><td>359</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b_w:w')">b:b_w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆏</td><td class="codepoint">U+1218F</td><td class="transliteration">KAB</td><td>148</td><td></td><td><button class="codebutton" onClick="showCharacter('sb:sb:sb:sb:sb:B-a:::sb-:::w-a')">sb:sb:sb:sb:sb:B-a:::sb-:::w-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆐</td><td class="codepoint">U+12190</td><td class="transliteration">KAD2</td><td>108</td><td></td><td><button class="codebutton" onClick="showCharacter(':sbsc-a;w')">:sbsc-a;w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆑</td><td class="codepoint">U+12191</td><td class="transliteration">KAD3</td><td>109</td><td></td><td><button class="codebutton" onClick="showCharacter(':sbsc-a;w-a;w-a;w')">:sbsc-a;w-a;w-a;w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃮</td><td class="codepoint">U+120EE</td><td class="transliteration">GABA</td><td></td><td></td><td><button class="codebutton" onClick="showCharacter('b:b_w:w-w:w-w:w-w:w')">b:b_w:w-w:w-w:w-w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄓</td><td class="codepoint">U+12113</td><td class="transliteration">GIŠ x BAD</td><td>471</td><td></td><td><button class="codebutton" onClick="showCharacter('b:sb-sw:b_a')">b:sb-sw:b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁁</td><td class="codepoint">U+12041</td><td class="transliteration">BAD</td><td>113</td><td></td><td><button class="codebutton" onClick="showCharacter('b_:::sc\'sd')">b_:::sc'sd</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁀</td><td class="codepoint">U+12040</td><td class="transliteration">BA</td><td>014</td><td></td><td><button class="codebutton" onClick="showCharacter('cd-::b-a')">cd-::b-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁍</td><td class="codepoint">U+1204D</td><td class="transliteration">BU</td><td>580</td><td></td><td><button class="codebutton" onClick="showCharacter('cd_cd_b')">cd_cd_b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁎</td><td class="codepoint">U+1204E</td><td class="transliteration">BU / BU AB</td><td>582</td><td></td><td><button class="codebutton" onClick="showCharacter('cd;cd_cd;cd_b:::b_:b:b_;::c\'d_a')">cd;cd_cd;cd_b:::b_:b:b_;::c'd_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁑</td><td class="codepoint">U+12051</td><td class="transliteration">BULUG</td><td>169</td><td></td><td><button class="codebutton" onClick="showCharacter('b-a;w-bsc_W')">b-a;w-bsc_W</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁓</td><td class="codepoint">U+12053</td><td class="transliteration">BUR</td><td>559</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b:b_ac;f')">b:b:b:b:b_ac;f</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁔</td><td class="codepoint">U+12054</td><td class="transliteration">BUR2</td><td>008</td><td></td><td><button class="codebutton" onClick="showCharacter(':b_ac;d-a_/b--w:w')">:b_ac;d-a_/b--w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁖</td><td class="codepoint">U+12056</td><td class="transliteration">DAG</td><td>438</td><td></td><td><button class="codebutton" onClick="showCharacter(';B-ab.ab.ab.ab-;f\'c')">;B-ab.ab.ab.ab-;f'c</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁮</td><td class="codepoint">U+1206E</td><td class="transliteration">DAM</td><td>889</td><td></td><td><button class="codebutton" onClick="showCharacter('a:bcb::d_a-b:::b-::b--a-::w')">a:bcb::d_a-b:::b-::b--a-::w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁲</td><td class="codepoint">U+12072</td><td class="transliteration">DI</td><td>736</td><td></td><td><button class="codebutton" onClick="showCharacter('f;c_-cb:b;f')">f;c_-cb:b;f</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁴</td><td class="codepoint">U+12074</td><td class="transliteration">DIM</td><td>167</td><td></td><td><button class="codebutton" onClick="showCharacter('b_a-aCDcd')">b_a-aCDcd</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒂖</td><td class="codepoint">U+12096</td><td class="transliteration">EL</td><td>899</td><td></td><td><button class="codebutton" onClick="showCharacter('a:bcb::d_b-;sb\'::sa--a')">a:bcb::d_b-;sb'::sa--a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒂡</td><td class="codepoint">U+120A1</td><td class="transliteration">EZEN</td><td>271</td><td></td><td><button class="codebutton" onClick="showCharacter(':sa-:sb::sb-ab;b_a-:sb::sb-:sa')">:sa-:sb::sb-ab;b_a-:sb::sb-:sa</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒂠</td><td class="codepoint">U+120A0</td><td class="transliteration">EŠ2</td><td>810; 811</td><td></td><td><button class="codebutton" onClick="showCharacter('a-b;B-sb:sb:sb:sb:sb_a')">a-b;B-sb:sb:sb:sb:sb_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒂷</td><td class="codepoint">U+120B7</td><td class="transliteration">GA2</td><td>387</td><td></td><td><button class="codebutton" onClick="showCharacter('b;b\';sa-;sa--a')">b;b';sa-;sa--a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃷</td><td class="codepoint">U+120F7</td><td class="transliteration">GAN2</td><td>174</td><td></td><td><button class="codebutton" onClick="showCharacter(';B\';sa-;sa-b;sa-;sa-;sa-a')">;B';sa-;sa-b;sa-;sa-;sa-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒉣</td><td class="codepoint">U+12263</td><td class="transliteration">NUN</td><td>143</td><td></td><td><button class="codebutton" onClick="showCharacter('::B\':sa-:sa-:sa-:sa-a')">::B':sa-:sa-:sa-:sa-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃰</td><td class="codepoint">U+120F0</td><td class="transliteration">GAD</td><td>157</td><td></td><td><button class="codebutton" onClick="showCharacter('d;c_A')">d;c_A</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄥</td><td class="codepoint">U+12125</td><td class="transliteration">GUR</td><td>180</td><td></td><td><button class="codebutton" onClick="showCharacter('b:::b-a--a')">b:::b-a--a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍏</td><td class="codepoint">U+1234F</td><td class="transliteration">URUDU (URUDA)</td><td>230</td><td></td><td><button class="codebutton" onClick="showCharacter(':sa-:sb::sb-a-b;b_a')">:sa-:sb::sb-a-b;b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌝</td><td class="codepoint">U+1231D</td><td class="transliteration">UM</td><td>238</td><td></td><td><button class="codebutton" onClick="showCharacter(':sb:sb-a-B;B\':sa-:sa-:sa-:sa-a')">:sb:sb-a-B;B':sa-:sa-:sa-:sa-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃴</td><td class="codepoint">U+120F4</td><td class="transliteration">GALAM (SUKUD)</td><td>338</td><td></td><td><button class="codebutton" onClick="showCharacter(':sb:sb-a-c;d_/:w')">:sb:sb-a-c;d_/:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒉌</td><td class="codepoint">U+1224C</td><td class="transliteration">NI</td><td>380</td><td></td><td><button class="codebutton" onClick="showCharacter('c;d-;sa-;sa')">c;d-;sa-;sa</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍑</td><td class="codepoint">U+12351</td><td class="transliteration">UŠ (NITA)</td><td>381</td><td></td><td><button class="codebutton" onClick="showCharacter('B;b\';sa-;sa-:sa-;w-a')">B;b';sa-;sa-:sa-;w-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆤</td><td class="codepoint">U+121A4</td><td class="transliteration">KID (LÍL)</td><td>484</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b\'a-a-a-a-a')">b:b:b:b'a-a-a-a-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌒</td><td class="codepoint">U+12312</td><td class="transliteration">UB</td><td>504</td><td></td><td><button class="codebutton" onClick="showCharacter('d;c_;sa\'c;d')">d;c_;sa'c;d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌙</td><td class="codepoint">U+12319</td><td class="transliteration">UD-gunû</td><td>542</td><td></td><td><button class="codebutton" onClick="showCharacter('sb:sb:sb:sb_d;c_a::a')">sb:sb:sb:sb_d;c_a::a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒇬</td><td class="codepoint">U+121EC</td><td class="transliteration">LAGAR</td><td>719</td><td></td><td><button class="codebutton" onClick="showCharacter('d;c-::sa--A')">d;c-::sa--A</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆠</td><td class="codepoint">U+121A0</td><td class="transliteration">KI</td><td>737</td><td></td><td><button class="codebutton" onClick="showCharacter('f;c_-cb:b:b:b::f')">f;c_-cb:b:b:b::f</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈨𒌍</td><td class="codepoint">U+12228 &amp; U+1230D </td><td>MEŠ</td><td>754</td><td></td><td><button class="codebutton" onClick="showCharacter('a-:b_W-W-W')">a-:b_W-W-W</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍦</td><td class="codepoint">U+12366</td><td class="transliteration">ZIB</td><td>628</td><td></td><td><button class="codebutton" onClick="showCharacter(';sc-\':::sc-\'::sc-:sc')">;sc-':::sc-'::sc-:sc</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍴</td><td class="codepoint">U+12374</td><td class="transliteration">DAG3</td><td></td><td></td><td><button class="codebutton" onClick="showCharacter('b::b-::sa-::sa-:::sc:sc--sa::sa')">b::b-::sa-::sa-:::sc:sc--sa::sa</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀪</td><td class="codepoint">U+1202A</td><td class="transliteration">aleph</td><td>635</td><td></td><td><button class="codebutton" onClick="showCharacter('f;c_-c:b\';d')">f;c_-c:b';d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒅁</td><td class="codepoint">U+12141</td><td class="transliteration">IB</td><td>807</td><td></td><td><button class="codebutton" onClick="showCharacter(';B\'a-:B\':sa-:sa-:sa-:sa-a')">;B'a-:B':sa-:sa-:sa-:sa-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒂽</td><td class="codepoint">U+120BD</td><td class="transliteration">GÁ×AŠ</td><td>389</td><td></td><td><button class="codebutton" onClick="showCharacter('b;b\';sa-;sa-::sb-a')">b;b';sa-;sa-::sb-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃢</td><td class="codepoint">U+120E2</td><td class="transliteration">SILA4 (GÁ×PA)</td><td>408</td><td></td><td><button class="codebutton" onClick="showCharacter('b;b\';sa-;sa-:sb:sb-:sa-a')">b;b';sa-;sa-:sb:sb-:sa-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁕</td><td class="codepoint">U+12055</td><td class="transliteration">DA</td><td>561</td><td></td><td><button class="codebutton" onClick="showCharacter('B:sb:sb:sb:sb:sb:b--:a-:::sb-:::w-A')">B:sb:sb:sb:sb:sb:b--:a-:::sb-:::w-A</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁷</td><td class="codepoint">U+12077</td><td class="transliteration">DIN</td><td>119</td><td></td><td><button class="codebutton" onClick="showCharacter('W:::W\'-c;d')">W:::W'-c;d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒀿</td><td class="codepoint">U+1203F</td><td class="transliteration">AŠGAB</td><td>173</td><td></td><td><button class="codebutton" onClick="showCharacter(';B\'a-:::sa-:::csa-:::sa-:::sa')">;B'a-:::sa-:::csa-:::sa-:::sa</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃼</td><td class="codepoint">U+120FC</td><td class="transliteration">GAR3</td><td>543</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b_Wc;d')">b:b:b:b_Wc;d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒃿</td><td class="codepoint">U+120FF</td><td class="transliteration">GEŠTIN x KUR</td><td>213</td><td></td><td><button class="codebutton" onClick="showCharacter('b:::b\'::sa-::sa-W:::W-c;d\':w::w-::w')">b:::b'::sa-::sa-W:::W-c;d':w::w-::w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒂂</td><td class="codepoint">U+12082</td><td class="transliteration">DUGUD</td><td>704</td><td></td><td><button class="codebutton" onClick="showCharacter('W-:b:b:b:b_b:b:b:b_::/b')">W-:b:b:b:b_b:b:b:b_::/b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒂅</td><td class="codepoint">U+12085</td><td class="transliteration">DUN3</td><td>836</td><td></td><td><button class="codebutton" onClick="showCharacter('B;b\'a--a::b_sa')">B;b'a--a::b_sa</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒂢</td><td class="codepoint">U+120A2</td><td class="transliteration">EZEN x A</td><td>288</td><td></td><td><button class="codebutton" onClick="showCharacter(':sa-:sb::sb-ab;b-:sa-:sa:sa-a-:sb::sb-:sa')">:sa-:sb::sb-ab;b-:sa-:sa:sa-a-:sb::sb-:sa</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒅅</td><td class="codepoint">U+12145</td><td class="transliteration">IG</td><td>136</td><td></td><td><button class="codebutton" onClick="showCharacter(';B-a-b:b:b:b-a-a_:::w:w')">;B-a-b:b:b:b-a-a_:::w:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒅂</td><td class="codepoint">U+12142</td><td class="transliteration">IDIM</td><td></td><td></td><td><button class="codebutton" onClick="showCharacter('!b:b')">!b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒇺</td><td class="codepoint">U+121FA</td><td class="transliteration">LIŠ</td><td>591</td><td></td><td><button class="codebutton" onClick="showCharacter('sc--a')">sc--a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒇻</td><td class="codepoint">U+121FB</td><td class="transliteration">LU</td><td>812</td><td></td><td><button class="codebutton" onClick="showCharacter(':a-b;b-:::sb::-::sa-a')">:a-b;b-:::sb::-::sa-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈮</td><td class="codepoint">U+1222E</td><td class="transliteration">MUG</td><td>012</td><td></td><td><button class="codebutton" onClick="showCharacter('b_ac;d-sa')">b_ac;d-sa</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄈</td><td class="codepoint">U+12108</td><td class="transliteration">GIR2</td><td>006</td><td></td><td><button class="codebutton" onClick="showCharacter(':B-::cd_c;dsa')">:B-::cd_c;dsa</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈧</td><td class="codepoint">U+12227</td><td class="transliteration">MAŠ2</td><td>130</td><td></td><td><button class="codebutton" onClick="showCharacter(':b-a_;c\'d_c;d')">:b-a_;c'd_c;d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍣</td><td class="codepoint">U+12363</td><td class="transliteration">ZI</td><td>140</td><td></td><td><button class="codebutton" onClick="showCharacter(':B-a-a-W:W-w:w-w:w-w:w-W:W')">:B-a-a-W:W-w:w-w:w-w:w-W:W</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒊑</td><td class="codepoint">U+12291</td><td class="transliteration">RI</td><td>142</td><td></td><td><button class="codebutton" onClick="showCharacter(':b\'a-a-::w-a')">:b'a-a-::w-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒅔</td><td class="codepoint">U+12154</td><td class="transliteration">IN</td><td>261</td><td></td><td><button class="codebutton" onClick="showCharacter('w:w:w-w:w:w-w:w:w-c;dsa-;sa')">w:w:w-w:w:w-w:w:w-c;dsa-;sa</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆒</td><td class="codepoint">U+12192</td><td class="transliteration">KAD4</td><td>568</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b_a::cd-a;b')">b:b:b:b_a::cd-a;b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆸</td><td class="codepoint">U+121B8</td><td class="transliteration">LAGAB</td><td>755</td><td></td><td><button class="codebutton" onClick="showCharacter('a-b;b_a')">a-b;b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆹</td><td class="codepoint">U+121B9</td><td class="transliteration">LAGAB x A</td><td>795</td><td></td><td><button class="codebutton" onClick="showCharacter('a-b;b-:sa-:sa:sa-a')">a-b;b-:sa-:sa:sa-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒇥</td><td class="codepoint">U+121E5</td><td class="transliteration">LAGAB x U</td><td>786</td><td></td><td><button class="codebutton" onClick="showCharacter('a-b;b\'::w_a')">a-b;b'::w_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒇧</td><td class="codepoint">U+121E7</td><td class="transliteration">LAGAB x U + U + U</td><td>788</td><td></td><td><button class="codebutton" onClick="showCharacter('a-b;b\'::w-::w-::w-a')">a-b;b'::w-::w-::w-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈖</td><td class="codepoint">U+12216</td><td class="transliteration">LU3</td><td>555</td><td></td><td><button class="codebutton" onClick="showCharacter(':sb:sb:sb-a-b;b_a:sb:sb:sb')">:sb:sb:sb-a-b;b_a:sb:sb:sb</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒆯</td><td class="codepoint">U+121AF</td><td class="transliteration">KU7</td><td>171</td><td></td><td><button class="codebutton" onClick="showCharacter('b:::b_d;c_a::a')">b:::b_d;c_a::a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄘</td><td class="codepoint">U+12118</td><td class="transliteration">GU2</td><td>176</td><td>TIK</td><td><button class="codebutton" onClick="showCharacter('b:::b-::sa--d;c_::a\'c;d')">b:::b-::sa--d;c_::a'c;d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋛</td><td class="codepoint">U+122DB</td><td class="transliteration">SI</td><td>181</td><td></td><td><button class="codebutton" onClick="showCharacter('B-;b\'::sa_a')">B-;b'::sa_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋜</td><td class="codepoint">U+122DC</td><td class="transliteration">SU4</td><td>182</td><td>SI-gunû</td><td><button class="codebutton" onClick="showCharacter('B-;b\'::sa--:sb:sb:sb-a')">B-;b'::sa--:sb:sb:sb-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒊕</td><td class="codepoint">U+12295</td><td class="transliteration">SAG</td><td>184</td><td></td><td><button class="codebutton" onClick="showCharacter('d;c-::a_a:b::b_a')">d;c-::a_a:b::b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌉</td><td class="codepoint">U+12309</td><td class="transliteration">TUR</td><td>255</td><td>DUMU</td><td><button class="codebutton" onClick="showCharacter('a#:sc::scsd::sd--#:b:b')">a#:sc::scsd::sd--#:b:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<!--<tr><td class="sign">𒀜</td><td class="codepoint">U+1221C</td><td>AD</td><td>258</td><td></td><td><button class="codebutton" onClick="showCharacter('b::b-::a-::a')">B-;b'::sa_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+AD	U+1201C 𒀜	-->
+<tr><td class="sign">𒊐</td><td class="codepoint">U+12290</td><td class="transliteration">RAB</td><td>262</td><td>RAB</td><td><button class="codebutton" onClick="showCharacter('::b:b-sb:sb:sb_/b::/b-/sb::sa-/sb')">::b:b-sb:sb:sb_/b::/b-/sb::sa-/sb</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌫</td><td class="codepoint">U+1232B</td><td class="transliteration">UR2</td><td>341</td><td></td><td><button class="codebutton" onClick="showCharacter('sa-b::b_;c::c_;b:::b_;a')">sa-b::b_;c::c_;b:::b_;a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒁉</td><td class="codepoint">U+12049</td><td class="transliteration">BI</td><td>358</td><td></td><td><button class="codebutton" onClick="showCharacter('b;bsa-;sa_c;ad-a')">b;bsa-;sa_c;ad-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑊</td><td class="codepoint">U+1244A</td><td class="transliteration">TAB variant old</td><td>593</td><td></td><td><button class="codebutton" onClick="showCharacter(':::sc-\'::sc')">:::sc-'::sc</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒑢</td><td class="codepoint">U+12462</td><td class="transliteration">Number 1/4(Kültepe)</td><td>594</td><td></td><td><button class="codebutton" onClick="showCharacter(':::sc-\'::sc-::b-:b')">:::sc-'::sc-::b-:b</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌌</td><td class="codepoint">U+1230C</td><td class="transliteration">UL</td><td>698</td><td>DU7</td><td><button class="codebutton" onClick="showCharacter('W_b::b_ac;d')">W_b::b_ac;d</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒎙</td><td class="codepoint">U+12399</td><td class="transliteration">MAN</td><td>708</td><td>2xU</td><td><button class="codebutton" onClick="showCharacter('W-W')">W-W</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒊔</td><td class="codepoint">U+12294</td><td class="transliteration">KIŠI4</td><td>743</td><td></td><td><button class="codebutton" onClick="showCharacter('d;c_a-:b::b_a')">d;c_a-:b::b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍮</td><td class="codepoint">U+1236E</td><td class="transliteration">ZUM</td><td>884</td><td></td><td><button class="codebutton" onClick="showCharacter('Ac::b::d_d:d;c:c')">Ac::b::d_d:d;c:c</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋼</td><td class="codepoint">U+122FC</td><td class="transliteration">TE</td><td>589</td><td></td><td><button class="codebutton" onClick="showCharacter('d;c_ac;d_A')">d;c_ac;d_A</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌁</td><td class="codepoint">U+12301</td><td class="transliteration">TIR</td><td>587</td><td></td><td><button class="codebutton" onClick="showCharacter('W::W-:w:w-:w:w-:w:w-W::W--B:::B-sa::sa-sa::sa-sa::sa-sa::sa-a:::a')">W::W-:w:w-:w:w-:w:w-W::W--B:::B-sa::sa-sa::sa-sa::sa-sa::sa-a:::a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌆</td><td class="codepoint">U+12306</td><td class="transliteration">TUG2</td><td>809</td><td></td><td><button class="codebutton" onClick="showCharacter('ab;b-::sb:sb--a')">ab;b-::sb:sb--a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌇</td><td class="codepoint">U+12307</td><td class="transliteration">TUK</td><td>827</td><td></td><td><button class="codebutton" onClick="showCharacter('a:::d-a-:sc')">a:::d-a-:sc</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌜</td><td class="codepoint">U+1231C</td><td class="transliteration">UDUG</td><td>833</td><td></td><td><button class="codebutton" onClick="showCharacter(';w-a:::w-\'a-a-:b::b-w--a')">;w-a:::w-'a-a-:b::b-w--a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌨</td><td class="codepoint">U+12328</td><td class="transliteration">UR</td><td>828</td><td></td><td><button class="codebutton" onClick="showCharacter(';B\'a-sa::b_a')">;B'a-sa::b_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌪</td><td class="codepoint">U+1232A</td><td class="transliteration">UR šešig</td><td>829</td><td></td><td><button class="codebutton" onClick="showCharacter(';B\'a-sa::b\':w;w-:w;w--a')">;B'a-sa::b':w;w-:w;w--a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍇</td><td class="codepoint">U+12347</td><td class="transliteration">URU x MIN</td><td>080</td><td></td><td><button class="codebutton" onClick="showCharacter('::B::B-a"b-:sa-:sa-a')">::B::B-a"b-:sa-:sa-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍨</td><td class="codepoint">U+12368</td><td class="transliteration">ZIG</td><td>336</td><td></td><td><button class="codebutton" onClick="showCharacter('sb:w:sb_b:::b\':W-:W-:W')">sb:w:sb_b:::b':W-:W-:W</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒍒</td><td class="codepoint">U+12352</td><td class="transliteration">UŠ x A</td><td>384</td><td></td><td><button class="codebutton" onClick="showCharacter('B;b\';sa-;sa-:sa-:sa:sa\';w-a')">B;b';sa-;sa-:sa-:sa:sa';w-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒉆</td><td class="codepoint">U+12246</td><td class="transliteration">NAM</td><td>134</td><td></td><td><button class="codebutton" onClick="showCharacter('::B-a;w-a;w-:::w-a-w::w::w-w::w::w')">::B-a;w-a;w-:::w-a-w::w::w-w::w::w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒌡</td><td class="codepoint">U+12321</td><td class="transliteration">UM x U</td><td>239</td><td></td><td><button class="codebutton" onClick="showCharacter(':sb:sb-a-B;B\':sa-:sa-:sa-:sa-::w-a')">:sb:sb-a-B;B':sa-:sa-:sa-:sa-::w-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒋫</td><td class="codepoint">U+122EB</td><td class="transliteration">TA</td><td>248</td><td></td><td><button class="codebutton" onClick="showCharacter('b;b_ac;d_a')">b;b_ac;d_a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒈗</td><td class="codepoint">U+12217</td><td class="transliteration">LUGAL</td><td>266</td><td></td><td><button class="codebutton" onClick="showCharacter('b:b:b:b_a::b_a;B\'::c::sc\'-:C:::sa-;sa-;sa')">b:b:b:b_a::b_a;B'::c::sc'-:C:::sa-;sa-;sa</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒄠</td><td class="codepoint">U+12120</td><td class="transliteration">GUD x KUR</td><td>309</td><td></td><td><button class="codebutton" onClick="showCharacter('b;b_ac;d\':w:w-:w')">b;b_ac;d':w:w-:w</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+<tr><td class="sign">𒉈</td><td class="codepoint">U+12248</td><td class="transliteration">NE</td><td>313</td><td></td><td><button class="codebutton" onClick="showCharacter('b::b\'::w-:w-w::W--sb::sb-a')">b::b'::w-:w-w::W--sb::sb-a</td><td class="svg"><div class="svgcontainer"></div></td></tr>
+</tbody></table>
+</div>
+</td><td class="svg"><div class="svgcontainer"></div></td></tr></table>
+<div class="container">
+    <h1 id="fontFamilyName"></h1>
+
+    <p>This font is generated dynamically in the browser.</p>
+    <button onclick="font.download()">Download Font</button>
+
+    <div id="glyphs"></div>
+    </div>
+<div id="graphDiv" width="1000" height="600"></div>
+<script>
+$(function() {
+  $("#examples").tablesorter();
+  $("#canvasinput").bind({
+    keydown: function(e) {
+        if ((e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 86 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
+		|| e.which == 46 || e.which == 49 || e.which == 55 || e.which==8 || e.which == 111 || e.which==110 || (e.which>186 && e.which<192)) {
+                return true;
+        }
+        return false;
+    }
+});
+  var count = $('#examples tr').length;
+	$('#amount').html((count-1)+" characters");
+	createOpenFont();
+	});
+</script>
+  </body>
+</html>
