@@ -66,9 +66,12 @@ For example we could define:
 * E
 * E_v1
 * E_v2
+
 each representing E, but with a different PaleoCodage description i.e. shape.
+
 Next, the defined IDs can be added to the OpenType font as ligatures.
 A ligature, when type, would let the font replace e.g. E_v1 with the respective sign variant encoded in the private unicode section of the font or in any other non-alphabetic part of the font.
+
 An example of such ligature substitutions is given by https://symbolset.com which replaces text with emoji.
 The concept is the same, only here we would replace modified transliterations with cuneiform characters.
 http://pomax.github.io/CFF-glyphlet-fonts/ provides some more insights into ligatures.
