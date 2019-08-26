@@ -1,5 +1,3 @@
-
-
 function to_image(){
                 var canvas = document.getElementById("myCanvas");
                 document.getElementById("canvasImg").src = canvas.toDataURL();
@@ -564,7 +562,8 @@ function drawVerticalLine(start,starty,canvas,strokeparse,big,keepconfig){
                                 canvas.lineTo(start+opentypestrokeWidth,starty+20*scalemultiplier);
                                 canvas.lineTo(start-opentypestrokeWidth,starty);
                     }
-            mirror=false;
+            if(!keepconfig)
+				mirror=false;
         }else{
 
                      if(!ot){       
@@ -650,7 +649,8 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
                                 canvas.lineTo(start,starty+20*scalemultiplier+opentypestrokeWidth);
                                 canvas.lineTo(start,starty+20*scalemultiplier-opentypestrokeWidth);
                     }
-            mirror=false;
+			if(!keepconfig)
+				mirror=false;
         }else if(rot>0){
 				console.log(rot)
 				start2=Math.cos(Math.PI/2+rot)*length;
