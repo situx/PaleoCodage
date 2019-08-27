@@ -118,16 +118,16 @@ function createTTL(){
 	svglist=[]
 	codepointlist=[]
 	charnamelist=[]
-	/*$('.codebutton').each(function(i, obj) {
-		paleo=paleoCodageToSVG($(this).text());
-		console.log(convertOutline({"outline":paleo}))
-		svglist.push(paleo)
+	var codes=[]
+	$('.codebutton').each(function(i, obj) {
+		codes.push($(this).text());
 	});
 	$('.codepoint').each(function(i, obj) {
 		codepointlist.push($(this).text())
-	});*/
+	});
 	$('.transliteration').each(function(i, obj) {
 		ttlstring+=baseuri+encodeURIComponent($(this).text())+" "+baseuri+"hasPaleoCode "+baseuri+encodeURIComponent($(this).text())+"_code . \n"
+		ttlstring+=baseuri+encodeURIComponent($(this).text())+"_code "+baseuri+"codeValue \""+codes[i]+"\"^^"+baseuri+"paleoCodeLiteral . \n"
 		charnamelist.push($(this).text())
 	});
 	console.log(ttlstring)
