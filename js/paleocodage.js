@@ -128,6 +128,7 @@ function createTTL(){
 	$('.transliteration').each(function(i, obj) {
 		ttlstring+=baseuri+encodeURIComponent($(this).text())+" "+baseuri+"hasPaleoCode "+baseuri+encodeURIComponent($(this).text())+"_code . \n"
 		ttlstring+=baseuri+encodeURIComponent($(this).text())+"_code "+baseuri+"codeValue \""+codes[i]+"\"^^"+baseuri+"paleoCodeLiteral . \n"
+		ttlstring+=baseuri+encodeURIComponent($(this).text())+" "+baseuri+"hasUnicodeCodePoint \""+codepointlist[i]+"\"^^http://www.w3.org/2001/XMLSchema#string . \n"
 		charnamelist.push($(this).text())
 	});
 	console.log(ttlstring)
