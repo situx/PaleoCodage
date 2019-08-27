@@ -1,3 +1,5 @@
+
+
 function to_image(){
                 var canvas = document.getElementById("myCanvas");
                 document.getElementById("canvasImg").src = canvas.toDataURL();
@@ -108,6 +110,30 @@ function to_svg(){
 	svg=ctx2.getSerializedSvg(true)
 	saveTextAsFile(svg,".svg","graphic")
 	paleoCodageToSVG($('#canvasinput').val());
+}
+
+function createTTL(){
+	ttlstring="";
+	baseuri="http://www.github.com/situx/PaleoCodage#"
+	svglist=[]
+	codepointlist=[]
+	charnamelist=[]
+	/*$('.codebutton').each(function(i, obj) {
+		paleo=paleoCodageToSVG($(this).text());
+		console.log(convertOutline({"outline":paleo}))
+		svglist.push(paleo)
+	});
+	$('.codepoint').each(function(i, obj) {
+		codepointlist.push($(this).text())
+	});*/
+	$('.transliteration').each(function(i, obj) {
+		ttlstring+=baseuri+encodeURIComponent($(this).text())+" "+baseuri+"hasPaleoCode "+baseuri+encodeURIComponent($(this).text())+"_code . \n"
+		charnamelist.push($(this).text())
+	});
+	console.log(ttlstring)
+	console.log(codepointlist)
+	console.log(charnamelist)
+	saveTextAsFile(ttlstring,".ttl","paleocodes")
 }
 
 function createFont(){
