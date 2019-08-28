@@ -113,7 +113,7 @@ function to_svg(){
 }
 
 function createTTL(){
-	ttlstring="@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . @prefix paleo: <http://www.github.com/situx/PaleoCodage#> .";
+	ttlstring="@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n @prefix xsd:<http://www.w3.org/2001/XMLSchema#> .\n @prefix paleo: <http://www.github.com/situx/PaleoCodage#> .\n";
 	baseuri="http://www.github.com/situx/PaleoCodage#"
 	baseuriprefix="paleo:"
 	svglist=[]
@@ -128,8 +128,8 @@ function createTTL(){
 	});
 	$('.transliteration').each(function(i, obj) {
 		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+" "+baseuriprefix+"hasPaleoCode "+baseuriprefix+encodeURIComponent($(this).text())+"_code . \n"
-		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+"_code "+baseuriprefix+"codeValue \""+codes[i]+"\"^^"+baseuri+"paleoCodeLiteral . \n"
-		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+" "+baseuriprefix+"hasUnicodeCodePoint \""+codepointlist[i]+"\"^^http://www.w3.org/2001/XMLSchema#string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+"_code "+baseuriprefix+"codeValue \""+codes[i]+"\"^^"+baseuriprefix+"paleoCodeLiteral . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+" "+baseuriprefix+"hasUnicodeCodePoint \""+codepointlist[i]+"\"^^xsd:string . \n"
 		charnamelist.push($(this).text())
 	});
 	console.log(ttlstring)
