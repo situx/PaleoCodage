@@ -21,7 +21,7 @@
 
 function htmlTableToJSON(filename,ext){
   var table = $('#examples').tableToJSON(); // Convert the table into a javascript object
-  saveTextAsFile(table,ext,filename)
+  saveTextAsFile(JSON.stringify(table),ext,filename)
   console.log(table);
 }
 </script>
