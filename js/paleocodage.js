@@ -113,12 +113,14 @@ function to_svg(){
 }
 
 function createTTL(){
-	ttlstring="@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n @prefix xsd:<http://www.w3.org/2001/XMLSchema#> .\n @prefix paleo: <http://www.github.com/situx/PaleoCodage#> .\n";
+	ttlstring="@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n@prefix owl: <http://www.w3.org/2002/07/owl#> .\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n@prefix lemon: <http://lemon-model.net/lemon#> .\n@prefix paleo: <http://www.github.com/situx/PaleoCodage#> .\n@prefix iso: <http://www.isocat.org/datcat/> .\n\n";
 	baseuri="http://www.github.com/situx/PaleoCodage#"
 	baseuriprefix="paleo:"
 	svglist=[]
 	codepointlist=[]
 	charnamelist=[]
+	borgerlist=[]
+	gottsteinlist=[]
 	var codes=[]
 	$('.codebutton').each(function(i, obj) {
 		codes.push($(this).text());
@@ -126,16 +128,64 @@ function createTTL(){
 	$('.codepoint').each(function(i, obj) {
 		codepointlist.push($(this).text())
 	});
+	$('.svgcontainer').each(function(i, obj) {
+		svglist.push($(this).prop('outerHTML').replace(/\"/g,"'"))
+	});
+	$('.borger').each(function(i, obj) {
+		borgerlist.push($(this).text())
+	});
+	$('.gottstein').each(function(i, obj) {
+		gottsteinlist.push($(this).text())
+	});
+	ttlstring+="lemon:Character rdf:type owl:Class . \n"
+	ttlstring+="paleo:Code rdf:type owl:Class . \n"
+	ttlstring+="paleo:hasPaleoCode rdf:type owl:ObjectProperty . \n"
+	ttlstring+="paleo:asSVG rdf:type owl:DatatypeProperty . \n"
+	ttlstring+="paleo:codeValue rdf:type owl:DatatypeProperty . \n"
+	ttlstring+="paleo:gottsteinCode rdf:type owl:DatatypeProperty . \n"
+	ttlstring+="iso:transliteration rdf:type owl:DatatypeProperty . \n"
+	ttlstring+="paleo:borgerNumber rdf:type owl:DatatypeProperty . \n"
+	ttlstring+="paleo:hasUnicodeCodePoint rdf:type owl:DatatypeProperty . \n"
 	$('.transliteration').each(function(i, obj) {
-		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+" "+baseuriprefix+"hasPaleoCode "+baseuriprefix+encodeURIComponent($(this).text())+"_code . \n"
-		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+"_code "+baseuriprefix+"codeValue \""+codes[i]+"\"^^"+baseuriprefix+"paleoCodeLiteral . \n"
-		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+" "+baseuriprefix+"hasUnicodeCodePoint \""+codepointlist[i]+"\"^^xsd:string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+" rdf:type "+"lemon:Character . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+"_code rdf:type "+"paleo:Code . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+" "+baseuriprefix+"hasPaleoCode "+baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+"_code . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+"_code "+baseuriprefix+"codeValue \""+codes[i].replace(/\"/g,"'")+"\"^^"+baseuriprefix+"paleoCodeLiteral . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+" "+baseuriprefix+"hasUnicodeCodePoint \""+codepointlist[i]+"\"^^xsd:string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+" iso:transliteration \""+$(this).text().replace(/\"/g,"'")+"\"^^xsd:string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+" paleo:borgerNumber \""+borgerlist[i]+"\"^^xsd:string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+"_code "+baseuriprefix+"asSVG \""+svglist[i]+"\"^^xsd:string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+"_code "+baseuriprefix+"gottsteinCode \""+gottsteinlist[i]+"\"^^xsd:string . \n"
 		charnamelist.push($(this).text())
 	});
 	console.log(ttlstring)
 	console.log(codepointlist)
 	console.log(charnamelist)
 	saveTextAsFile(ttlstring,".ttl","paleocodes")
+}
+
+function countChars(checkstr,c) { 
+  var result = 0, i = 0;
+  for(i;i<checkstr.length;i++)if(checkstr[i]==c)result++;
+  return result;
+}
+
+function paleoCodeToGottstein(paleocode){
+	gottstein="";
+	var acount=(countChars(paleocode,"a")+countChars(paleocode,"A"))
+	var bcount=(countChars(paleocode,"b")+countChars(paleocode,"B"))
+	var ccount=(countChars(paleocode,"c")+countChars(paleocode,"C")+countChars(paleocode,"d")+countChars(paleocode,"D")+countChars(paleocode,"w")+countChars(paleocode,"W"))
+	var dcount=(countChars(paleocode,"e")+countChars(paleocode,"E")+countChars(paleocode,"f")+countChars(paleocode,"F"))
+	console.log(acount+" "+bcount+" "+ccount+" "+dcount)
+	if(acount>0)
+		gottstein+="a"+acount
+	if(bcount>0)
+		gottstein+="b"+bcount
+	if(ccount>0)
+		gottstein+="c"+ccount
+	if(dcount>0)
+		gottstein+="d"+dcount
+	return gottstein;
 }
 
 function createFont(){
@@ -220,6 +270,8 @@ function paleoCodageToSVG(paleoCode,index){
         //var dom = parser.parseFromString(svghtml, "text/xml");
         console.log("Index: "+index)
         var elem=$('.svgcontainer').eq(index)
+		var gottstein=$('.gottstein').eq(index)
+		gottstein.html(paleoCodeToGottstein(paleoCode))
        // var container=elem.createChild('div')
         //container.innerHTML=svghtml
         elem.html(svghtml)
