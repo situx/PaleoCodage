@@ -113,8 +113,9 @@ function to_svg(){
 }
 
 function createTTL(){
-	ttlstring="";
+	ttlstring="@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . @prefix paleo: <http://www.github.com/situx/PaleoCodage#> .";
 	baseuri="http://www.github.com/situx/PaleoCodage#"
+	baseuriprefix="paleo:"
 	svglist=[]
 	codepointlist=[]
 	charnamelist=[]
@@ -126,9 +127,9 @@ function createTTL(){
 		codepointlist.push($(this).text())
 	});
 	$('.transliteration').each(function(i, obj) {
-		ttlstring+=baseuri+encodeURIComponent($(this).text())+" "+baseuri+"hasPaleoCode "+baseuri+encodeURIComponent($(this).text())+"_code . \n"
-		ttlstring+=baseuri+encodeURIComponent($(this).text())+"_code "+baseuri+"codeValue \""+codes[i]+"\"^^"+baseuri+"paleoCodeLiteral . \n"
-		ttlstring+=baseuri+encodeURIComponent($(this).text())+" "+baseuri+"hasUnicodeCodePoint \""+codepointlist[i]+"\"^^http://www.w3.org/2001/XMLSchema#string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+" "+baseuriprefix+"hasPaleoCode "+baseuriprefix+encodeURIComponent($(this).text())+"_code . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+"_code "+baseuriprefix+"codeValue \""+codes[i]+"\"^^"+baseuri+"paleoCodeLiteral . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text())+" "+baseuriprefix+"hasUnicodeCodePoint \""+codepointlist[i]+"\"^^http://www.w3.org/2001/XMLSchema#string . \n"
 		charnamelist.push($(this).text())
 	});
 	console.log(ttlstring)
