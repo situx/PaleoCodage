@@ -1,3 +1,5 @@
+
+
 function to_image(){
                 var canvas = document.getElementById("myCanvas");
                 document.getElementById("canvasImg").src = canvas.toDataURL();
@@ -38,13 +40,12 @@ function createOpenFont(){
 	var charnamelist=[]
 	var counterr=0
 	$('.codebutton').each(function(i, obj) {
-        console.log(counterr)
 		var paleo=paleoCodageToSVG($(this).text(),counterr);
 		var paleo=paleoCodageToOpenTypePath($(this).text())
 		counterr++;
 		//console.log(convertOutlineToType2({"outline":paleo}))
 		//console.log(i+" - "+$('.svg:nth-child('+i+')'))
-		console.log($(this).text())
+		console.log(paleo)
 		//$('.svg:nth-child('+i+')' ).html(paleo)
 		svglist.push(paleo)
 	});
@@ -54,9 +55,9 @@ function createOpenFont(){
 	$('.transliteration').each(function(i, obj) {
 		charnamelist.push($(this).text())
 	});
-	//console.log(svglist)
-	//console.log(codepointlist)
-	//console.log(charnamelist)
+	console.log(svglist)
+	console.log(codepointlist)
+	console.log(charnamelist)
 	var glyphs=[]
 	var coun=0
 	for(svg in svglist){
@@ -64,7 +65,7 @@ function createOpenFont(){
             glyphs.push(createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist[svg]))
             //opentype.gsub.add(charnamelist[svg])
         }
-        //console.log(coun++)
+        console.log(coun++)
 	}
     //glyphs.push(createOpenTypeGlyph([0],codepointlist[0],svglist[0]))
 	console.log("Glyphs: "+glyphs)
@@ -72,7 +73,7 @@ function createOpenFont(){
     console.log(font.toTables());
     for(svg in charnamelist){
         var sub=convertToSubstitution(charnamelist[svg].replace(" ","").toLowerCase())
-       // console.log(sub)
+        console.log(sub)
         //font.substitution.addLigature({ "sub": convertToSubstitution(charnamelist[svg].replace(" ","").toLowerCase()), "by": charnamelist[svg] })
     }
     console.log(font.substitution)
@@ -111,6 +112,82 @@ function to_svg(){
 	paleoCodageToSVG($('#canvasinput').val());
 }
 
+function createTTL(){
+	ttlstring="@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n@prefix owl: <http://www.w3.org/2002/07/owl#> .\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n@prefix lemon: <http://lemon-model.net/lemon#> .\n@prefix paleo: <http://www.github.com/situx/PaleoCodage#> .\n@prefix iso: <http://www.isocat.org/datcat/> .\n\n";
+	baseuri="http://www.github.com/situx/PaleoCodage#"
+	baseuriprefix="paleo:"
+	svglist=[]
+	codepointlist=[]
+	charnamelist=[]
+	borgerlist=[]
+	gottsteinlist=[]
+	var codes=[]
+	$('.codebutton').each(function(i, obj) {
+		codes.push($(this).text());
+	});
+	$('.codepoint').each(function(i, obj) {
+		codepointlist.push($(this).text())
+	});
+	$('.svgcontainer').each(function(i, obj) {
+		svglist.push($(this).prop('outerHTML').replace(/\"/g,"'"))
+	});
+	$('.borger').each(function(i, obj) {
+		borgerlist.push($(this).text())
+	});
+	$('.gottstein').each(function(i, obj) {
+		gottsteinlist.push($(this).text())
+	});
+	ttlstring+="lemon:Character rdf:type owl:Class . \n"
+	ttlstring+="paleo:Code rdf:type owl:Class . \n"
+	ttlstring+="paleo:hasPaleoCode rdf:type owl:ObjectProperty . \n"
+	ttlstring+="paleo:asSVG rdf:type owl:DatatypeProperty . \n"
+	ttlstring+="paleo:codeValue rdf:type owl:DatatypeProperty . \n"
+	ttlstring+="paleo:gottsteinCode rdf:type owl:DatatypeProperty . \n"
+	ttlstring+="iso:transliteration rdf:type owl:DatatypeProperty . \n"
+	ttlstring+="paleo:borgerNumber rdf:type owl:DatatypeProperty . \n"
+	ttlstring+="paleo:hasUnicodeCodePoint rdf:type owl:DatatypeProperty . \n"
+	$('.transliteration').each(function(i, obj) {
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+" rdf:type "+"lemon:Character . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+"_code rdf:type "+"paleo:Code . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+" "+baseuriprefix+"hasPaleoCode "+baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+"_code . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+"_code "+baseuriprefix+"codeValue \""+codes[i].replace(/\"/g,"'")+"\"^^"+baseuriprefix+"paleoCodeLiteral . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+" "+baseuriprefix+"hasUnicodeCodePoint \""+codepointlist[i]+"\"^^xsd:string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+" iso:transliteration \""+$(this).text().replace(/\"/g,"'")+"\"^^xsd:string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+" paleo:borgerNumber \""+borgerlist[i]+"\"^^xsd:string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+"_code "+baseuriprefix+"asSVG \""+svglist[i]+"\"^^xsd:string . \n"
+		ttlstring+=baseuriprefix+encodeURIComponent($(this).text()).replace("(","").replace(")","")+"_code "+baseuriprefix+"gottsteinCode \""+gottsteinlist[i]+"\"^^xsd:string . \n"
+		charnamelist.push($(this).text())
+	});
+	console.log(ttlstring)
+	console.log(codepointlist)
+	console.log(charnamelist)
+	saveTextAsFile(ttlstring,".ttl","paleocodes")
+}
+
+function countChars(checkstr,c) { 
+  var result = 0, i = 0;
+  for(i;i<checkstr.length;i++)if(checkstr[i]==c)result++;
+  return result;
+}
+
+function paleoCodeToGottstein(paleocode){
+	gottstein="";
+	var acount=(countChars(paleocode,"a")+countChars(paleocode,"A"))
+	var bcount=(countChars(paleocode,"b")+countChars(paleocode,"B"))
+	var ccount=(countChars(paleocode,"c")+countChars(paleocode,"C")+countChars(paleocode,"d")+countChars(paleocode,"D")+countChars(paleocode,"w")+countChars(paleocode,"W"))
+	var dcount=(countChars(paleocode,"e")+countChars(paleocode,"E")+countChars(paleocode,"f")+countChars(paleocode,"F"))
+	console.log(acount+" "+bcount+" "+ccount+" "+dcount)
+	if(acount>0)
+		gottstein+="a"+acount
+	if(bcount>0)
+		gottstein+="b"+bcount
+	if(ccount>0)
+		gottstein+="c"+ccount
+	if(dcount>0)
+		gottstein+="d"+dcount
+	return gottstein;
+}
+
 function createFont(){
 	svglist=[]
 	codepointlist=[]
@@ -126,9 +203,9 @@ function createFont(){
 	$('.transliteration').each(function(i, obj) {
 		charnamelist.push($(this).text())
 	});
-	//console.log(svglist)
-	//console.log(codepointlist)
-	//console.log(charnamelist)
+	console.log(svglist)
+	console.log(codepointlist)
+	console.log(charnamelist)
 }
 
 function saveTextAsFile(tosave,fileext,filename)
@@ -193,6 +270,8 @@ function paleoCodageToSVG(paleoCode,index){
         //var dom = parser.parseFromString(svghtml, "text/xml");
         console.log("Index: "+index)
         var elem=$('.svgcontainer').eq(index)
+		var gottstein=$('.gottstein').eq(index)
+		gottstein.html(paleoCodeToGottstein(paleoCode))
        // var container=elem.createChild('div')
         //container.innerHTML=svghtml
         elem.html(svghtml)
@@ -506,7 +585,7 @@ function drawVerticalLine(start,starty,canvas,strokeparse,big,keepconfig){
             curposx+=10
         if(big){
             length=multiplier*scalemultiplierForStrokeLength*strokelength;
-			//console.log("LENGTH: "+length)
+			console.log("LENGTH: "+length)
             if(mirror){
                         canvas.moveTo(start-5*scalemultiplier, starty+10*scalemultiplier+length); // start at top left corner of canvas
                         canvas.lineTo(start+5*scalemultiplier, starty+10*scalemultiplier+length); // go 200px to right (x), straight line from 0 to 0
@@ -520,7 +599,7 @@ function drawVerticalLine(start,starty,canvas,strokeparse,big,keepconfig){
                 canvas.fill();
         }else if(smaller){
             length=0.5*scalemultiplierForStrokeLength*strokelength;
-			//console.log("LENGTH: "+length)
+			console.log("LENGTH: "+length)
 			if(!keepconfig)
 				smaller=false;
             if(mirror){
