@@ -90,7 +90,7 @@ function createOpenFont(){
         glyph.drawPoints(ctx, x, y, fontSize);
         glyph.drawMetrics(ctx, x, y, fontSize);
     }
-        document.getElementById('jsonFont').innerHTML=stringify(font)
+        //document.getElementById('jsonFont').innerHTML=stringify(font)
     clearCanvas();
 }
 
