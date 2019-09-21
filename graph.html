@@ -39,8 +39,8 @@ var i=1;
 				var lev = levenshteinDistance(js["PaleoCode"], js2["PaleoCode"]);
 								console.log(js["PaleoCode"]+" - "+js2["PaleoCode"]+" - "+lev)
                         //console.log("[ "+js["PaleoCode"]+" ] is in [ "+js2["PaleoCode"]+" ]");
-						nodemap[js["PaleoCode"]]=js["translit"]+"("+js["cunei"]+")\n"+js["PaleoCode"]
-						nodemap[js2["PaleoCode"]]=js2["translit"]+"("+js2["cunei"]+")\n"+js2["PaleoCode"]
+						nodemap[js["PaleoCode"]]=js["Transliteration"]+"("+js["sign"]+")\n"+js["PaleoCode"]
+						nodemap[js2["PaleoCode"]]=js2["Transliteration"]+"("+js2["sign"]+")\n"+js2["PaleoCode"]
 						edges.push({from:js["PaleoCode"], to:js2["PaleoCode"],label:lev})
 				//}
             }
@@ -73,20 +73,20 @@ var similar={}
 						if(similar[js["PaleoCode"]]==undefined){
 							similar[js["PaleoCode"]]=""
 						}
-						similar[js["PaleoCode"]]+=js2["cunei"]+" "
+						similar[js["PaleoCode"]]+=js2["sign"]+" "
 						if(similar[js["PaleoCode"]]!=undefined){
-							nodemap[js["PaleoCode"]]=js["translit"]+"("+js["cunei"]+")\n"+js["PaleoCode"]+"\n["+similar[js["PaleoCode"]]+"]"
+							nodemap[js["PaleoCode"]]=js["Transliteration"]+"("+js["sign"]+")\n"+js["PaleoCode"]+"\n["+similar[js["PaleoCode"]]+"]"
 						}else{
-							nodemap[js["PaleoCode"]]=js["translit"]+"("+js["cunei"]+")\n"+js["PaleoCode"]
+							nodemap[js["PaleoCode"]]=js["Transliteration"]+"("+js["sign"]+")\n"+js["PaleoCode"]
 						}
 						if(similar[js2["PaleoCode"]]!=undefined){
-							nodemap[js2["PaleoCode"]]=js2["translit"]+"("+js2["cunei"]+")\n"+js2["PaleoCode"]+"\n["+similar[js2["PaleoCode"]]+"]"
+							nodemap[js2["PaleoCode"]]=js2["Transliteration"]+"("+js2["sign"]+")\n"+js2["PaleoCode"]+"\n["+similar[js2["PaleoCode"]]+"]"
 						}else{
-							nodemap[js2["PaleoCode"]]=js2["translit"]+"("+js2["cunei"]+")\n"+js2["PaleoCode"]
+							nodemap[js2["PaleoCode"]]=js2["Transliteration"]+"("+js2["sign"]+")\n"+js2["PaleoCode"]
 						}
 						edges.push({from:js["PaleoCode"], to:js2["PaleoCode"]})
-                        /*graph.addNode(js["PaleoCode"],js["translit"])
-                        graph.addNode(js2["PaleoCode"],js2["translit"])
+                        /*graph.addNode(js["PaleoCode"],js["Transliteration"])
+                        graph.addNode(js2["PaleoCode"],js2["Transliteration"])
                         graph.addLink(js["PaleoCode"],js2["PaleoCode"])*/
                 }
             }
