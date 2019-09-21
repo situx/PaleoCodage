@@ -127,7 +127,7 @@ Tutorial:
 <div class="table-wrapper-scroll-y">
 <table align="center" id="examples" class="tablesorter" cellpadding="2">
 <thead>
-<tr><th>Sign</th><th>Code point</th><th>Transliteration</th><th>Borger</th><th>Code</th><th>SVG</th><th>Gottstein</th><th>Comment</th><th>Source</th><th>Epoch</th><th>Location</th></tr><tr>
+<tr><th>Sign</th><th>Code point</th><th>Transliteration</th><th>Borger</th><th>PaleoCode</th><th>SVG</th><th>Gottstein</th><th>Comment</th><th>Source</th><th>Epoch</th><th>Location</th></tr><tr>
 </thead><tbody>
 <tr><td class="sign">𒀀</td><td class="codepoint">U+12000</td><td class="transliteration">A</td><td class="borger">839</td><td><button class="codebutton" onClick="showCharacter('a-a:a')">a-a:a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td><td></tr>
 <tr><td class="sign">𒀁</td><td class="codepoint">U+12001</td><td class="transliteration">A x A</td><td class="borger">845</td><td><button class="codebutton" onClick="showCharacter('a-:sa-:sa:sa-a:a')">a-:sa-:sa:sa-a:a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>EDURU</td><td></td><td></td><td></td></tr>
@@ -392,6 +392,9 @@ which is demonstrated above.</p>
 		  <li>
             <a href="https://github.com/situx/PaleoCodage" target="_blank">PaleoCodage Repository Github</a>
           </li>
+		  <li>
+            <a href="https://github.com/situx/PaleoCodage/graph.html" target="_blank">Similarity Graph</a>
+          </li>
           <li>
             <a href="https://www.mainzed.org" target="_blank">mainzed</a>
           </li>
@@ -423,7 +426,11 @@ which is demonstrated above.</p>
 <div id="graphDiv" width="1000" height="600"></div>
 <script>
 $(function() {
-  $("#examples").tablesorter();
+  var count = $('#examples tr').length;
+	$('#amount').html((count-1)+" characters");
+	createOpenFont();
+	});
+$("#examples").tablesorter();
   $("#canvasinput").bind({
     keydown: function(e) {
         if ((e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 86 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
@@ -433,10 +440,6 @@ $(function() {
         return false;
     }
 });
-  var count = $('#examples tr').length;
-	$('#amount').html((count-1)+" characters");
-	createOpenFont();
-	});
 </script>
   </body>
 </html>

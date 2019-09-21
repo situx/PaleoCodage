@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+<head>
+<title>Paleo Codage - A machine-readable way to describe cuneiform characters paleographically</title>
+<script src="https://hongru.github.io/proj/canvas2image/canvas2image.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+  <script src="js/canvas2svg.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/table-to-json@0.13.0/lib/jquery.tabletojson.min.js" integrity="sha256-AqDz23QC5g2yyhRaZcEGhMMZwQnp8fC6sCZpf+e7pnw=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.1/js/jquery.tablesorter.min.js"></script>
+    <script src="js/paleocodage.js"></script>
+  <script>
+
+function htmlTableToJSON(filename,ext){
+  var table = $('#examples').tableToJSON(); // Convert the table into a javascript object
+  saveTextAsFile(JSON.stringify(table),ext,filename)
+  console.log(table);
+}
+</script>
+<style>
+        body {
+            font: 13px Helvetica, arial, freesans, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            margin: 0 0 50px 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #glyphs {
+            clear: both;
+        }
+
+        .wrapper {
+            float: left;
+            margin: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .wrapper span {
+            text-align: center;
+            background: #ddd;
+            display: block;
+        }
+    </style>
+<style>
+.cod { 
+      display: flex;
+      flex-wrap: wrap;
+      width: 100px;
+	  max-width: 80px;
+      padding: 10px;
+		white-space: normal;
+      }
+
+.table-wrapper-scroll-y {
+  display: block;
+  max-height: 600px;
+  max-width: 100%;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+</style>
+</head>
+<body>
+<div class="page-header text-center">
+   <h1>Paleo Codage</h1><h5>A machine-readable way to describe cuneiform characters paleographically</h5>
+</div>
+<br/><br/>
+  <div class="container">
+  <div class="row">
+
+    <div class="left col-sm-5">
+
+
+<canvas id="myCanvas" width="300" height="100" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+<img id="canvasImg"/>
+<br/>
+Stroke Order Input: <input type="text" id="canvasinput" onKeyUp="strokeParser(document.getElementById('canvasinput').value)"/><br/><button id="clearcanvas" onClick="clearCanvas(false)">Clear Canvas</button><br/>
+<button id="downloadImage" onClick="to_image()">Download Image</button><button id="downloadSVG" onClick="to_svg()">Download SVG</button><button id="createFont" onClick="createFont()">Create Font</button><br/>
+<br/>
+Tutorial:
+<table>
+<tr><td><b>a</b> <button id="horizontal" onClick="showCharacter('a')">Horizontal Stroke (a)</button><button id="D" onClick="showCharacter('A')">Big (A)</button>
+<button id="sa" onClick="showCharacter('sa')">Small (sa)</button></td></tr>
+<tr><td><b>b</b> <button id="vertical" onClick="showCharacter('b')">Vertical Stroke (b)</button>
+<button id="D" onClick="showCharacter('B')">Big (B)</button><button id="sb" onClick="showCharacter('sb')">Small (sb)</button></td></tr>
+<tr><td><b>c</b> <button id="diagonal1" onClick="showCharacter('c')">Diagonal Stroke1 (c)</button>
+<button id="C" onClick="showCharacter('C')">Big (C)</button><button id="sc" onClick="showCharacter('sc')">Small (sc)</button></td></tr>
+<tr><td><b>d</b> <button id="diagonal2" onClick="showCharacter('d')">Diagonal Stroke2 (d)</button>
+<button id="D" onClick="showCharacter('D')">Big (D)</button><button id="sd" onClick="showCharacter('sd')">Small (sd)</button></td></tr>
+<tr><td><b>e</b> <button id="diagonal3" onClick="showCharacter('e')">Diagonal Stroke3 (e)</button>
+<button id="E" onClick="showCharacter('E')">Big (E)</button><button id="se" onClick="showCharacter('se')">Small (se)</button></td></tr>
+<tr><td><b>f</b> <button id="diagonal4" onClick="showCharacter('f')">Diagonal Stroke4 (f)</button>
+<button id="F" onClick="showCharacter('F')">Big (F)</button><button id="sf" onClick="showCharacter('sf')">Small (sf)</button></td></tr>
+<tr><td><b>w</b> <button id="wedge" onClick="showCharacter('w')">Winkelhaken (w)</button><button id="F" onClick="showCharacter('W')">Big (W)</button></td></tr><tr><td><b>-</b> right of the current stroke passing through other strokes</td></tr>
+<tr><td><b>_</b> right of the current stroke NOT passing through other strokes</td></tr>
+<tr><td><b>:</b> under the current stroke passing through other strokes</td></tr>
+<tr><td><b>;</b> under the current stroke NOT passing through other strokes</td></tr>
+<tr><td><b>/</b> half the distance of <b>:</b> under the current stroke passing through other strokes </td></tr>
+<tr><td><b>.</b> diagonal right under the current stroke</td></tr>
+<tr><td><b>,</b> diagonal left above the current stroke</td></tr>
+<tr><td><b>s</b> smaller version of the stroke (e.g. sb, sc)</td></tr>
+<tr><td><b>!</b> mirrored version of the stroke (e.g. !a, !A, !sa)</td></tr>
+<tr><td><b>Whitespace</b> Enough distance to start a new character</td></tr>
+</table>
+  </div>
+
+
+    <div class="left col-sm-7">
+
+	<span id="amount"></span>
+<div class="table-wrapper-scroll-y">
+<table align="center" id="examples" class="tablesorter" cellpadding="2">
+<thead>
+<tr><th>Sign</th><th>Code point</th><th>Transliteration</th><th>Borger</th><th>Code</th><th>SVG</th><th>Gottstein</th><th>Comment</th><th>Source</th><th>Epoch</th><th>Location</th></tr><tr>
+</thead><tbody>
+<tr><td class="sign"> </td><td class="codepoint">U+12000</td><td class="transliteration">A</td><td class="borger">839</td><td><button class="codebutton" onClick="showCharacter('b')">b</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td><td></tr>
+<tr><td class="sign">ᚁ</td><td class="codepoint">U+12001</td><td class="transliteration">A x A</td><td class="borger">845</td><td><button class="codebutton" onClick="showCharacter('b-a')">b-a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>EDURU</td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚂ</td><td class="codepoint">U+12002</td><td class="transliteration">A x BAD</td><td class="borger">840</td><td><button class="codebutton" onClick="showCharacter('a-b-w-a:a')">a-b-w-a:a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>AGAM</td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚃ</td><td class="codepoint">U+122F0</td><td class="transliteration">TAB</td><td class="borger">209</td><td><button class="codebutton" onClick="showCharacter('b:b')">b:b</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚄ</td><td class="codepoint">U+12311</td><td class="transliteration">U2</td><td class="borger">490</td><td><button class="codebutton" onClick="showCharacter('B::B-a-a-a-a')">B::B-a-a-a-a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚅ</td><td class="codepoint">U+1203E</td><td class="transliteration">AŠ2</td><td class="borger">548</td><td><button class="codebutton" onClick="showCharacter('b:b:b:b-a')">b:b:b:b-a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚆ</td><td class="codepoint">U+121F2</td><td class="transliteration">LAL</td><td class="borger">750</td><td><button class="codebutton" onClick="showCharacter('a-b')">a-b</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚇ</td><td class="codepoint">U+12047</td><td class="transliteration">BAR</td><td class="borger">121</td><td><button class="codebutton" onClick="showCharacter(';b-a')">;b-a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚈ</td><td class="codepoint">U+12083</td><td class="transliteration">DUḪ</td><td class="borger">298</td><td><button class="codebutton" onClick="showCharacter('b:b_w:w-w:w-w:w-w:w')" >b:b_w:w-w:w-w:w-w:w</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>GAB, DU8, TUḪ</td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚉ</td><td class="codepoint">U+12089</td><td class="transliteration">DUR2</td><td class="borger">808</td><td><button class="codebutton" onClick="showCharacter('a-b;b-::b_a')">a-b;b-::b_a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>DURU2, DURUN, TUKUL, TUŠ</td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚊ</td><td class="codepoint">U+120F2</td><td class="transliteration">GAL</td><td class="borger">553</td><td><button class="codebutton" onClick="showCharacter('b:b:b:b_a-:b')">b:b:b:b_a-:b</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚋ</td><td class="codepoint">U+121F9</td><td class="transliteration">LIMMU2</td><td class="borger">215</td><td><button class="codebutton" onClick="showCharacter('b:b_b:b')">b:b_b:b</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚌ</td><td class="codepoint">U+12129</td><td class="transliteration">ḪA</td><td class="borger">856</td><td><button class="codebutton" onClick="showCharacter('a:a;w-a:a-w')">a:a;w-a:a-w</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>KU6</td><td></td><td></td></tr>
+<tr><td class="sign">ᚍ</td><td class="codepoint">U+121B3</td><td class="transliteration">KUR</td><td class="borger">578</td><td><button class="codebutton" onClick="showCharacter('w:w-w')">w:w-w</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚎ</td><td class="codepoint">U+12226</td><td class="transliteration">MAŠ</td><td class="borger">120</td><td><button class="codebutton" onClick="showCharacter(':b-a')">:b-a</button></td><td class="svg"><div class="svgcontainer"></div><td class="gottstein"></td><td></td><td></td><td></td></td></tr>
+<tr><td class="sign">ᚏ</td><td class="codepoint">U+1219C</td><td class="transliteration">KASKAL</td><td class="borger">302</td><td><button class="codebutton" onClick="showCharacter('::c\'d-::d\'c')">::c'd-::d'c</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚐ</td><td class="codepoint">U+12195</td><td class="transliteration">KAK</td><td class="borger">379</td><td><button class="codebutton" onClick="showCharacter('a-c:d')">a-c:d</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>GAG, DU3, RU2</td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚑ</td><td class="codepoint">U+1219A</td><td class="transliteration">KAM2</td><td class="borger">595</td><td><button class="codebutton" onClick="showCharacter('c:c-c:c:c-c')">c:c-c:c:c-c</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚒ</td><td class="codepoint">U+1221B</td><td class="transliteration">LUḪ</td><td class="borger">494</td><td><button class="codebutton" onClick="showCharacter('b:b:b:b_a-a-a-a')">b:b:b:b_a-a-a-a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚓ</td><td class="codepoint">U+12220</td><td class="transliteration">MA</td><td class="borger">552</td><td><button class="codebutton" onClick="showCharacter('b_a;b-:b_a')">b_a;b-:b_a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚔ</td><td class="codepoint">U+12261</td><td class="transliteration">NU</td><td class="borger">112</td><td><button class="codebutton" onClick="showCharacter(':B-A;d')">:B-A;d</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚕ</td><td class="codepoint">U+1202B</td><td class="transliteration">AMAR</td><td class="borger">695</td><td><button class="codebutton" onClick="showCharacter('w:w_b:b_w:w')">w:w_b:b_w:w</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚖ</td><td class="codepoint">U+120F5</td><td class="transliteration">GAM</td><td class="borger">576</td><td><button class="codebutton" onClick="showCharacter('c.c')">c.c</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚗ</td><td class="codepoint">U+122B8</td><td class="transliteration">ŠAB6</td><td class="borger"></td><td><button class="codebutton" onClick="showCharacter(':b:b_b:b:b_:b')">b:b_b:b:b_:b</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚘ</td><td class="codepoint">U+12111</td><td class="transliteration">GIŠ</td><td class="borger">469</td><td><button class="codebutton" onClick="showCharacter('b::b_a')">b::b_a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚙ</td><td class="codepoint">U+12128</td><td class="transliteration">GURUŠ</td><td class="borger"></td><td><button class="codebutton" onClick="showCharacter('b:::b-a--a')">b:::b-a--a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">ᚚ</td><td class="codepoint">U+12137</td><td class="transliteration">ḪU</td><td class="borger">132</td><td><button class="codebutton" onClick="showCharacter(':b-a-::w-a')">:b-a-::w-a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">᚛</td><td class="codepoint">U+1213F</td><td class="transliteration">I</td><td class="borger">252</td><td><button class="codebutton" onClick="showCharacter('b:b:b_/b:b')">b:b:b_/b:b</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td class="sign">᚜</td><td class="codepoint">U+12228</td><td class="transliteration">ME</td><td class="borger">753</td><td><button class="codebutton" onClick="showCharacter('a-:b')">a-:b</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+w::W--sb::sb-a')">b::b'::w-:w-w::W--sb::sb-a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
+</tbody></table>
+</div>
+</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr></table>
+</div>
+<footer class="page-footer font-small blue pt-4">
+  <!-- Footer Links -->
+  <div class="container-fluid text-center text-md-left">
+    <!-- Grid row -->
+    <div class="row">
+      <!-- Grid column -->
+      <div class="col-md-6 mt-md-0 mt-3">
+        <!-- Content -->
+        <h5>Description</h5>
+        <p>This website uses JavaScript to allow the user to describe their cuneiform characters using PaleoCodage,
+a system to describe the shape of cuneiform characters.<br/>
+The system is described in detail in the following short paper publication:<br/>
+<a href="https://dh2019.adho.org/short-papers/">Paleo Codage - A machine-readable way to describe cuneiform characters paleographically</a>
+The result of the description can be saved as a PNG image, as SVG or can be incorporated into an OpenType font.<br/>
+Similar to the implementation at <a href="https://symbolset.com">https://symbolset.com</a>,<br/> the font can be used to replace modified cuneiform transliteration texts with correct sign variants defined in PaleoCodage
+which is demonstrated above.</p>
+      </div>
+      <!-- Grid column -->
+
+      <hr class="clearfix w-100 d-md-none pb-3">
+
+      <!-- Grid column -->
+      <div class="col-md-3 mb-md-0 mb-3">
+
+        <!-- Links -->
+        <h5>Downloads</h5>
+
+        <ul class="list-unstyled">
+          <li>
+            <button id="asjson" onclick="htmlTableToJSON('paleocodes','.json')">PaleoCodes as JSON</button>
+          </li>
+          <li>
+            <button id="asttl" onclick="createTTL()">PaleoCodes as TTL</button>
+          </li>
+        </ul>
+
+
+      </div>
+      <!-- Grid column -->
+
+      <!-- Grid column -->
+      <div class="col-md-3 mb-md-0 mb-3">
+
+        <!-- Links -->
+        <h5>Links</h5>
+
+        <ul class="list-unstyled">
+          <li>
+            <a href="https://dh2019.adho.org/" target="_blank">DH2019</a>
+          </li>
+		  <li>
+            <a href="https://github.com/situx/PaleoCodage" target="_blank">PaleoCodage Repository Github</a>
+          </li>
+          <li>
+            <a href="https://www.mainzed.org" target="_blank">mainzed</a>
+          </li>
+        </ul>
+
+      </div>
+      <!-- Grid column -->
+
+    </div>
+    <!-- Grid row -->
+
+  </div>
+  <!-- Footer Links -->
+
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">
+  </div>
+  <!-- Copyright -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.6.6/processing.min.js" type="text/javascript"></script>
+</footer>
+<div class="container">
+    <h1 id="fontFamilyName"></h1>
+
+    <p>This font is generated dynamically in the browser.</p>
+    <button onclick="font.download()">Download Font</button>
+
+    <div id="glyphs"></div>
+    </div>
+<div id="graphDiv" width="1000" height="600"></div>
+<script>
+$(function() {
+  var count = $('#examples tr').length;
+	$('#amount').html((count-1)+" characters");
+	createOpenFont();
+	});
+$("#examples").tablesorter();
+  $("#canvasinput").bind({
+    keydown: function(e) {
+        if ((e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 86 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
+		|| e.which == 46 || e.which == 49 || e.which == 55 || e.which==8 || e.which == 111 || e.which==110 || (e.which>186 && e.which<192)) {
+                return true;
+        }
+        return false;
+    }
+});
+</script>
+  </body>
+</html>

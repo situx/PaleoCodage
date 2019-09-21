@@ -1,0 +1,145 @@
+<html>
+<head>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+  <script src="js/paleocodes.js"></script>
+<script>
+var edges=[]
+var nodes=[]
+var nodemap=[]
+var graphml=""
+
+function levenshteinDistance (s, t) {
+    if (!s.length) return t.length;
+    if (!t.length) return s.length;
+
+    return Math.min(
+        levenshteinDistance(s.substr(1), t) + 1,
+        levenshteinDistance(t.substr(1), s) + 1,
+        levenshteinDistance(s.substr(1), t.substr(1)) + (s[0] !== t[0] ? 1 : 0)
+    ) + 1;
+}
+
+function editdistancegraph(){
+var remembermap={}
+var i=1;
+	    for(let js of paleocode){
+			alert(i)
+			alert(JSON.stringify(remembermap))
+			i++;
+            for(let js2 of paleocode){
+				
+				if(!(js2["PaleoCode"] in remembermap)){
+					remembermap[js["PaleoCode"]]=js2["PaleoCode"]
+					//remembermap[js2["PaleoCode"]]=js["PaleoCode"]
+
+				var lev = levenshteinDistance(js["PaleoCode"], js2["PaleoCode"]);
+								console.log(js["PaleoCode"]+" - "+js2["PaleoCode"]+" - "+lev)
+                        //console.log("[ "+js["PaleoCode"]+" ] is in [ "+js2["PaleoCode"]+" ]");
+						nodemap[js["PaleoCode"]]=js["translit"]+"("+js["cunei"]+")\n"+js["PaleoCode"]
+						nodemap[js2["PaleoCode"]]=js2["translit"]+"("+js2["cunei"]+")\n"+js2["PaleoCode"]
+						edges.push({from:js["PaleoCode"], to:js2["PaleoCode"],label:lev})
+				//}
+            }
+    }
+		for(var node in nodemap){
+		nodes.push({id: node, label: nodemap[node]})
+	}
+}}
+
+function graphToGraphML(){
+    graphml='<?xml version="1.0" encoding="UTF-8"?>\n<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n<key id="d0" for="node" yfiles.type="nodegraphics"/><key id="d1" for="edge" yfiles.type="edgegraphics"/> <graph id="G" edgedefault="undirected">\n'
+    for(var node in nodes){
+        console.log(node)
+        graphml+="<node id=\""+nodes[node]["id"].trim()+"\"/>\n"
+    }
+    for(var edge in edges){
+        console.log(edge)
+        graphml+="<edge id=\"e"+edge+"\" from=\""+edges[edge]["from"].trim()+"\" to=\""+edges[edge]["to"].trim()+"\"/>\n"
+    }
+    graphml+="</graph>\n</graphml>"
+}
+
+  function substringgraph(){
+var similar={}
+//Â´graph.addLink(1, 2);
+    for(let js of paleocode){
+            for(let js2 of paleocode){
+                if(js2["PaleoCode"]!=js["PaleoCode"] && js2["PaleoCode"].includes(js["PaleoCode"])){
+                        //console.log("[ "+js["PaleoCode"]+" ] is in [ "+js2["PaleoCode"]+" ]");
+						if(similar[js["PaleoCode"]]==undefined){
+							similar[js["PaleoCode"]]=""
+						}
+						similar[js["PaleoCode"]]+=js2["cunei"]+" "
+						if(similar[js["PaleoCode"]]!=undefined){
+							nodemap[js["PaleoCode"]]=js["translit"]+"("+js["cunei"]+")\n"+js["PaleoCode"]+"\n["+similar[js["PaleoCode"]]+"]"
+						}else{
+							nodemap[js["PaleoCode"]]=js["translit"]+"("+js["cunei"]+")\n"+js["PaleoCode"]
+						}
+						if(similar[js2["PaleoCode"]]!=undefined){
+							nodemap[js2["PaleoCode"]]=js2["translit"]+"("+js2["cunei"]+")\n"+js2["PaleoCode"]+"\n["+similar[js2["PaleoCode"]]+"]"
+						}else{
+							nodemap[js2["PaleoCode"]]=js2["translit"]+"("+js2["cunei"]+")\n"+js2["PaleoCode"]
+						}
+						edges.push({from:js["PaleoCode"], to:js2["PaleoCode"]})
+                        /*graph.addNode(js["PaleoCode"],js["translit"])
+                        graph.addNode(js2["PaleoCode"],js2["translit"])
+                        graph.addLink(js["PaleoCode"],js2["PaleoCode"])*/
+                }
+            }
+    }
+	for(var node in nodemap){
+		nodes.push({id: node, label: nodemap[node]})
+	}
+	graphToGraphML()
+}
+
+function exportGraphML(){
+    saveTextAsFile(graphml,"graphml","export");
+}
+
+function saveTextAsFile(tosave,fileext,filename)
+{
+    var a = document.createElement('a');
+    a.style = "display: none";  
+    var blob= new Blob([tosave], {type:'text/plain'});
+    var url = window.URL.createObjectURL(blob);
+    var filename = filename+fileext;
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);  
+    }, 1000);
+}
+</script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css">
+</head>
+<body>
+<div id="mynetwork"></div>
+<script>
+$(function() {
+    substringgraph();
+//editdistancegraph();
+
+var container = document.getElementById('mynetwork');
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+  var options = { physics:false,interaction:{dragNodes:true,hover:true,navigationButtons: true, keyboard: {
+                enabled: true,
+                bindToWindow: false
+            },
+            navigationButtons: true,zoomView:true}, layout: {    improvedLayout:true,hierarchical:{enabled:true, levelSeparation:50, nodeSpacing:300,sortMethod:"hubsize",direction:"UD",edgeMinimization:true,parentCentralization:true,blockShifting:true}}};
+  var network = new vis.Network(container, data, options);
+});
+</script>
+<button id="exportGraphML" onClick="exportGraphML()">Export GraphML</button>
+</body>
+</html>
