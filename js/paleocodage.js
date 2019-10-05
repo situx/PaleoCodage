@@ -19,11 +19,13 @@ function createOpenTypeGlyph(charname,unicode,path){
 function changeStrokeColor(color){
 	strokeColor=color; 
 	console.log(color)
+	strokeParser(document.getElementById('canvasinput').value)
 }
 
 function changeFillColor(color){
 	fillColor=color; 
 	console.log(color)
+	strokeParser(document.getElementById('canvasinput').value)
 }
 
   function convertToSubstitution(str,n){
@@ -310,8 +312,7 @@ function strokeParser(input,svgonly){
     halfangle=false;
 	curposy=10;
 	curposx=10;
-    for (var i = 0; i < input.length; i++) {
-	
+    for (var i = 0; i < input.length; i++) {	
         switch(input.charAt(i)){
                 case "a":
 					scalemultiplier=1
