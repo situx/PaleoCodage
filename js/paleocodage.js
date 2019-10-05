@@ -739,6 +739,7 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
                         canvas.moveTo(start+10*scalemultiplier+length, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
                         canvas.lineTo(start+10*scalemultiplier+length, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
                         canvas.lineTo(start+length, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
+						canvas.lineTo(start+10*scalemultiplier+length, starty+15*scalemultiplier); 
             }else{
                         
 						if(rot>0){
@@ -747,10 +748,12 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
 						   canvas.moveTo(start+start2-10, starty+starty2+15); // pick up "pen," reposition at 300 (horiz), 0 (vert)
 						   canvas.lineTo(start+start2-10, starty+starty2+25); // draw straight down (from 300,0) to 200px
                            canvas.lineTo(start+start2, starty+starty2+20); // draw up toward right (100 half of 200)
+						   canvas.lineTo(start+start2-10, starty+starty2+15); 
 						}else{
 							canvas.moveTo(start-10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
 							canvas.lineTo(start-10*scalemultiplier, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
 							canvas.lineTo(start, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
+							canvas.lineTo(start-10*scalemultiplier, starty+15*scalemultiplier);
 						}
 
             }
