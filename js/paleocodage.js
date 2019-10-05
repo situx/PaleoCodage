@@ -16,6 +16,13 @@ function createOpenTypeGlyph(charname,unicode,path){
     });
 }
 
+function changeColors(colors){
+	changeStrokeColor(colors.split(";")[0]);
+	changeFillColor(colors.split(";")[1]);
+	document.getElementById("strokeColor").value=colors.split(";")[0]
+	document.getElementById("fillColor").value=colors.split(";")[1]
+}
+
 function changeStrokeColor(color){
 	strokeColor=color; 
 	console.log(color)
