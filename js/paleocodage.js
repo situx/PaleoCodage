@@ -58,9 +58,11 @@ function createOpenFont(){
     var svglist=[]
 	var codepointlist=[]
 	var charnamelist=[]
+	var paleocodelist=[]
 	var counterr=0
 	$('#glyphs').html("")
 	$('.codebutton').each(function(i, obj) {
+        paleocodelist.push($(this).text())
 		var paleo=paleoCodageToSVG($(this).text(),counterr);
 		var paleo=paleoCodageToOpenTypePath($(this).text())
 		counterr++;
@@ -76,6 +78,9 @@ function createOpenFont(){
 	$('.transliteration').each(function(i, obj) {
 		charnamelist.push($(this).text())
 	});
+        for(code in paleocodelist){
+        charNameToPaleoCode[charnamelist[code]]=paleocodelist[code]
+    }
 	console.log(svglist)
 	console.log(codepointlist)
 	console.log(charnamelist)
@@ -216,10 +221,8 @@ function createFont(){
 	svglist=[]
 	codepointlist=[]
 	charnamelist=[]
-	paleocodelist=[]
 	$('.codebutton').each(function(i, obj) {
 		paleo=paleoCodageToSVG($(this).text());
-        paleocodelist.pust($(this).text());
 		console.log(convertOutline({"outline":paleo}))
 		svglist.push(paleo)
 	});
@@ -229,9 +232,6 @@ function createFont(){
 	$('.transliteration').each(function(i, obj) {
 		charnamelist.push($(this).text())
 	});
-    for(code in paleocodelist){
-        charNameToPaleoCode[charnamelist[code]]=paleocodelist[code]
-    }
 	console.log(svglist)
 	console.log(codepointlist)
 	console.log(charnamelist)
@@ -261,7 +261,7 @@ var strokelength=30;
 var wedgelength=10;
 var multiplier=1.5;
 var roundbracket=0
-var bracket=0
+var bracket=false
 var charnamebuffer=""
 var smallermultiplier=0.5
 var rotmultiplier=5;
@@ -289,14 +289,14 @@ function paleoCodageToOpenTypePath(paleoCode){
         ctx3.stroke=strokeColor
 		ctx3.fill=fillColor
         ctx3.strokeWidth=2
-        strokeParser(paleoCode,true)
+        strokeParser(paleoCode,true,false)
         //ot=false;
         return ctx3;
 }
 
 function paleoCodageToSVG(paleoCode,index){
 	//console.log(paleoCode)
-	strokeParser(paleoCode,false)
+	strokeParser(paleoCode,false,false)
     //console.log(ctx2.getSerializedSvg())
 	//ctx2.scale(10,10);
 	svghtml=ctx2.getSerializedSvg();
@@ -326,14 +326,17 @@ function paleoCodageToSVG(paleoCode,index){
 
 //var canvasSVGContext = new CanvasSVG.Deferred();
 //canvasSVGContext.wrapCanvas(document.getElementById("myCanvas"));
-function strokeParser(input,svgonly){
+function strokeParser(input,svgonly,recursive){
     var ctx = document.getElementById("myCanvas").getContext("2d");
-	clearCanvas(true);
-    smaller=false;
-    mirror=false;
-    halfangle=false;
-	curposy=10;
-	curposx=10;
+    console.log("Input: "+input)
+	if(!recursive){
+        clearCanvas(true);
+        smaller=false;
+        mirror=false;
+        halfangle=false;
+        curposy=10;
+        curposx=10;
+    }
     for (var i = 0; i < input.length; i++) {	
         switch(input.charAt(i)){
                 case "a":
@@ -696,13 +699,20 @@ function strokeParser(input,svgonly){
                     break;
                 case "[":
                     charnamebuffer=""
-                    bracket++;
+                    bracket=true;
+                    console.log("Bracket: "+bracket)
                     break;
                 case "]":
-                    bracket--;
-                    strokeParser(charnamebuffer,svgonly)
+                    bracket=false;
+                    console.log("Bracket: "+bracket)
+                    console.log(charnamebuffer)
+                    console.log(charNameToPaleoCode[charnamebuffer])
+                    strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
                     break;
                 default: 
+        }
+        if(bracket>0 && input.charAt(i)!="["){
+            charnamebuffer+=input.charAt(i)
         }
         //console.log(input.charAt(i));
     }
