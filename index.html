@@ -90,7 +90,9 @@ function htmlTableToJSON(filename,ext){
 Your browser does not support the HTML5 canvas tag.</canvas>
 <img id="canvasImg"/>
 <br/>
-Stroke Order Input: <input type="text" id="canvasinput" onKeyUp="strokeParser(document.getElementById('canvasinput').value)"/><br/><button id="clearcanvas" onClick="clearCanvas(false)">Clear Canvas</button><br/>
+Stroke Order Input: <input type="text" id="canvasinput" onKeyUp="strokeParser(document.getElementById('canvasinput').value)"/><br/><button id="clearcanvas" onClick="clearCanvas()">Clear Canvas</button><button id="refreshsvg" onClick="createOpenFont()">Refresh SVG</button><br/>
+Style: <select id="styleselect" onchange='changeColors(document.getElementById("styleselect").value)'><option value="#000000;#000000" selected="selected">Traditional</option><option value="#000000;#FFFFFF">Variant</option></select>
+Stroke Color: <input type="color" id="strokeColor" onchange='changeStrokeColor(document.getElementById("strokeColor").value)'/>Fill Color: <input type="color" id="fillColor" onchange='changeFillColor(document.getElementById("fillColor").value)'/><br/>
 <button id="downloadImage" onClick="to_image()">Download Image</button><button id="downloadSVG" onClick="to_svg()">Download SVG</button><button id="createFont" onClick="createFont()">Create Font</button><br/>
 <br/>
 Tutorial:
@@ -434,7 +436,8 @@ $(function() {
 $("#examples").tablesorter();
   $("#canvasinput").bind({
     keydown: function(e) {
-        if ((e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 86 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
+		console.log(e.which)
+        if ((e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
 		|| e.which == 46 || e.which == 49 || e.which == 55 || e.which==60 || e.which==8 || e.which == 111 || e.which==163 || e.which==171 || e.which==173 || e.which==110 || (e.which>186 && e.which<192)) {
                 return true;
         }
