@@ -713,7 +713,7 @@ function strokeParser(input,svgonly,recursive){
                     console.log(charNameToPaleoCode[charnamebuffer])
                     if(charnamebuffer in charNameToPaleoCode)
                         strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
-                    bracketpositions[bracketpositions.length-1]["end"]=i;
+                    bracketpositions[bracketpositions.length-1]["end"]=i+1;
                     break;
                 default: 
         }
