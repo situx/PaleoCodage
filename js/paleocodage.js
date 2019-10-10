@@ -29,13 +29,13 @@ function changeColors(colors){
 function changeStrokeColor(color){
 	strokeColor=color; 
 	console.log(color)
-	strokeParser(document.getElementById('canvasinput').value)
+	strokeParser(document.getElementById('canvasinput').value,false,false)
 }
 
 function changeFillColor(color){
 	fillColor=color; 
 	console.log(color)
-	strokeParser(document.getElementById('canvasinput').value)
+	strokeParser(document.getElementById('canvasinput').value,false,false)
 }
 
   function convertToSubstitution(str,n){
@@ -80,7 +80,7 @@ function createOpenFont(){
 	$('.transliteration').each(function(i, obj) {
 		charnamelist.push($(this).text())
 	});
-        for(code in paleocodelist){
+    for(code in paleocodelist){
         charNameToPaleoCode[charnamelist[code]]=paleocodelist[code]
     }
 	console.log(svglist)
@@ -265,6 +265,8 @@ function saveTextAsFile(tosave,fileext,filename)
 
 var curposx=30;
 var curposy=30;
+var startposy=0;
+var startposx=0;
 var charNameToPaleoCode={}
 var strokelength=30;
 var wedgelength=10;
@@ -310,7 +312,8 @@ function paleoCodageToSVG(paleoCode,index){
 	strokeParser(paleoCode,false,false)
     //console.log(ctx2.getSerializedSvg())
 	//ctx2.scale(10,10);
-	svghtml=ctx2.getSerializedSvg();
+	console.log("PaleoCode: "+paleoCode)
+	svghtml=ctx2.getSerializedSvg(true);
     if(!isNaN(index)){
         console.log(index+" - "+svghtml)
         //$('.svg :nth-child('+index+')' ).html(svghtml)
@@ -349,7 +352,12 @@ function strokeParser(input,svgonly,recursive){
         bracketpositions=[]
         curposy=10;
         curposx=10;
-    }
+		startposx=10;
+		startposy=10;
+    }else{
+		startposx=curposx;
+		startposy=curposy;
+	}
     for (var i = 0; i < input.length; i++) {	
         switch(input.charAt(i)){
                 case "a":
@@ -616,9 +624,12 @@ function strokeParser(input,svgonly,recursive){
                 case "-":
                     if(bracket==0){
                         curposx+=10*scalemultiplier;
-						if(!recursive){
+						curposy=startposy*scalemultiplier;
+						/*if(!recursive){
 						    curposy=10*scalemultiplier;
-						}
+						}else{
+							
+						}*/
                     }
                         break;
                 case "#":
@@ -699,7 +710,7 @@ function strokeParser(input,svgonly,recursive){
                 case "_": 
                     if(bracket==0){
                         curposx+=strokelength;
-                        curposy=10*scalemultiplier;
+                        curposy=startposy*scalemultiplier;
                     }
                         break;
                 case " ": 
@@ -1166,6 +1177,6 @@ function drawWedge2(start,starty,canvas,big){
 }
 
 function showCharacter(character){
-        strokeParser(character)
+        strokeParser(character,false,false)
         document.getElementById('canvasinput').value=character
 }
