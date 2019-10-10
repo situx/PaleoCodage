@@ -614,7 +614,9 @@ function strokeParser(input,svgonly,recursive){
                 case "-":
                     if(bracket==0){
                         curposx+=10*scalemultiplier;
-                        curposy=10*scalemultiplier;
+						if(!recursive){
+						    curposy=10*scalemultiplier;
+						}
                     }
                         break;
                 case "#":
