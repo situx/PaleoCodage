@@ -60,9 +60,11 @@ function createOpenFont(){
     var svglist=[]
 	var codepointlist=[]
 	var charnamelist=[]
+	var paleocodelist=[]
 	var counterr=0
 	$('#glyphs').html("")
 	$('.codebutton').each(function(i, obj) {
+        paleocodelist.push($(this).text())
 		var paleo=paleoCodageToSVG($(this).text(),counterr);
 		var paleo=paleoCodageToOpenTypePath($(this).text())
 		counterr++;
@@ -78,6 +80,9 @@ function createOpenFont(){
 	$('.transliteration').each(function(i, obj) {
 		charnamelist.push($(this).text())
 	});
+        for(code in paleocodelist){
+        charNameToPaleoCode[charnamelist[code]]=paleocodelist[code]
+    }
 	console.log(svglist)
 	console.log(codepointlist)
 	console.log(charnamelist)
@@ -260,9 +265,14 @@ function saveTextAsFile(tosave,fileext,filename)
 
 var curposx=30;
 var curposy=30;
+var charNameToPaleoCode={}
 var strokelength=30;
 var wedgelength=10;
 var multiplier=1.5;
+var roundbracket=0
+var bracket=false
+var bracketpositions=[]
+var charnamebuffer=""
 var smallermultiplier=0.5
 var rotmultiplier=5;
 var scalemultiplier=1
@@ -289,14 +299,14 @@ function paleoCodageToOpenTypePath(paleoCode){
         ctx3.stroke=strokeColor
 		ctx3.fill=fillColor
         ctx3.strokeWidth=2
-        strokeParser(paleoCode,true)
+        strokeParser(paleoCode,true,false)
         //ot=false;
         return ctx3;
 }
 
 function paleoCodageToSVG(paleoCode,index){
 	//console.log(paleoCode)
-	strokeParser(paleoCode,false)
+	strokeParser(paleoCode,false,false)
     //console.log(ctx2.getSerializedSvg())
 	//ctx2.scale(10,10);
 	svghtml=ctx2.getSerializedSvg();
@@ -326,17 +336,23 @@ function paleoCodageToSVG(paleoCode,index){
 
 //var canvasSVGContext = new CanvasSVG.Deferred();
 //canvasSVGContext.wrapCanvas(document.getElementById("myCanvas"));
-function strokeParser(input,svgonly){
+function strokeParser(input,svgonly,recursive){
     var ctx = document.getElementById("myCanvas").getContext("2d");
-	clearCanvas(true);
-    smaller=false;
-    mirror=false;
-    halfangle=false;
-	curposy=10;
-	curposx=10;
+    console.log("Input: "+input)
+	if(!recursive){
+        clearCanvas(true);
+        smaller=false;
+        mirror=false;
+        bracket=false;
+        halfangle=false;
+        bracketpositions=[]
+        curposy=10;
+        curposx=10;
+    }
     for (var i = 0; i < input.length; i++) {	
         switch(input.charAt(i)){
                 case "a":
+                    if(bracket==0){
 					scalemultiplier=1
 					scalemultiplierForStrokeLength=1
 					drawVerticalLine(curposx,curposy,ctx,true,false,true);
@@ -350,8 +366,10 @@ function strokeParser(input,svgonly){
 					drawVerticalLine(curposx,curposy,ctx3,true,false,false);
 					ot=false;
 					rot=0; mirror=false;
+                    }
                     break;
                 case "A":
+                    if(bracket==0){
 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 					drawVerticalLine(curposx,curposy,ctx,true,true,true);
@@ -365,8 +383,10 @@ function strokeParser(input,svgonly){
 					drawVerticalLine(curposx,curposy,ctx3,true,true,false);
 					ot=false
 					rot=0; mirror=false;
+                    }
                     break;
                 case "b":
+                    if(bracket==0){
 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
                         drawHorizontalLine(curposx,curposy,ctx,true,false,true);
@@ -380,8 +400,10 @@ function strokeParser(input,svgonly){
 						drawHorizontalLine(curposx,curposy,ctx3,true,false,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
                         break;
                 case "B":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawHorizontalLine(curposx,curposy,ctx,true,true,true);
@@ -395,8 +417,10 @@ function strokeParser(input,svgonly){
 						drawHorizontalLine(curposx,curposy,ctx3,true,true,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
                         break;
                 case "c":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawDiagonalLine1(curposx,curposy,ctx,false,true);
@@ -410,8 +434,10 @@ function strokeParser(input,svgonly){
 						drawDiagonalLine1(curposx,curposy,ctx3,false,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
                         break;
                 case "C":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawDiagonalLine1(curposx,curposy,ctx,true,true);
@@ -425,8 +451,10 @@ function strokeParser(input,svgonly){
 						drawDiagonalLine1(curposx,curposy,ctx3,true,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
                         break;
                 case "d":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawDiagonalLine2(curposx,curposy,ctx,false,true);
@@ -440,8 +468,10 @@ function strokeParser(input,svgonly){
 						drawDiagonalLine2(curposx,curposy,ctx3,false,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
                         break;
                 case "D":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawDiagonalLine2(curposx,curposy,ctx,true,true);
@@ -455,8 +485,10 @@ function strokeParser(input,svgonly){
 						drawDiagonalLine2(curposx,curposy,ctx3,true,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
                         break;
                 case "e":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawDiagonalLine3(curposx,curposy,ctx,false,true);
@@ -470,8 +502,10 @@ function strokeParser(input,svgonly){
 						drawDiagonalLine3(curposx,curposy,ctx3,false,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
                         break;
                 case "E":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawDiagonalLine3(curposx,curposy,ctx,true,true);
@@ -485,8 +519,10 @@ function strokeParser(input,svgonly){
 						drawDiagonalLine3(curposx,curposy,ctx3,true,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
                         break;
                 case "f":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawDiagonalLine4(curposx,curposy,ctx,false,true);
@@ -500,8 +536,10 @@ function strokeParser(input,svgonly){
 						drawDiagonalLine4(curposx,curposy,ctx3,false,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
 						break;
                 case "F":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawDiagonalLine4(curposx,curposy,ctx,true,true);
@@ -515,11 +553,15 @@ function strokeParser(input,svgonly){
 						drawDiagonalLine4(curposx,curposy,ctx3,true,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
 						break;
                 case "s":
+                    if(bracket==0){
                         smaller=true;
+                    }
                         break;
                 case "w":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawWedge2(curposx,curposy,ctx,false);
@@ -533,8 +575,10 @@ function strokeParser(input,svgonly){
 						drawWedge2(curposx,curposy,ctx3,false);
 						ot=false
 						rot=0; mirror=false;
+                    }
                         break;
                 case "W":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawWedge2(curposx,curposy,ctx,true);
@@ -548,8 +592,10 @@ function strokeParser(input,svgonly){
 						drawWedge2(curposx,curposy,ctx3,true);
 						ot=false
 						rot=0; mirror=false;
+                    }
                         break;
                 case "w2":
+                    if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
 						drawWedge(curposx,curposy,ctx);
@@ -563,54 +609,125 @@ function strokeParser(input,svgonly){
 						drawWedge(curposx,curposy,ctx3);
 						ot=false;
 						rot=0; mirror=false;
+                    }
                         break;
                 case "-":
+                    if(bracket==0){
                         curposx+=10*scalemultiplier;
                         curposy=10*scalemultiplier;
+                    }
                         break;
                 case "#":
+                    if(bracket==0){
                         curposx+=5*scalemultiplier;
                         curposy=10*scalemultiplier;
+                    }
                         break;
-                case ":": curposy+=7*scalemultiplier;
+                case ":": 
+                        if(bracket==0){
+                            curposy+=7*scalemultiplier;
+                        }
                         break;
                 case "!": //mirror character
-                        mirror=true;
+                        if(bracket==0){
+                            mirror=true;
+                        }
                         break;
-                case "'": curposy=10*scalemultiplier;
-                        break;
-				case "\"": curposy=0*scalemultiplier;
-                        break;
-				case "~": curposx-=10*scalemultiplier;
+                case "'":
+                    if(bracket==0){
                         curposy=10*scalemultiplier;
+                    }
                         break;
-                case "/": curposy+=3.5*scalemultiplier;
+				case "\"": 
+                    if(bracket==0){
+                        curposy=0*scalemultiplier;
+                    }
+                        break;
+				case "~": 
+                    if(bracket==0){
+                        curposx-=10*scalemultiplier;
+                        curposy=10*scalemultiplier;
+                    }
+                        break;
+                case "/": 
+                    if(bracket==0){
+                        curposy+=3.5*scalemultiplier;
+                    }
                     break;
-                case "|": halfangle=true;
+                case "|":
+                    if(bracket==0){
+                        halfangle=true;
+                    }
                         break;
-                case ";": curposy+=strokelength;
+                case ";": 
+                    if(bracket==0){
+                        curposy+=strokelength;
+                    }
                         break;
-                case ".": curposy+=7*scalemultiplier;
+                case ".": 
+                    if(bracket==0){
+                        curposy+=7*scalemultiplier;
                         curposx+=7*scalemultiplier;
+                    }
                         break;
-				case "<": 
+				case "<":
+                    if(bracket==0){
 				        rot--;
+                    }
                         break;
 				case ">": 
-						rot++;
+						if(bracket==0){
+                            rot++;
+                        }
                         break;
-                case "\\": curposy+=7*scalemultiplier;
+                case "\\": 
+                    if(bracket==0){    
+                        curposy+=7*scalemultiplier;
                         curposx-=7*scalemultiplier;
+                    }
                         break;
-                case ",": curposy-=7*scalemultiplier;
-                        curposx-=7*scalemultiplier;
+                case ",": 
+                        if(bracket==0){    
+                            curposy-=7*scalemultiplier;
+                            curposx-=7*scalemultiplier;
+                        }
                         break;
-                case "_": curposx+=strokelength;
+                case "_": 
+                    if(bracket==0){
+                        curposx+=strokelength;
                         curposy=10*scalemultiplier;
+                    }
                         break;
-                case " ": curposx+=1.5*strokelength*scalemultiplier;
+                case " ": 
+                    if(bracket==0){
+                        curposx+=1.5*strokelength*scalemultiplier;
+                    }
                         break;
+                case "(":
+                    roundbracket++;
+                    break;
+                case ")":
+                    roundbracket--;
+                    break;
+                case "[":
+                    charnamebuffer=""
+                    bracket=true;
+                    console.log("Bracket: "+bracket)
+                    bracketpositions.push({start:i,end:-1})
+                    break;
+                case "]":
+                    bracket=false;
+                    console.log("Bracket: "+bracket)
+                    console.log(charnamebuffer)
+                    console.log(charNameToPaleoCode[charnamebuffer])
+                    if(charnamebuffer in charNameToPaleoCode)
+                        strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
+                    bracketpositions[bracketpositions.length-1]["end"]=i+1;
+                    break;
                 default: 
+        }
+        if(bracket>0 && input.charAt(i)!="["){
+            charnamebuffer+=input.charAt(i)
         }
         //console.log(input.charAt(i));
     }
