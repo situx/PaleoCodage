@@ -9,6 +9,8 @@ function to_image(){
 
 function createOpenTypeGlyph(charname,unicode,path){
 	//console.log(path)
+	path.stroke=strokeColor
+	path.fill=fillColor
     return new opentype.Glyph({
         name: charname,
         unicode: unicode.replace("0x",""),
@@ -83,7 +85,11 @@ function createOpenFont(){
 	var coun=0
 	for(svg in svglist){
 	    if(svg<charnamelist.length && svg<=codepointlist.length && svg<svglist.length){
-            glyphs.push(createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist[svg]))
+			gly=createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist[svg])
+			gly.path.fill=fillColor;
+			gly.path.stroke=strokeColor;
+            glyphs.push(gly)
+			//console.log(gly)
             //opentype.gsub.add(charnamelist[svg])
         }
         console.log(coun++)
@@ -104,21 +110,22 @@ function createOpenFont(){
     document.getElementById('fontFamilyName').innerHTML = font2.names.fontFamily.en;
      for (var i = 0; i < font2.glyphs.length; i++) {
         var glyph = font2.glyphs.get(i);
-        var ctx = createGlyphCanvas(glyph, 150);
+        var ctxx = createGlyphCanvas(glyph, 150);
         var x = 50;
         var y = 120;
         var fontSize = 72;
-		console.log(glyph)
-        glyph.draw(ctx, x, y, fontSize);
-        glyph.drawPoints(ctx, x, y, fontSize);
-        glyph.drawMetrics(ctx, x, y, fontSize);
+		console.log(strokeColor+" - "+fillColor)
+		console.log(ctxx)
+        glyph.draw(ctxx, x, y, fontSize);
+        glyph.drawPoints(ctxx, x, y, fontSize);
+        glyph.drawMetrics(ctxx, x, y, fontSize);
     }
         //document.getElementById('jsonFont').innerHTML=stringify(font)
     clearCanvas();
 }
 
     function createGlyphCanvas(glyph, size) {
-        var canvasId, html, glyphsDiv, wrap, canvas, ctx;
+        var canvasId, html, glyphsDiv, wrap, canvas, ctxxx;
         canvasId = 'c' + glyph.index;
         html = '<div class="wrapper" style="width:' + size + 'px"><canvas id="' + canvasId + '" width="' + size + '" height="' + size + '"></canvas><span>'+glyph.name+"[" + glyph.index+"]" + '</span></div>';
         glyphsDiv = document.getElementById('glyphs');
@@ -126,8 +133,10 @@ function createOpenFont(){
         wrap.innerHTML = html;
         glyphsDiv.appendChild(wrap);
         canvas = document.getElementById(canvasId);
-        ctx = canvas.getContext('2d');
-        return ctx;
+        ctxxx = canvas.getContext('2d');
+		ctxxx.strokeStyle=strokeColor;
+		ctxxx.fillStyle=fillColor;
+        return ctxxx;
     }
 
 function to_svg(){
