@@ -286,7 +286,8 @@ var halfangle=false;
 var opentypestrokeWidth=5
 var ot=false;
 var font;
-var rot=0; mirror=false;
+var rot=0;
+var mirror=false;
 var ctx2width=170
 var ctx2height=80
 var ctx3=new opentype.Path();
@@ -365,7 +366,7 @@ function strokeParser(input,svgonly,recursive){
 					ot=true; mirror=!mirror;
 					drawVerticalLine(curposx,curposy,ctx3,true,false,recursive);
 					ot=false;
-					rot=0; mirror=false;
+					rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                     break;
                 case "A":
@@ -382,7 +383,7 @@ function strokeParser(input,svgonly,recursive){
 					ot=true; mirror=!mirror;
 					drawVerticalLine(curposx,curposy,ctx3,true,true,recursive);
 					ot=false
-					rot=0; mirror=false;
+					rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                     break;
                 case "b":
@@ -396,10 +397,10 @@ function strokeParser(input,svgonly,recursive){
 						scalemultiplierForStrokeLength=scalemultiplier
 						//mirror=!mirror
 					}
-						ot=true; //mirror=!mirror;
+						ot=true; mirror=!mirror;
 						drawHorizontalLine(curposx,curposy,ctx3,true,false,recursive);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "B":
@@ -413,10 +414,10 @@ function strokeParser(input,svgonly,recursive){
 						scalemultiplierForStrokeLength=scalemultiplier
 						
 					}
-						ot=true; //mirror=!mirror;
+						ot=true; mirror=!mirror;
 						drawHorizontalLine(curposx,curposy,ctx3,true,true,recursive);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "c":
@@ -433,7 +434,7 @@ function strokeParser(input,svgonly,recursive){
 						ot=true; mirror=!mirror;
 						drawDiagonalLine1(curposx,curposy,ctx3,false,false);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "C":
@@ -448,9 +449,9 @@ function strokeParser(input,svgonly,recursive){
 						mirror=!mirror
 					}
 						ot=true; mirror=!mirror;
-						drawDiagonalLine1(curposx,curposy,ctx3,true,false);
+						drawDiagonalLine1(curposx,curposy,ctx3,true,recursive);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "d":
@@ -465,9 +466,9 @@ function strokeParser(input,svgonly,recursive){
 						mirror=!mirror
 					}
 						ot=true; mirror=!mirror;
-						drawDiagonalLine2(curposx,curposy,ctx3,false,false);
+						drawDiagonalLine2(curposx,curposy,ctx3,false,recursive);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "D":
@@ -482,9 +483,9 @@ function strokeParser(input,svgonly,recursive){
 						mirror=!mirror
 					}
 						ot=true; mirror=!mirror;
-						drawDiagonalLine2(curposx,curposy,ctx3,true,false);
+						drawDiagonalLine2(curposx,curposy,ctx3,true,recursive);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "e":
@@ -499,9 +500,9 @@ function strokeParser(input,svgonly,recursive){
 						mirror=!mirror
 					}
 						ot=true; mirror=!mirror;
-						drawDiagonalLine3(curposx,curposy,ctx3,false,false);
+						drawDiagonalLine3(curposx,curposy,ctx3,false,recursive);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "E":
@@ -516,9 +517,9 @@ function strokeParser(input,svgonly,recursive){
 						mirror=!mirror
 					}
 						ot=true; mirror=!mirror;
-						drawDiagonalLine3(curposx,curposy,ctx3,true,false);
+						drawDiagonalLine3(curposx,curposy,ctx3,true,recursive);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "f":
@@ -533,9 +534,9 @@ function strokeParser(input,svgonly,recursive){
 						mirror=!mirror
 					}
 						ot=true; mirror=!mirror;
-						drawDiagonalLine4(curposx,curposy,ctx3,false,false);
+						drawDiagonalLine4(curposx,curposy,ctx3,false,recursive);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
 						break;
                 case "F":
@@ -550,9 +551,9 @@ function strokeParser(input,svgonly,recursive){
 						mirror=!mirror
 					}
 						ot=true; mirror=!mirror;
-						drawDiagonalLine4(curposx,curposy,ctx3,true,false);
+						drawDiagonalLine4(curposx,curposy,ctx3,true,recursive);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
 						break;
                 case "s":
@@ -572,9 +573,9 @@ function strokeParser(input,svgonly,recursive){
 						mirror=!mirror
 					}
 						ot=true; mirror=!mirror;
-						drawWedge2(curposx,curposy,ctx3,false);
+						drawWedge2(curposx,curposy,ctx3,recursive);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "W":
@@ -591,7 +592,7 @@ function strokeParser(input,svgonly,recursive){
 						ot=true; mirror=!mirror;
 						drawWedge2(curposx,curposy,ctx3,true);
 						ot=false
-						rot=0; mirror=false;
+						rot=0; if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "w2":
@@ -608,7 +609,8 @@ function strokeParser(input,svgonly,recursive){
 						ot=true; mirror=!mirror;
 						drawWedge(curposx,curposy,ctx3);
 						ot=false;
-						rot=0; mirror=false;
+						rot=0; 
+						if(!recursive)mirror=false;else{mirror=!mirror;}
                     }
                         break;
                 case "-":
