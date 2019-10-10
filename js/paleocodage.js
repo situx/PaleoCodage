@@ -262,6 +262,7 @@ var wedgelength=10;
 var multiplier=1.5;
 var roundbracket=0
 var bracket=false
+var bracketpositions=[]
 var charnamebuffer=""
 var smallermultiplier=0.5
 var rotmultiplier=5;
@@ -333,7 +334,9 @@ function strokeParser(input,svgonly,recursive){
         clearCanvas(true);
         smaller=false;
         mirror=false;
+        bracket=false;
         halfangle=false;
+        bracketpositions=[]
         curposy=10;
         curposx=10;
     }
@@ -701,13 +704,16 @@ function strokeParser(input,svgonly,recursive){
                     charnamebuffer=""
                     bracket=true;
                     console.log("Bracket: "+bracket)
+                    bracketpositions.push({start:i,end:-1})
                     break;
                 case "]":
                     bracket=false;
                     console.log("Bracket: "+bracket)
                     console.log(charnamebuffer)
                     console.log(charNameToPaleoCode[charnamebuffer])
-                    strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
+                    if(charnamebuffer in charNameToPaleoCode)
+                        strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
+                    bracketpositions[bracketpositions.length-1]["end"]=i;
                     break;
                 default: 
         }

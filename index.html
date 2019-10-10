@@ -437,7 +437,18 @@ $("#examples").tablesorter();
   $("#canvasinput").bind({
     keydown: function(e) {
 		console.log(e.which)
-        if (bracket>0 || (e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
+		var carpos=e.target.selectionStart
+		var inbracket=false;
+		console.log(carpos)
+		console.log(bracketpositions)
+		for(pos in bracketpositions){
+            if(bracketpositions[pos]["start"]<carpos && (bracketpositions[pos]["end"]>carpos || bracketpositions["end"]==-1)){
+                inbracket=true;
+                break;
+            }
+		}
+		console.log("InBracket: "+inbracket)
+        if (inbracket || (e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
 		|| e.which == 46 || e.which == 49 || e.which == 55 || e.which==56 || e.which==57 || e.which==60 || e.which==8 || e.which == 111 || e.which==163 || e.which==171 || e.which==173 || e.which==110 || (e.which>186 && e.which<192)) {
                 return true;
         }
