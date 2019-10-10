@@ -363,7 +363,7 @@ function strokeParser(input,svgonly,recursive){
 						//mirror=!mirror
 					}
 					ot=true; mirror=!mirror;
-					drawVerticalLine(curposx,curposy,ctx3,true,false,false);
+					drawVerticalLine(curposx,curposy,ctx3,true,false,recursive);
 					ot=false;
 					rot=0; mirror=false;
                     }
@@ -380,7 +380,7 @@ function strokeParser(input,svgonly,recursive){
 						//mirror=!mirror
 					}
 					ot=true; mirror=!mirror;
-					drawVerticalLine(curposx,curposy,ctx3,true,true,false);
+					drawVerticalLine(curposx,curposy,ctx3,true,true,recursive);
 					ot=false
 					rot=0; mirror=false;
                     }
@@ -397,7 +397,7 @@ function strokeParser(input,svgonly,recursive){
 						//mirror=!mirror
 					}
 						ot=true; //mirror=!mirror;
-						drawHorizontalLine(curposx,curposy,ctx3,true,false,false);
+						drawHorizontalLine(curposx,curposy,ctx3,true,false,recursive);
 						ot=false
 						rot=0; mirror=false;
                     }
@@ -414,7 +414,7 @@ function strokeParser(input,svgonly,recursive){
 						
 					}
 						ot=true; //mirror=!mirror;
-						drawHorizontalLine(curposx,curposy,ctx3,true,true,false);
+						drawHorizontalLine(curposx,curposy,ctx3,true,true,recursive);
 						ot=false
 						rot=0; mirror=false;
                     }
@@ -725,6 +725,9 @@ function strokeParser(input,svgonly,recursive){
                     if(charnamebuffer in charNameToPaleoCode)
                         strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
                     bracketpositions[bracketpositions.length-1]["end"]=i+1;
+					smaller=false;
+					mirror=false;
+					halfangle=false;
                     break;
                 default: 
         }
