@@ -573,15 +573,15 @@ function strokeParser(input,svgonly,recursive){
                     if(bracket==0){
                 					scalemultiplier=1
                     scalemultiplierForStrokeLength=1
-						drawWedge2(curposx,curposy,ctx,false);
-						drawWedge2(curposx,curposy,ctx2,false);
+						drawWedge2(curposx,curposy,ctx,false,true);
+						drawWedge2(curposx,curposy,ctx2,false,true);
 											if(svgonly){
 						scalemultiplier=15
 						scalemultiplierForStrokeLength=scalemultiplier
 						mirror=!mirror
 					}
 						ot=true; mirror=!mirror;
-						drawWedge2(curposx,curposy,ctx3,recursive);
+						drawWedge2(curposx,curposy,ctx3,true,recursive);
 						ot=false
 						if(!recursive){mirror=false;rot=0;}else{mirror=!mirror;}
                     }
@@ -1156,12 +1156,20 @@ function drawWedge(start,starty,canvas){
 		 }
 }
 
-function drawWedge2(start,starty,canvas,big){
+function drawWedge2(start,starty,canvas,big,keepconfig){
     if(big){
         canvas.moveTo(start+10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
-		canvas.lineTo(start+10*scalemultiplier, starty+30*scalemultiplier); // draw straight down by 200px (200 + 200)
-		canvas.lineTo(start, starty+25*scalemultiplier); // draw up toward left (100 less than 300, so left)
+		canvas.lineTo(start+10*scalemultiplier, starty+35*scalemultiplier); // draw straight down by 200px (200 + 200)
+		canvas.lineTo(start-2, starty+25*scalemultiplier); // draw up toward left (100 less than 300, so left)
 		canvas.lineTo(start+10*scalemultiplier, starty+15*scalemultiplier);
+    }else if(smaller){
+        length=smallermultiplier*strokelength;
+        canvas.moveTo(start+10*scalemultiplier*smallermultiplier, starty+15*scalemultiplier*smallermultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
+		canvas.lineTo(start+10*scalemultiplier*smallermultiplier, starty+28*scalemultiplier*smallermultiplier); // draw straight down by 200px (200 + 200)
+		canvas.lineTo(start-2, starty+20*scalemultiplier*smallermultiplier); // draw up toward left (100 less than 300, so left)
+		canvas.lineTo(start+10*scalemultiplier*smallermultiplier, starty+15*scalemultiplier*smallermultiplier); 
+        if(!keepconfig)
+            smaller=false;
     }else{
         canvas.moveTo(start+10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
 		canvas.lineTo(start+10*scalemultiplier, starty+25*scalemultiplier); // draw straight down by 200px (200 + 200)
