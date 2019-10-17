@@ -34,28 +34,52 @@ function rotate(cx, cy, x, y, angle) {
     return {"x":nx, "y":ny};
 }
 
-function rotateHead(points,angle){
+function rotateHead(points,angle,center){
 	var result=[]
-	var center=getCenterHead(points)
+	if(!center){
+		center=getCenterHead(points)
+	}
 	for(point in points){
 		result.push(rotateLineClockWise(center, points[point], angle))
 	}
 	return result;
 }
 
-function rotateWedge(points,angle){
+function rotateWedge(points,angle,center){
 	var result=[]
 	var lastcalc=0;
+	var nonewcenter=false;
+	if(center){
+		nonewcenter=true;
+	}
 	for(i=1;i<points.length;i++){
 		begin=points[i-1]
 		end=points[i]
-		var center=getCenter(begin,end)
+		if(!nonewcenter){
+			center=getCenter(begin,end)
+		}
 		if(i==1){
 			result.push(rotateLineClockWise(center,begin,angle))
 		}
 		result.push(rotateLineClockWise(center,end,angle))
 	}
 	return result;
+}
+
+
+function getCenterOfWedge(points){
+	var minx=1000000,minxpoint,maxx=-10000,maxxpoint;
+	for(point in points){
+		if(points[point]["x"]<minx){
+			minx=points[point]["x"]
+			minxpoint=points[point]
+		}
+		if(points[point]["x"]>maxx){
+			maxx=points[point]["x"]
+			maxxpoint=points[point]
+		}
+	}
+	return getCenter(minxpoint,maxxpoint)
 }
 
 function rotateWedgeEndPoint(begin,end,angle){
@@ -334,6 +358,7 @@ var wedgelength=10;
 var multiplier=1.5;
 var roundbracket=0
 var bracket=false
+var globalCenterPoint;
 var rotationconstant=15
 var bracketpositions=[]
 var charnamebuffer=""
@@ -419,6 +444,9 @@ function strokeParser(input,svgonly,recursive){
     }else{
 		startposx=curposx;
 		startposy=curposy;
+		if(recursive){
+			
+		}
 	}
     for (var i = 0; i < input.length; i++) {	
         switch(input.charAt(i)){
@@ -825,10 +853,26 @@ function drawVerticalLine(start,starty,canvas,strokeparse,big,keepconfig){
                         canvas.lineTo(start, starty+length*scalemultiplier); // go to horizontal 100 (x) and vertical 200 (y)
 						canvas.lineTo(start-5*scalemultiplier, starty+10*scalemultiplier+length); 
             }else{
+				if(rot!=0){
+						   start2=start;
+						   starty2=starty;
+						   var points=[{"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier},
+						   {"x":start+5*scalemultiplier, "y":starty+10*scalemultiplier},
+						   {"x":start, "y":starty+20*scalemultiplier},
+						   {"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier}];
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty+lineLength*scalemultiplier},
+						   {"x":start+length, "y":starty2+lineLength*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
+                           canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
+						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
+				}else{
                         canvas.moveTo(start-5*scalemultiplier, starty+10*scalemultiplier); // start at top left corner of canvas
                         canvas.lineTo(start+5*scalemultiplier, starty+10*scalemultiplier); // go 200px to right (x), straight line from 0 to 0
                         canvas.lineTo(start, starty+20*scalemultiplier); // go to horizontal 100 (x) and vertical 200 (y)
 						canvas.lineTo(start-5*scalemultiplier, starty+10*scalemultiplier);
+				}
             }
             if(!ot){
 				canvas.fillStyle = fillColor;
@@ -845,10 +889,26 @@ function drawVerticalLine(start,starty,canvas,strokeparse,big,keepconfig){
                     canvas.lineTo(start, starty+length*scalemultiplier); // go to horizontal 100 (x) and vertical 200 (y)
 					canvas.lineTo(start-5*scalemultiplier, starty+5*scalemultiplier+length);
             }else{ 
+			if(rot!=0){
+						   start2=start;
+						   starty2=starty;
+						   var points=[{"x":start-5*scalemultiplier, "y":starty+15*scalemultiplier},
+						   {"x":start+5*scalemultiplier, "y":starty+15*scalemultiplier},
+						   {"x":start, "y":starty+20*scalemultiplier},
+						   {"x":start-5*scalemultiplier, "y":starty+15*scalemultiplier}];
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty+lineLength*scalemultiplier},
+						   {"x":start+length, "y":starty2+lineLength*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
+                           canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
+						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
+				}else{
                 canvas.moveTo(start-5*scalemultiplier, starty+15*scalemultiplier); // start at top left corner of canvas
                 canvas.lineTo(start+5*scalemultiplier, starty+15*scalemultiplier); // go 200px to right (x), straight line from 0 to 0
                 canvas.lineTo(start, starty+20*scalemultiplier); // go to horizontal 100 (x) and vertical 200 (y)
 				canvas.lineTo(start-5*scalemultiplier, starty+15*scalemultiplier);
+				}
             }
             if(!ot){
 				canvas.fillStyle = fillColor;
@@ -857,15 +917,31 @@ function drawVerticalLine(start,starty,canvas,strokeparse,big,keepconfig){
         }else{
             length=scalemultiplierForStrokeLength*strokelength;
             if(mirror){
-                        canvas.moveTo(start-5*scalemultiplier*1.5, starty+10*scalemultiplier*1.5+length); // start at top left corner of canvas
-                        canvas.lineTo(start+5*scalemultiplier*1.5, starty+10*scalemultiplier*1.5+length); // go 200px to right (x), straight line from 0 to 0
+                        canvas.moveTo(start-5*scalemultiplier*1.5, starty+10*scalemultiplier); // start at top left corner of canvas
+                        canvas.lineTo(start+5*scalemultiplier*1.5, starty+10*scalemultiplier); // go 200px to right (x), straight line from 0 to 0
                         canvas.lineTo(start, starty+10+length); // go to horizontal 100 (x) and vertical 200 (y)
-						canvas.lineTo(start-5*scalemultiplier*1.5, starty+10*scalemultiplier*1.5+length)
+						canvas.lineTo(start-5*scalemultiplier*1.5, starty+10*scalemultiplier)
             }else{
+				if(rot!=0){
+						   start2=start;
+						   starty2=starty;
+						   var points=[{"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier},
+						   {"x":start+5*scalemultiplier, "y":starty+10*scalemultiplier},
+						   {"x":start, "y":starty+20*scalemultiplier},
+						   {"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier}];
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty+lineLength*scalemultiplier},
+						   {"x":start+length, "y":starty2+lineLength*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
+                           canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
+						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
+				}else{
                         canvas.moveTo(start-5*scalemultiplier, starty+10*scalemultiplier); // start at top left corner of canvas
                         canvas.lineTo(start+5*scalemultiplier, starty+10*scalemultiplier); // go 200px to right (x), straight line from 0 to 0
                         canvas.lineTo(start, starty+20*scalemultiplier); // go to horizontal 100 (x) and vertical 200 (y)
 						canvas.lineTo(start-5*scalemultiplier, starty+10*scalemultiplier)
+				}
             }
              if(!ot){
 				canvas.fillStyle = fillColor;
@@ -889,7 +965,28 @@ function drawVerticalLine(start,starty,canvas,strokeparse,big,keepconfig){
                     }
             if(!keepconfig)
 				mirror=false;
-        }else{
+        }else if(rot!=0){
+				console.log(rot)
+				start2=start;
+				starty2=starty;
+				var rotpoints2;
+				rotpoints2=rotateWedge([{"x":start, "y":starty+lineLength*scalemultiplier},
+				{"x":start, "y":starty+lineLength*scalemultiplier+length}],rot*-1,centerwholewedge)			
+				console.log(rotpoints)
+					canvas.moveTo(rotpoints2[0]["x"],rotpoints2[0]["y"]);
+					canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);				
+                 if(!ot){
+					canvas.fillStyle = fillColor;
+                    canvas.stroke();
+                }else{
+                                canvas.moveTo(start+start2,starty+lineLength*scalemultiplier-opentypestrokeWidth);
+                                canvas.lineTo(start+length,starty+lineLength*scalemultiplier-opentypestrokeWidth);
+                                canvas.lineTo(start+length,starty+lineLength*scalemultiplier+opentypestrokeWidth);
+                                canvas.lineTo(start,starty+lineLength*scalemultiplier+opentypestrokeWidth);
+                                canvas.lineTo(start,starty+lineLength*scalemultiplier-opentypestrokeWidth);
+								canvas.stroke=strokeColor
+                    }
+		}else{
 
                      if(!ot){       
                         canvas.moveTo(start,starty+lineLength*scalemultiplier);
@@ -921,10 +1018,26 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
                         canvas.lineTo(start+length, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
 						canvas.lineTo(start+10*scalemultiplier+length, starty+15*scalemultiplier);
             }else{
+				if(rot!=0){
+						   start2=start;
+						   starty2=starty;
+						   var points=[{"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier},
+						   {"x":start-10*scalemultiplier, "y":starty+25*scalemultiplier},
+						   {"x":start, "y":starty+20*scalemultiplier},
+						   {"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier}];
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty+lineLength*scalemultiplier},
+						   {"x":start+length, "y":starty2+lineLength*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
+                           canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
+						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
+				}else{
                     canvas.moveTo(start-10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
                     canvas.lineTo(start-10*scalemultiplier, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
                     canvas.lineTo(start, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
 					canvas.lineTo(start-10*scalemultiplier, starty+15*scalemultiplier);
+				}
             }
              if(!ot){
 				canvas.fillStyle = fillColor;
@@ -940,11 +1053,27 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
                         canvas.lineTo(start+length, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
 						canvas.lineTo(start+5*scalemultiplier+length, starty+15*scalemultiplier);
             }else{
+				if(rot!=0){
+						   start2=start;
+						   starty2=starty;
+						   var points=[{"x":start-5*scalemultiplier, "y":starty+15*scalemultiplier},
+						   {"x":start-5*scalemultiplier, "y":starty+25*scalemultiplier},
+						   {"x":start, "y":starty+20*scalemultiplier},
+						   {"x":start-5*scalemultiplier, "y":starty+15*scalemultiplier}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty+lineLength*scalemultiplier},
+						   {"x":start+length, "y":starty2+lineLength*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
+                           canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
+						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
+				}else{
                         canvas.moveTo(start-5*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
                         canvas.lineTo(start-5*scalemultiplier, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
                         canvas.lineTo(start, starty+20*scalemultiplier); // draw up toward right (100 half of 200)
 						canvas.lineTo(start-5*scalemultiplier, starty+15*scalemultiplier);
-            }
+				}
+			}
             if(!ot){
 				canvas.fillStyle = fillColor;
                 canvas.fill(); // connect and fill
@@ -958,27 +1087,20 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
 						canvas.lineTo(start+10*scalemultiplier+length, starty+15*scalemultiplier); 
             }else{
                         
-						if(rot>0){
+						if(rot!=0){
 						   start2=start;
 						   starty2=starty;
-						   var rotpoints=rotateHead([{"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier},
+						   var points=[{"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier},
 						   {"x":start-10*scalemultiplier, "y":starty+25*scalemultiplier},
 						   {"x":start, "y":starty+20*scalemultiplier},
-						   {"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier}
-						   ],rot*-1)
-						   console.log(rotpoints)
+						   {"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty+lineLength*scalemultiplier},
+						   {"x":start+length, "y":starty2+lineLength*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
 						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
 						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
                            canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
 						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
-						   var maxx=-100000;
-						   var maxpoint;
-						   for(point in rotpoints){
-								if(rotpoints[point]["x"]>maxx){
-									maxx=rotpoints[point]["x"]
-									maxpoint=rotpoints[point]
-								}
-						   }
 						}else{
 							canvas.moveTo(start-10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
 							canvas.lineTo(start-10*scalemultiplier, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
@@ -1010,17 +1132,16 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
                     }
 			if(!keepconfig)
 				mirror=false;
-        }else if(rot>0){
+        }else if(rot!=0){
 				console.log(rot)
 				start2=start;
 				starty2=starty;
 				var rotpoints2;
 				rotpoints2=rotateWedge([{"x":start, "y":starty+lineLength*scalemultiplier},
-				{"x":start+length, "y":starty2+lineLength*scalemultiplier}],rot*-1)
-				
+				{"x":start+length, "y":starty2+lineLength*scalemultiplier}],rot*-1,centerwholewedge)			
 				console.log(rotpoints)
-					canvas.moveTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);
-					canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]);				
+					canvas.moveTo(rotpoints2[0]["x"],rotpoints2[0]["y"]);
+					canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);				
                  if(!ot){
 					canvas.fillStyle = fillColor;
                     canvas.stroke();
