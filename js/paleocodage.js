@@ -1204,39 +1204,81 @@ function drawDiagonalLine1(start,starty,canvas,big,keepconfig){
 			if(halfangle)
                 length=0.6*length
             length=multiplier*strokelength;
+			if(rot!=0){
+						 var points=[{"x":start+wlength-10*scalemultiplier, "y":starty+wlength-10*scalemultiplier},
+						   {"x":start+wlength-10*scalemultiplier, "y":starty-10*scalemultiplier},
+						   {"x":start-10, "y":starty+wlength-10},
+						   {"x":start+wlength-10*scalemultiplier, "y":starty+wlength-10*scalemultiplier}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty},
+						   {"x":start+length*scalemultiplier, "y":starty+length*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
 			drawHeadArray([
 						start+wlength-10*scalemultiplier, starty+wlength-10*scalemultiplier,
 						start+wlength-10*scalemultiplier, starty-10*scalemultiplier,
 						start-10, starty+wlength-10,
 						start+wlength-10*scalemultiplier, starty+wlength-10*scalemultiplier
 						],canvas) 
+			}
         }else if(smaller){
             length=smallermultiplier*strokelength;
             wlength=wedgelength-5
-			drawHeadArray([
+						if(rot!=0){
+						 var points=[{"x":start+wlength-5*scalemultiplier, "y":starty+wlength-5*scalemultiplier},
+						   {"x":start+wlength-5*scalemultiplier, "y":starty-5*scalemultiplier},
+						   {"x":start-5*scalemultiplier, "y":starty+wlength-5*scalemultiplier},
+						   {"x":start+wlength-5*scalemultiplier, "y":starty+wlength-5*scalemultiplier}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty},
+						   {"x":start+length*scalemultiplier, "y":starty+length*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
+					drawHeadArray([
 						start+wlength-5*scalemultiplier, starty+wlength-5*scalemultiplier,
 						start+wlength-5*scalemultiplier, starty-5*scalemultiplier,
 						start-5*scalemultiplier, starty+wlength-5*scalemultiplier,
 						start+wlength-5*scalemultiplier, starty+wlength-5*scalemultiplier
-			],canvas) 
+					],canvas) 
+			}
 			if(!keepconfig)
 				smaller=false;
         }else{
             length=scalemultiplierForStrokeLength*strokelength;
 			wlength=wedgelength
-						drawHeadArray([
+			if(rot!=0){
+						 var points=[{"x":start, "y":starty},
+						   {"x":start-wedgelength*scalemultiplier, "y":starty},
+						   {"x":start, "y":starty-wedgelength*scalemultiplier},
+						   {"x":start, "y":starty}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty},
+						   {"x":start+length*scalemultiplier, "y":starty+length*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
+				drawHeadArray([
 						start, starty,
 						start-wedgelength*scalemultiplier, starty,
 						start, starty-wedgelength*scalemultiplier,
 						start, starty
-			],canvas) 
+					],canvas) 
+			}
         }
-        canvas.moveTo(start,starty);
-        if(halfangle){
+		if(rot!=0){
+			var rotpoints2;
+				rotpoints2=rotateWedge([{"x":start, "y":starty},
+				{"x":start+length*scalemultiplier, "y":starty+length*scalemultiplier}],rot*-1,centerwholewedge)			
+				console.log(rotpoints)
+				canvas.moveTo(rotpoints2[0]["x"],rotpoints2[0]["y"]);
+				canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);	
+		}else{
+			canvas.moveTo(start,starty);
+			if(halfangle){
                 canvas.lineTo(start+length,starty+0.6*length);
-        }else{
+			}else{
                 canvas.lineTo(start+length*scalemultiplier,starty+length*scalemultiplier);
-        }
+			}
+		}
          if(!ot){
 			canvas.fillStyle = fillColor;
             canvas.fill();
@@ -1255,83 +1297,165 @@ function drawDiagonalLine2(start,starty,canvas,big,keepconfig){
             length=multiplier*strokelength;
             if(halfangle)
                 length=0.6*length
-			drawHeadArray([
+			if(rot!=0){
+						 var points=[{"x":start, "y":starty+length},
+						   {"x":start, "y":starty+length+10},
+						   {"x":start-10, "y":starty+length},
+						   {"x":start, "y":starty+length}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start+length*scalemultiplier, "y":starty},
+						   {"x":start, "y":starty+length*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
+					drawHeadArray([
 						start, starty+length,
 						start, starty+length+10,
 						start-10, starty+length,
 						start, starty+length
-			],canvas) 
+				],canvas) 
+			}
         }else if(smaller){
 			length=smallermultiplier*strokelength;
             if(halfangle)
                 length=0.6*length
-			drawHeadArray([
+			if(rot!=0){
+						 var points=[{"x":start, "y":starty+length},
+						   {"x":start, "y":starty+length+5},
+						   {"x":start-5, "y":starty+length},
+						   {"x":start, "y":starty+length}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start+length*scalemultiplier, "y":starty},
+						   {"x":start, "y":starty+length*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
+				drawHeadArray([
 						start, starty+length,
 						start, starty+length+5,
 						start-5, starty+length,
 						start, starty+length
-			],canvas) 
+				],canvas) 
+			}
 			if(!keepconfig)
 				smaller=false;
 		}else{
              length=scalemultiplierForStrokeLength*strokelength;
              if(halfangle)
                 length=0.6*length
-			drawHeadArray([
+				if(rot!=0){
+						 var points=[{"x":start, "y":starty+length},
+						   {"x":start, "y":starty+length+10},
+						   {"x":start-10, "y":starty+length},
+						   {"x":start, "y":starty+length}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start+length*scalemultiplier, "y":starty},
+						   {"x":start, "y":starty+length*scalemultiplier}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+				}else{
+					drawHeadArray([
 						start, starty+length,
 						start, starty+length+10,
 						start-10, starty+length,
 						start, starty+length
-			],canvas) 
+					],canvas)
+				}			
         }
          if(!ot){
 			canvas.fillStyle = fillColor;
             canvas.fill();
+						 if(rot!=0){
+				var rotpoints2;
+				rotpoints2=rotateWedge([{"x":start+length*scalemultiplier, "y":starty},
+				{"x":start, "y":starty+length*scalemultiplier}],rot*-1,centerwholewedge)			
+				console.log(rotpoints)
+				canvas.moveTo(rotpoints2[0]["x"],rotpoints2[0]["y"]);
+				canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);	
+			}else{
             canvas.moveTo(start+length*scalemultiplier,starty);
             canvas.lineTo(start,starty+length*scalemultiplier);
+			}
 			canvas.strokeStyle=strokeColor
             canvas.stroke();
         }else{
-            canvas.moveTo(start+length*scalemultiplier,starty);
-            canvas.lineTo(start,starty+length*scalemultiplier);
+				canvas.moveTo(start+length*scalemultiplier,starty);
+				canvas.lineTo(start,starty+length*scalemultiplier);
         }
 }
 
 function drawDiagonalLine3(start,starty,canvas,big,keepconfig){
         if(big){
             length=multiplier*strokelength;
+			if(rot!=0){
+						 var points=[{"x":start+length, "y":starty+length},
+						   {"x":start+length, "y":starty+length},
+						   {"x":start+length, "y":starty+wedgelength},
+						   {"x":start+length, "y":starty+length}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty},
+						   {"x":start+length, "y":starty+length}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
 			drawHeadArray([
 						start+length,starty+length,
 						start+length+wedgelength, starty+length,
 						start+length, starty+length+wedgelength,
 						start+length,starty+length
 			],canvas) 
+			}
         }else if(smaller){
 			length=smallermultiplier*strokelength;
-			drawHeadArray([
+			if(rot!=0){
+						 var points=[{"x":start+length, "y":starty+length},
+						   {"x":start+length+wedgelength-5, "y":starty+length},
+						   {"x":start+length, "y":starty+length+wedgelength-5},
+						   {"x":start+length, "y":starty+length}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty},
+						   {"x":start+length, "y":starty+length}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
+					drawHeadArray([
 						start+length,starty+length,
 						start+length+wedgelength-5, starty+length,
 						start+length, starty+length+wedgelength-5,
 						start+length,starty+length
-			],canvas) 
+					],canvas) 
+			}
 			if(!keepconfig)
 				smaller=false;
 		}else{
             length=scalemultiplierForStrokeLength*strokelength;
-			drawHeadArray([
+						if(rot!=0){
+						 var points=[{"x":start+length, "y":starty+length},
+						   {"x":start+length+wedgelength*scalemultiplier, "y":starty+length},
+						   {"x":start+length, "y":starty+length+wedgelength*scalemultiplier},
+						   {"x":start+length, "y":starty+length}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty},
+						   {"x":start+length, "y":starty+length}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
+					drawHeadArray([
 						start+length,starty+length,
 						start+length+wedgelength*scalemultiplier, starty+length,
 						start+length, starty+length+wedgelength*scalemultiplier,
 						start+length,starty+length
-			],canvas) 
+					],canvas)
+			}			
         }
-		canvas.moveTo(start,starty);
-        canvas.lineTo(start+length,starty+length);
          if(!ot){
-			 canvas.fillStyle = fillColor;
+			canvas.fillStyle = fillColor;
             canvas.fill();
-            canvas.moveTo(start,starty);
-            canvas.lineTo(start+length,starty+length);
+			 if(rot!=0){
+				var rotpoints2;
+				rotpoints2=rotateWedge([{"x":start, "y":starty},
+				{"x":start+length, "y":starty+length}],rot*-1,centerwholewedge)			
+				console.log(rotpoints)
+				canvas.moveTo(rotpoints2[0]["x"],rotpoints2[0]["y"]);
+				canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);	
+			}else{
+				canvas.moveTo(start,starty);
+				canvas.lineTo(start+length,starty+length);
+			}
 			canvas.strokeStyle=strokeColor
             canvas.stroke();
         }else{
@@ -1345,36 +1469,78 @@ function drawDiagonalLine3(start,starty,canvas,big,keepconfig){
 function drawDiagonalLine4(start,starty,canvas,big,keepconfig){
         if(big){
             length=multiplier*strokelength;
-			drawHeadArray([
+			if(rot!=0){
+						 var points=[{"x":start+length, "y":starty},
+						   {"x":start+length, "y":starty-wedgelength},
+						   {"x":start+length+wedgelength, "y":starty},
+						   {"x":start+length, "y":starty}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty},
+						   {"x":start+length, "y":starty+length}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
+				drawHeadArray([
 						start+length,starty,
 						start+length, starty-wedgelength,
 						start+length+wedgelength, starty,
 						start+length,starty
-			],canvas) 
+				],canvas) 
+			}
         }else if(smaller){
 			length=smallermultiplier*strokelength;
-			drawHeadArray([
+			if(rot!=0){
+						 var points=[{"x":start+length, "y":starty},
+						   {"x":start+length, "y":starty-wedgelength+5},
+						   {"x":start+length+wedgelength-5, "y":starty},
+						   {"x":start+length, "y":starty}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty},
+						   {"x":start+length, "y":starty+length}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
+					drawHeadArray([
 						start+length,starty,
 						start+length, starty-wedgelength+5,
 						start+length+wedgelength-5, starty,
 						start+length,starty
-			],canvas) 
+					],canvas) 
+			}
 			if(!keepconfig)
 				smaller=false;
 		}else{
             length=scalemultiplierForStrokeLength*strokelength;
-			drawHeadArray([
+			if(rot!=0){
+						 var points=[{"x":start+length, "y":starty},
+						   {"x":start+length, "y":starty-wedgelength},
+						   {"x":start+length+wedgelength, "y":starty},
+						   {"x":start+length, "y":starty}]
+						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty},
+						   {"x":start+length, "y":starty+length}]))
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   drawHead(rotpoints,canvas)
+			}else{
+					drawHeadArray([
 						start+length,starty,
 						start+length, starty-wedgelength,
 						start+length+wedgelength, starty,
 						start+length,starty
-			],canvas) 
+					],canvas) 
+			}
         }
          if(!ot){
 			canvas.fillStyle = fillColor;
             canvas.fill();
-            canvas.moveTo(start+length*scalemultiplier,starty);
-            canvas.lineTo(start,starty+length*scalemultiplier);
+			 if(rot!=0){
+				var rotpoints2;
+				rotpoints2=rotateWedge([{"x":start+length*scalemultiplier, "y":starty},
+				{"x":start, "y":starty+length*scalemultiplier}],rot*-1,centerwholewedge)			
+				console.log(rotpoints)
+				canvas.moveTo(rotpoints2[0]["x"],rotpoints2[0]["y"]);
+				canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);	
+			}else{
+				canvas.moveTo(start+length*scalemultiplier,starty);
+				canvas.lineTo(start,starty+length*scalemultiplier);
+			}
 			canvas.strokeStyle=strokeColor
             canvas.stroke();
         }else{
