@@ -424,10 +424,10 @@ function paleoCodageToSVG(paleoCode,index){
 	return svghtml
 	//console.log(svghtml)
 }
-
+var recursiverotation=false;
 //var canvasSVGContext = new CanvasSVG.Deferred();
 //canvasSVGContext.wrapCanvas(document.getElementById("myCanvas"));
-function strokeParser(input,svgonly,recursive){
+function strokeParser(input,svgonly,recursive,rotationcheck){
     var ctx = document.getElementById("myCanvas").getContext("2d");
     console.log("Input: "+input)
 	if(!recursive){
@@ -435,7 +435,9 @@ function strokeParser(input,svgonly,recursive){
         smaller=false;
         mirror=false;
         bracket=false;
+		recursiverotation=false;
         halfangle=false;
+		rot=0;
         bracketpositions=[]
         curposy=10;
         curposx=10;
@@ -444,9 +446,8 @@ function strokeParser(input,svgonly,recursive){
     }else{
 		startposx=curposx;
 		startposy=curposy;
-		if(recursive){
-			
-		}
+		if(rotationcheck)
+			recursiverotation=true;
 	}
     for (var i = 0; i < input.length; i++) {	
         switch(input.charAt(i)){
@@ -665,11 +666,11 @@ function strokeParser(input,svgonly,recursive){
                     scalemultiplierForStrokeLength=1
 						drawWedge2(curposx,curposy,ctx,false,true);
 						drawWedge2(curposx,curposy,ctx2,false,true);
-											if(svgonly){
-						scalemultiplier=15
-						scalemultiplierForStrokeLength=scalemultiplier
-						mirror=!mirror
-					}
+						if(svgonly){
+							scalemultiplier=15
+							scalemultiplierForStrokeLength=scalemultiplier
+							mirror=!mirror
+						}
 						ot=true; mirror=!mirror;
 						drawWedge2(curposx,curposy,ctx3,true,recursive);
 						ot=false
@@ -678,8 +679,8 @@ function strokeParser(input,svgonly,recursive){
                         break;
                 case "W":
                     if(bracket==0){
-                					scalemultiplier=1
-                    scalemultiplierForStrokeLength=1
+                		scalemultiplier=1
+						scalemultiplierForStrokeLength=1
 						drawWedge2(curposx,curposy,ctx,true);
 						drawWedge2(curposx,curposy,ctx2,true);
 											if(svgonly){
@@ -695,8 +696,8 @@ function strokeParser(input,svgonly,recursive){
                         break;
                 case "w2":
                     if(bracket==0){
-                					scalemultiplier=1
-                    scalemultiplierForStrokeLength=1
+                		scalemultiplier=1
+						scalemultiplierForStrokeLength=1
 						drawWedge(curposx,curposy,ctx);
 						drawWedge(curposx,curposy,ctx2);
 											if(svgonly){
@@ -825,8 +826,12 @@ function strokeParser(input,svgonly,recursive){
                     console.log("Bracket: "+bracket)
                     console.log(charnamebuffer)
                     console.log(charNameToPaleoCode[charnamebuffer])
-                    if(charnamebuffer in charNameToPaleoCode)
+                    if(charnamebuffer in charNameToPaleoCode){
+						if(rot!=0){
+							
+						}
                         strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
+					}
                     bracketpositions[bracketpositions.length-1]["end"]=i+1;
 					smaller=false;
 					mirror=false;
@@ -837,6 +842,10 @@ function strokeParser(input,svgonly,recursive){
         if(bracket>0 && input.charAt(i)!="["){
             charnamebuffer+=input.charAt(i)
         }
+		if(rotationcheck){
+			globalCenterPoint=getCenterOfWedge(rotationCheckArray)
+		}
+
         //console.log(input.charAt(i));
     }
 }
