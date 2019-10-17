@@ -1360,23 +1360,68 @@ function drawWedge(start,starty,canvas){
 
 function drawWedge2(start,starty,canvas,big,keepconfig){
     if(big){
-        canvas.moveTo(start+10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
-		canvas.lineTo(start+10*scalemultiplier, starty+35*scalemultiplier); // draw straight down by 200px (200 + 200)
-		canvas.lineTo(start-2, starty+25*scalemultiplier); // draw up toward left (100 less than 300, so left)
-		canvas.lineTo(start+10*scalemultiplier, starty+15*scalemultiplier);
+		if(rot!=0){
+						   start2=start;
+						   starty2=starty;
+						   var points=[{"x":start+10*scalemultiplier*smallermultiplier, "y":starty+15*scalemultiplier*smallermultiplier},
+						   {"x":start+10*scalemultiplier*smallermultiplier, "y":starty+35*scalemultiplier*smallermultiplier},
+						   {"x":start-2, "y":starty+25*scalemultiplier*smallermultiplier},
+						   {"x":start+10*scalemultiplier*smallermultiplier, "y":starty+15*scalemultiplier*smallermultiplier}]
+						   var centerwholewedge=getCenterOfWedge(points)
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
+                           canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
+						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
+		}else{
+			canvas.moveTo(start+10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
+			canvas.lineTo(start+10*scalemultiplier, starty+35*scalemultiplier); // draw straight down by 200px (200 + 200)
+			canvas.lineTo(start-2, starty+25*scalemultiplier); // draw up toward left (100 less than 300, so left)
+			canvas.lineTo(start+10*scalemultiplier, starty+15*scalemultiplier);
+		}
     }else if(smaller){
         length=smallermultiplier*strokelength;
-        canvas.moveTo(start+10*scalemultiplier*smallermultiplier, starty+15*scalemultiplier*smallermultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
-		canvas.lineTo(start+10*scalemultiplier*smallermultiplier, starty+28*scalemultiplier*smallermultiplier); // draw straight down by 200px (200 + 200)
-		canvas.lineTo(start-2, starty+20*scalemultiplier*smallermultiplier); // draw up toward left (100 less than 300, so left)
-		canvas.lineTo(start+10*scalemultiplier*smallermultiplier, starty+15*scalemultiplier*smallermultiplier); 
+		if(rot!=0){
+						   start2=start;
+						   starty2=starty;
+						   var points=[{"x":start+10*scalemultiplier*smallermultiplier, "y":starty+15*scalemultiplier*smallermultiplier},
+						   {"x":start+10*scalemultiplier*smallermultiplier, "y":starty+28*scalemultiplier*smallermultiplier},
+						   {"x":start-2, "y":starty+20*scalemultiplier*smallermultiplier},
+						   {"x":start+10*scalemultiplier*smallermultiplier, "y":starty+15*scalemultiplier*smallermultiplier}]
+						   var centerwholewedge=getCenterOfWedge(points)
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
+                           canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
+						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
+		}else{
+			canvas.moveTo(start+10*scalemultiplier*smallermultiplier, starty+15*scalemultiplier*smallermultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
+			canvas.lineTo(start+10*scalemultiplier*smallermultiplier, starty+28*scalemultiplier*smallermultiplier); // draw straight down by 200px (200 + 200)
+			canvas.lineTo(start-2, starty+20*scalemultiplier*smallermultiplier); // draw up toward left (100 less than 300, so left)
+			canvas.lineTo(start+10*scalemultiplier*smallermultiplier, starty+15*scalemultiplier*smallermultiplier); 
+		}
         if(!keepconfig)
             smaller=false;
     }else{
-        canvas.moveTo(start+10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
-		canvas.lineTo(start+10*scalemultiplier, starty+25*scalemultiplier); // draw straight down by 200px (200 + 200)
-		canvas.lineTo(start, starty+20*scalemultiplier); // draw up toward left (100 less than 300, so left)
-		canvas.lineTo(start+10*scalemultiplier, starty+15*scalemultiplier); 
+		if(rot!=0){
+						   start2=start;
+						   starty2=starty;
+						   var points=[{"x":start+10*scalemultiplier, "y":starty+15*scalemultiplier},
+						   {"x":start+10*scalemultiplier, "y":starty+25*scalemultiplier},
+						   {"x":start, "y":starty+20*scalemultiplier},
+						   {"x":start+10*scalemultiplier, "y":starty+15*scalemultiplier}]
+						   var centerwholewedge=getCenterOfWedge(points)
+						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
+						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
+                           canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
+						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
+		}else{
+		        canvas.moveTo(start+10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 200 (vert)
+				canvas.lineTo(start+10*scalemultiplier, starty+25*scalemultiplier); // draw straight down by 200px (200 + 200)
+				canvas.lineTo(start, starty+20*scalemultiplier); // draw up toward left (100 less than 300, so left)
+				canvas.lineTo(start+10*scalemultiplier, starty+15*scalemultiplier); 
+		}
     }
      if(!ot){
 		canvas.fillStyle = fillColor;
