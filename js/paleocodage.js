@@ -25,6 +25,23 @@ function rotateLineClockWise(center, edge, angle) {
     return {"x":xRot,"y":yRot}
 }
 
+function rotate(cx, cy, x, y, angle) {
+    var radians = (Math.PI / 180) * angle,
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+    return {"x":nx, "y":ny};
+}
+
+function rotateHead(points,angle){
+	var result=[]
+	var center=getCenterHead(points)
+	for(point in points){
+		result.push(rotateLineClockWise(center, points[point], angle))
+	}
+	return result;
+}
 
 function rotateWedge(points,angle){
 	var result=[]
@@ -50,6 +67,12 @@ function toRadians(degrees)
 {
   var pi = Math.PI;
   return degrees * (pi/180);
+}
+
+function getCenterHead(origins) {
+	cx=(origins[0]["x"]+origins[1]["x"]+origins[2]["x"])/3
+	cy=(origins[0]["y"]+origins[1]["y"]+origins[2]["y"])/3
+    return {"x":cx, "y":cy};
 }
 
 function getCenter(origin,endPoint) {
@@ -938,16 +961,24 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
 						if(rot>0){
 						   start2=start;
 						   starty2=starty;
-						   var rotpoints=rotateWedge([{"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier},
+						   var rotpoints=rotateHead([{"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier},
 						   {"x":start-10*scalemultiplier, "y":starty+25*scalemultiplier},
 						   {"x":start, "y":starty+20*scalemultiplier},
-							   {"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier}
+						   {"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier}
 						   ],rot*-1)
 						   console.log(rotpoints)
 						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
 						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
                            canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
 						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
+						   var maxx=-100000;
+						   var maxpoint;
+						   for(point in rotpoints){
+								if(rotpoints[point]["x"]>maxx){
+									maxx=rotpoints[point]["x"]
+									maxpoint=rotpoints[point]
+								}
+						   }
 						}else{
 							canvas.moveTo(start-10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
 							canvas.lineTo(start-10*scalemultiplier, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
@@ -983,11 +1014,13 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
 				console.log(rot)
 				start2=start;
 				starty2=starty;
-				var rotpoints=rotateWedge([{"x":start2, "y":starty2+lineLength*scalemultiplier},
-						   {"x":start2+length, "y":starty2+lineLength*scalemultiplier}],rot)
+				var rotpoints2;
+				rotpoints2=rotateWedge([{"x":start, "y":starty+lineLength*scalemultiplier},
+				{"x":start+length, "y":starty2+lineLength*scalemultiplier}],rot*-1)
+				
 				console.log(rotpoints)
-				canvas.moveTo(rotpoints[0]["x"],rotpoints[0]["y"]);
-				canvas.lineTo(rotpoints[1]["x"],rotpoints[1]["y"]);
+					canvas.moveTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);
+					canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]);				
                  if(!ot){
 					canvas.fillStyle = fillColor;
                     canvas.stroke();
