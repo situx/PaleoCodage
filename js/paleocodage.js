@@ -19,6 +19,44 @@ function createOpenTypeGlyph(charname,unicode,path){
     });
 }
 
+function rotateLineClockWise(center, edge, angle) {
+    xRot = center["x"] + Math.cos(toRadians(angle)) * (edge["x"] - center["x"]) - Math.sin(toRadians(angle)) * (edge["y"] - center["y"]);
+    yRot = center["y"] + Math.sin(toRadians(angle)) * (edge["x"] - center["x"]) + Math.cos(toRadians(angle)) * (edge["y"] - center["y"]);
+    return {"x":xRot,"y":yRot}
+}
+
+
+function rotateWedge(points,angle){
+	var result=[]
+	var lastcalc=0;
+	for(i=1;i<points.length;i++){
+		begin=points[i-1]
+		end=points[i]
+		var center=getCenter(begin,end)
+		if(i==1){
+			result.push(rotateLineClockWise(center,begin,angle))
+		}
+		result.push(rotateLineClockWise(center,end,angle))
+	}
+	return result;
+}
+
+function rotateWedgeEndPoint(begin,end,angle){
+	var center=getCenter(begin,end)
+	return [rotateLineClockWise(center,end,angle)]
+}
+
+function toRadians(degrees)
+{
+  var pi = Math.PI;
+  return degrees * (pi/180);
+}
+
+function getCenter(origin,endPoint) {
+    return {"x":(origin["x"] + endPoint["x"]) / 2, "y":(origin["y"] + endPoint["y"]) / 2};
+}
+
+
 function changeColors(colors){
 	changeStrokeColor(colors.split(";")[0]);
 	changeFillColor(colors.split(";")[1]);
@@ -273,6 +311,7 @@ var wedgelength=10;
 var multiplier=1.5;
 var roundbracket=0
 var bracket=false
+var rotationconstant=15
 var bracketpositions=[]
 var charnamebuffer=""
 var smallermultiplier=0.5
@@ -687,12 +726,12 @@ function strokeParser(input,svgonly,recursive){
                         break;
 				case "<":
                     if(bracket==0){
-				        rot--;
+				        rot-=rotationconstant;
                     }
                         break;
 				case ">": 
 						if(bracket==0){
-                            rot++;
+                            rot+=rotationconstant;
                         }
                         break;
                 case "\\": 
@@ -897,12 +936,18 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
             }else{
                         
 						if(rot>0){
-						   start2=start+Math.cos(rot)*length;
-						   starty2=starty+Math.sin(rot)*length;
-						   canvas.moveTo(start2-10, starty2+15); // pick up "pen," reposition at 300 (horiz), 0 (vert)
-						   canvas.lineTo(start2-10, (starty+25)); // draw straight down (from 300,0) to 200px
-                           canvas.lineTo(start2,(starty2+20)); // draw up toward right (100 half of 200)
-						   canvas.lineTo(start2-10, starty2+15); 
+						   start2=start;
+						   starty2=starty;
+						   var rotpoints=rotateWedge([{"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier},
+						   {"x":start-10*scalemultiplier, "y":starty+25*scalemultiplier},
+						   {"x":start, "y":starty+20*scalemultiplier},
+							   {"x":start-10*scalemultiplier, "y":starty+15*scalemultiplier}
+						   ],rot*-1)
+						   console.log(rotpoints)
+						   canvas.moveTo(rotpoints[0]["x"], rotpoints[0]["y"]); // pick up "pen," reposition at 300 (horiz), 0 (vert)
+						   canvas.lineTo(rotpoints[1]["x"], rotpoints[1]["y"]); // draw straight down (from 300,0) to 200px
+                           canvas.lineTo(rotpoints[2]["x"],rotpoints[2]["y"]); // draw up toward right (100 half of 200)
+						   canvas.lineTo(rotpoints[3]["x"], rotpoints[3]["y"]); 
 						}else{
 							canvas.moveTo(start-10*scalemultiplier, starty+15*scalemultiplier); // pick up "pen," reposition at 300 (horiz), 0 (vert)
 							canvas.lineTo(start-10*scalemultiplier, starty+25*scalemultiplier); // draw straight down (from 300,0) to 200px
@@ -936,10 +981,13 @@ function drawHorizontalLine(start,starty,canvas,strokeparse,big,keepconfig){
 				mirror=false;
         }else if(rot>0){
 				console.log(rot)
-				start2=start+Math.cos(rot)*length;
-				starty2=starty+Math.sin(rot)*length;
-				canvas.moveTo(start2,starty2+lineLength);
-				canvas.lineTo(start2+Math.cos(rot)*length,starty2+lineLength+Math.sin(rot)*length*scalemultiplier);
+				start2=start;
+				starty2=starty;
+				var rotpoints=rotateWedge([{"x":start2, "y":starty2+lineLength*scalemultiplier},
+						   {"x":start2+length, "y":starty2+lineLength*scalemultiplier}],rot)
+				console.log(rotpoints)
+				canvas.moveTo(rotpoints[0]["x"],rotpoints[0]["y"]);
+				canvas.lineTo(rotpoints[1]["x"],rotpoints[1]["y"]);
                  if(!ot){
 					canvas.fillStyle = fillColor;
                     canvas.stroke();
