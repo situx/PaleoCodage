@@ -1204,26 +1204,32 @@ function drawDiagonalLine1(start,starty,canvas,big,keepconfig){
 			if(halfangle)
                 length=0.6*length
             length=multiplier*strokelength;
-            canvas.moveTo(start+wlength-10*scalemultiplier, starty+wlength-10*scalemultiplier);
-            canvas.lineTo(start+wlength-10*scalemultiplier, starty-10*scalemultiplier);
-            canvas.lineTo(start-10, starty+wlength-10);
-			canvas.lineTo(start+wlength-10*scalemultiplier, starty+wlength-10*scalemultiplier);
+			drawHeadArray([
+						start+wlength-10*scalemultiplier, starty+wlength-10*scalemultiplier,
+						start+wlength-10*scalemultiplier, starty-10*scalemultiplier,
+						start-10, starty+wlength-10,
+						start+wlength-10*scalemultiplier, starty+wlength-10*scalemultiplier
+						],canvas) 
         }else if(smaller){
             length=smallermultiplier*strokelength;
             wlength=wedgelength-5
-            canvas.moveTo(start+wlength-5*scalemultiplier, starty+wlength-5*scalemultiplier);
-            canvas.lineTo(start+wlength-5*scalemultiplier, starty-5*scalemultiplier);
-            canvas.lineTo(start-5*scalemultiplier, starty+wlength-5*scalemultiplier);
-			canvas.lineTo(start+wlength-5*scalemultiplier, starty+wlength-5*scalemultiplier);
+			drawHeadArray([
+						start+wlength-5*scalemultiplier, starty+wlength-5*scalemultiplier,
+						start+wlength-5*scalemultiplier, starty-5*scalemultiplier,
+						start-5*scalemultiplier, starty+wlength-5*scalemultiplier,
+						start+wlength-5*scalemultiplier, starty+wlength-5*scalemultiplier
+			],canvas) 
 			if(!keepconfig)
 				smaller=false;
         }else{
             length=scalemultiplierForStrokeLength*strokelength;
 			wlength=wedgelength
-            canvas.moveTo(start, starty);
-            canvas.lineTo(start-wedgelength*scalemultiplier, starty);
-            canvas.lineTo(start, starty-wedgelength*scalemultiplier);
-			canvas.lineTo(start, starty);
+						drawHeadArray([
+						start, starty,
+						start-wedgelength*scalemultiplier, starty,
+						start, starty-wedgelength*scalemultiplier,
+						start, starty
+			],canvas) 
         }
         canvas.moveTo(start,starty);
         if(halfangle){
@@ -1249,28 +1255,34 @@ function drawDiagonalLine2(start,starty,canvas,big,keepconfig){
             length=multiplier*strokelength;
             if(halfangle)
                 length=0.6*length
-			canvas.moveTo(start, starty+length);
-			canvas.lineTo(start, starty+length+10);
-			canvas.lineTo(start-10, starty+length);
-			canvas.lineTo(start, starty+length);
+			drawHeadArray([
+						start, starty+length,
+						start, starty+length+10,
+						start-10, starty+length,
+						start, starty+length
+			],canvas) 
         }else if(smaller){
 			length=smallermultiplier*strokelength;
             if(halfangle)
                 length=0.6*length
-			canvas.moveTo(start, starty+length);
-			canvas.lineTo(start, starty+length+5);
-			canvas.lineTo(start-5, starty+length);
-			canvas.lineTo(start, starty+length);
+			drawHeadArray([
+						start, starty+length,
+						start, starty+length+5,
+						start-5, starty+length,
+						start, starty+length
+			],canvas) 
 			if(!keepconfig)
 				smaller=false;
 		}else{
              length=scalemultiplierForStrokeLength*strokelength;
              if(halfangle)
                 length=0.6*length
-			canvas.moveTo(start, starty+length);
-			canvas.lineTo(start, starty+length+10);
-			canvas.lineTo(start-10, starty+length);
-			canvas.lineTo(start, starty+length);
+			drawHeadArray([
+						start, starty+length,
+						start, starty+length+10,
+						start-10, starty+length,
+						start, starty+length
+			],canvas) 
         }
          if(!ot){
 			canvas.fillStyle = fillColor;
@@ -1288,24 +1300,30 @@ function drawDiagonalLine2(start,starty,canvas,big,keepconfig){
 function drawDiagonalLine3(start,starty,canvas,big,keepconfig){
         if(big){
             length=multiplier*strokelength;
-			canvas.moveTo(start+length,starty+length);
-			canvas.lineTo(start+length+wedgelength, starty+length);
-			canvas.lineTo(start+length, starty+length+wedgelength);
-			canvas.lineTo(start+length,starty+length);
+			drawHeadArray([
+						start+length,starty+length,
+						start+length+wedgelength, starty+length,
+						start+length, starty+length+wedgelength,
+						start+length,starty+length
+			],canvas) 
         }else if(smaller){
 			length=smallermultiplier*strokelength;
-			canvas.moveTo(start+length,starty+length);
-			canvas.lineTo(start+length+wedgelength-5, starty+length);
-			canvas.lineTo(start+length, starty+length+wedgelength-5);
-			canvas.lineTo(start+length,starty+length);
+			drawHeadArray([
+						start+length,starty+length,
+						start+length+wedgelength-5, starty+length,
+						start+length, starty+length+wedgelength-5,
+						start+length,starty+length
+			],canvas) 
 			if(!keepconfig)
 				smaller=false;
 		}else{
             length=scalemultiplierForStrokeLength*strokelength;
-			canvas.moveTo(start+length,starty+length);
-			canvas.lineTo(start+length+wedgelength*scalemultiplier, starty+length);
-			canvas.lineTo(start+length, starty+length+wedgelength*scalemultiplier);
-			canvas.lineTo(start+length,starty+length);
+			drawHeadArray([
+						start+length,starty+length,
+						start+length+wedgelength*scalemultiplier, starty+length,
+						start+length, starty+length+wedgelength*scalemultiplier,
+						start+length,starty+length
+			],canvas) 
         }
 		canvas.moveTo(start,starty);
         canvas.lineTo(start+length,starty+length);
@@ -1327,24 +1345,30 @@ function drawDiagonalLine3(start,starty,canvas,big,keepconfig){
 function drawDiagonalLine4(start,starty,canvas,big,keepconfig){
         if(big){
             length=multiplier*strokelength;
-			canvas.moveTo(start+length,starty);
-			canvas.lineTo(start+length, starty-wedgelength);
-			canvas.lineTo(start+length+wedgelength, starty);
-			canvas.lineTo(start+length,starty);
+			drawHeadArray([
+						start+length,starty,
+						start+length, starty-wedgelength,
+						start+length+wedgelength, starty,
+						start+length,starty
+			],canvas) 
         }else if(smaller){
 			length=smallermultiplier*strokelength;
-			canvas.moveTo(start+length,starty);
-			canvas.lineTo(start+length, starty-wedgelength+5);
-			canvas.lineTo(start+length+wedgelength-5, starty);
-			canvas.lineTo(start+length,starty);
+			drawHeadArray([
+						start+length,starty,
+						start+length, starty-wedgelength+5,
+						start+length+wedgelength-5, starty,
+						start+length,starty
+			],canvas) 
 			if(!keepconfig)
 				smaller=false;
 		}else{
             length=scalemultiplierForStrokeLength*strokelength;
-			canvas.moveTo(start+length,starty);
-			canvas.lineTo(start+length, starty-wedgelength);
-			canvas.lineTo(start+length+wedgelength, starty);
-			canvas.lineTo(start+length,starty);
+			drawHeadArray([
+						start+length,starty,
+						start+length, starty-wedgelength,
+						start+length+wedgelength, starty,
+						start+length,starty
+			],canvas) 
         }
          if(!ot){
 			canvas.fillStyle = fillColor;
