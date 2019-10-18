@@ -453,6 +453,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 	rot=0;
         bracketpositions=[]
         factorbracketpositions=[]
+	factorbuffer=""
 	curposy=10;
         curposx=10;
 		startposx=10;
@@ -829,16 +830,22 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     roundbracket=true;
                     break;
                 case ")":
-		    var value=parseInt(factorbuffer);
-		    switch(lastoperator){
-			case ">":
-				rot+=value
-				break;
-			case "<":
-				rot-=value
-				break;
-		    }
-		    factorbracketpositions[factorbracketpositions.length-1]["end"]=i+1;
+			console.log(lastoperator)
+			console.log(rot)
+			var value=parseInt(factorbuffer);
+			console.log(value)
+			switch(lastoperator){
+				case ">":
+					rot=0
+					rot+=value
+					break;
+				case "<":
+					rot=0
+					rot-=value
+					break;
+			}
+			console.log(rot)
+			factorbracketpositions[factorbracketpositions.length-1]["end"]=i+1;
                     roundbracket=false;
                     break;
 		case "0":
