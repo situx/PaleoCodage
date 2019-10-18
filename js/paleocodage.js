@@ -663,6 +663,9 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 					smaller=false;
 					mirror=false;
 					halfangle=false;
+					startposx=10;
+					startposy=10;
+					curposy=10;
                     break;
                 default: 
         }
