@@ -775,7 +775,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 		if(!onlyhead){
 			if(!ot){
 				canvas.fillStyle = fillColor;
-                canvas.fill();
+                		canvas.fill();
 				var insert=[pointarray[pointarray.length-2],pointarray[pointarray.length-1]]
 				var rotpoints2=rotateWedge(insert,localrot*-1,centerwholewedge)			
 				//console.log(rotpoints2)
@@ -810,7 +810,9 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 		}else{
 			if(!ot){
 				canvas.fillStyle = fillColor;
-                canvas.fill();
+                		canvas.fill();
+				canvas.strokeStyle=strokeColor
+				canvas.stroke();
 			}
 		}
 }
