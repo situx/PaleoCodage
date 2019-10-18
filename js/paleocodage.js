@@ -819,7 +819,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     break;
                 case ")":
 		    var value=factorbuffer;
-		    bracketpositions[bracketpositions.length-1]["end"]=i+1;
+		    factorbracketpositions[factorbracketpositions.length-1]["end"]=i+1;
                     roundbracket=false;
                     break;
 		case "0":
