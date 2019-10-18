@@ -892,7 +892,7 @@ function drawVerticalLine(start,starty,canvas,strokeparse,big,keepconfig){
 						   {"x":start, "y":starty+20*scalemultiplier},
 						   {"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier}];
 						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty+lineLength*scalemultiplier},
-						   {"x":start+length, "y":starty+lineLength*scalemultiplier}]))
+						   {"x":start, "y":starty+lineLength*scalemultiplier+length}]))
 						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
 						   drawHead(rotpoints,canvas)
 				}else{
@@ -927,7 +927,7 @@ function drawVerticalLine(start,starty,canvas,strokeparse,big,keepconfig){
 						   {"x":start, "y":starty+20*scalemultiplier},
 						   {"x":start-5*scalemultiplier, "y":starty+15*scalemultiplier}];
 						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty+lineLength*scalemultiplier},
-						   {"x":start+length, "y":starty+lineLength*scalemultiplier}]))
+						   {"x":start, "y":starty+lineLength*scalemultiplier+length}]))
 						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
 						   drawHead(rotpoints,canvas)
 				}else{
@@ -959,7 +959,7 @@ function drawVerticalLine(start,starty,canvas,strokeparse,big,keepconfig){
 						   {"x":start, "y":starty+20*scalemultiplier},
 						   {"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier}];
 						   var centerwholewedge=getCenterOfWedge(points.concat([{"x":start, "y":starty+lineLength*scalemultiplier},
-						   {"x":start+length, "y":starty+lineLength*scalemultiplier}]))
+						   {"x":start, "y":starty+lineLength*scalemultiplier+length}]))
 						   var rotpoints=rotateHead(points,rot*-1,centerwholewedge)
 						   drawHead(rotpoints,canvas)
 				}else{
