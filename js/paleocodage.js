@@ -361,6 +361,7 @@ var bracket=false
 var globalCenterPoint;
 var rotationconstant=15
 var bracketpositions=[]
+var factorbracketpositions=[]
 var charnamebuffer=""
 var factorbuffer=""
 var smallermultiplier=0.5
@@ -813,10 +814,12 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
                 case "(":
 		    lastoperator=input.charAt(i-1)
+		    factorbracketpositions.push({start:i,end:-1})
                     roundbracket=true;
                     break;
                 case ")":
-		    
+		    var value=factorbuffer;
+		    bracketpositions[bracketpositions.length-1]["end"]=i+1;
                     roundbracket=false;
                     break;
 		case "0":
