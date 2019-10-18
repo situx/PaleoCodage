@@ -829,7 +829,15 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     roundbracket=true;
                     break;
                 case ")":
-		    var value=factorbuffer;
+		    var value=parseInt(factorbuffer);
+		    switch(lastoperator){
+			case ">":
+				rot+=value
+				break;
+			case "<":
+				rot-=value
+				break;
+		    }
 		    factorbracketpositions[factorbracketpositions.length-1]["end"]=i+1;
                     roundbracket=false;
                     break;
