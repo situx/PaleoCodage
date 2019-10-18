@@ -455,14 +455,14 @@ $("#examples").tablesorter();
             		}
 		}
 		console.log("InBracket: "+inbracket)
-		if(e.which==56 && inbracket){
+		if(e.which==56 && e.key=='[' && inbracket){
 			return false;
-		}else if(e.which==57 && !inbracket){
+		}else if(e.which==57 && e.key==']' && !inbracket){
 			return false;
 		}
-	    	if(e.which==56 && infactorbracket){
+	    	if(e.which==56 && e.key=='(' && infactorbracket){
 			return false;
-		}else if(e.which==57 && !infactorbracket){
+		}else if(e.which==57 && e.key==')' && !infactorbracket){
 			return false;
 		}
 	    	console.log("InFactorBracket: "+infactorbracket)
