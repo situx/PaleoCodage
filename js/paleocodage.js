@@ -362,11 +362,13 @@ var globalCenterPoint;
 var rotationconstant=15
 var bracketpositions=[]
 var charnamebuffer=""
+var factorbuffer=""
 var smallermultiplier=0.5
 var rotmultiplier=5;
 var scalemultiplier=1
 var scalemultiplierForStrokeLength=1
 var smaller=false;
+var lastoperator;
 var strokeColor="#000000"
 var fillColor="#000000"
 var lineLength=strokelength-wedgelength
@@ -435,9 +437,9 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
         smaller=false;
         mirror=false;
         bracket=false;
-		recursiverotation=false;
+	recursiverotation=false;
         halfangle=false;
-		rot=0;
+	rot=0;
         bracketpositions=[]
         curposy=10;
         curposx=10;
@@ -810,11 +812,25 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     }
                         break;
                 case "(":
-                    roundbracket++;
+		    lastoperator=input.charAt(i-1)
+                    roundbracket=true;
                     break;
                 case ")":
-                    roundbracket--;
+		    
+                    roundbracket=false;
                     break;
+		case "0":
+		case "1":
+		case "2":
+		case "3":
+		case "4":
+		case "5":
+		case "6":
+		case "7":
+		case "8":
+		case "9":
+			factorbuffer+=input.charAt(i)
+			break;
                 case "[":
                     charnamebuffer=""
                     bracket=true;
