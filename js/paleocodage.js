@@ -168,6 +168,7 @@ function createOpenFont(){
 	});
     for(code in paleocodelist){
         charNameToPaleoCode[charnamelist[code]]=paleocodelist[code]
+	paleoCodeToCharName[paleocodelist[code]]=charnamelist[code]
     }
 	console.log(svglist)
 	console.log(codepointlist)
@@ -358,6 +359,7 @@ var curposy=30;
 var startposy=0;
 var startposx=0;
 var charNameToPaleoCode={}
+var paleoCodeToCharName={}
 var strokelength=30;
 var wedgelength=10;
 var multiplier=1.5;
@@ -405,6 +407,11 @@ function simplifyInput(input){
 			input=input.replace(pat,simplification[pat])
 		}
 	}
+	/*for(code in paleoCodeToCharName){
+		if(input.includes(code)){
+			input=input.replace(pat,"["+paleoCodeToCharName[code]+"]")
+		}
+	}*/
 	return input;
 }
 
