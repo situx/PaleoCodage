@@ -348,6 +348,7 @@ function saveTextAsFile(tosave,fileext,filename)
     }, 1000);
 }
 
+var simplification={">(180)a":"!a","<(180)a":"!a",">(180)b":"!b","<(180)b":"!b",">(45)a":"f",">(90)a":"!b"}
 var curposx=30;
 var curposy=30;
 var startposy=0;
@@ -385,6 +386,15 @@ var ctx2height=80
 var ctx3=new opentype.Path();
 var ctx2 = new C2S(ctx2width,ctx2height);
 
+
+function simplifyInput(input){
+	for(pat in simplification){
+		if(input.includes(pat)){
+			input=input.replace(pat,simplification[pat])
+		}
+	}
+	return input;
+}
 
 function paleoCodageToOpenTypePath(paleoCode){
         //ot=true;
