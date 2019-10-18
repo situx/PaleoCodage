@@ -774,6 +774,8 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 		//console.log(ot)
 		if(!onlyhead){
 			if(!ot){
+				canvas.strokeStyle=strokeColor
+				canvas.stroke();
 				canvas.fillStyle = fillColor;
                 		canvas.fill();
 				var insert=[pointarray[pointarray.length-2],pointarray[pointarray.length-1]]
