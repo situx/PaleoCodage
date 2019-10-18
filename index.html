@@ -438,13 +438,20 @@ $("#examples").tablesorter();
 		console.log(e.which)
 		var carpos=e.target.selectionStart
 		var inbracket=false;
+	    	var infactorbracket=false;
 		console.log(carpos)
 		console.log(bracketpositions)
 		for(pos in bracketpositions){
-            if(bracketpositions[pos]["start"]<carpos && (bracketpositions[pos]["end"]>carpos || bracketpositions[pos]["end"]==-1)){
-                inbracket=true;
-                break;
-            }
+            		if(bracketpositions[pos]["start"]<carpos && (bracketpositions[pos]["end"]>carpos || bracketpositions[pos]["end"]==-1)){
+                	inbracket=true;
+                	break;
+            		}
+		}
+	    	for(pos in factorbracketpositions){
+            		if(factorbracketpositions[pos]["start"]<carpos && (factorbracketpositions[pos]["end"]>carpos || factorbracketpositions[pos]["end"]==-1)){
+                	infactorbracket=true;
+                	break;
+            		}
 		}
 		console.log("InBracket: "+inbracket)
 		if(e.which==56 && inbracket){
@@ -452,7 +459,16 @@ $("#examples").tablesorter();
 		}else if(e.which==57 && !inbracket){
 			return false;
 		}
-		if (inbracket || (e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
+	    	if(e.which==56 && infactorbracket){
+			return false;
+		}else if(e.which==57 && !infactorbracket){
+			return false;
+		}
+	    	if(infactorbracket){
+			if(e.key==0 || e.key==1 || e.key==2 || e.key==3 || e.key==4 || e.key==5 || e.key==6 || e.key==7 || e.key==8 || e.key==9 || e.which==57){
+				return true;
+			}
+		}else if (inbracket || (e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
 		|| e.which == 46 || e.which == 49 || e.which == 55 || e.which==56 || e.which==57 || e.which==60 || e.which==8 || e.which == 111 || e.which==163 || e.which==171 || e.which==173 || e.which==110 || (e.which>186 && e.which<192)) {
                 return true;
         }
