@@ -442,7 +442,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
         halfangle=false;
 	rot=0;
         bracketpositions=[]
-        curposy=10;
+        factorbracketpositions=[]
+	curposy=10;
         curposx=10;
 		startposx=10;
 		startposy=10;
