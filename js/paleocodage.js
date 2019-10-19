@@ -364,9 +364,9 @@ function saveTextAsFile(tosave,fileext,filename)
 }
 
 var simplification={">(180)a":"!a","<(180)a":"!a",">(180)b":"!b","<(180)b":"!b",">(45)a":"f",">(90)a":"!b","s:":":s",":!":"!:","::::":";"}
-var operatorToLocalRot={"a":0,"A":0,"b":90,"B":90,"c":45,"C":45,"d":135,"D":135,"e":225,"E":225,"f":315,"F":315,"w":90,"W":90}
-var operatorToPositioning={"a":[0,0],"A":[0,0],"b":[-0.3,0.3],"B":[-0.2,0.3],"c":[0,-0.3],"C":[0,-0.3],"d":[0,0.7],"D":[0,0.7],"e":[1,0.7],"E":[1,0.7],"f":[1,-0.3],"F":[1,-0.3],"w":[0,0.2],"W":[0,0.2]}
-var operatorToScaling={"a":1,"A":1,"b":1,"B":1,"c":1,"C":1,"d":1,"D":1,"e":1,"E":1,"f":1,"F":1,"w":2,"W":2}
+var operatorToLocalRot={"a":0,"A":0,"b":90,"B":90,"c":45,"C":45,"d":135,"D":135,"e":225,"E":225,"f":315,"F":315,"w":90,"W":90,"x":0,"X":0,"y":-90,"Y":-90}
+var operatorToPositioning={"a":[0,0],"A":[0,0],"b":[-0.3,0.3],"B":[-0.2,0.3],"c":[0,-0.3],"C":[0,-0.3],"d":[0,0.7],"D":[0,0.7],"e":[1,0.7],"E":[1,0.7],"f":[1,-0.3],"F":[1,-0.3],"w":[0,0.2],"W":[0,0.2],"x":[0.5,0.5],"X":[0.5,0.5],"y":[0.5,0.5],"Y":[0.5,0.5]}
+var operatorToScaling={"a":1,"A":1,"b":1,"B":1,"c":1,"C":1,"d":1,"D":1,"e":1,"E":1,"f":1,"F":1,"w":2,"W":2,"x":0,"X":0,"y":0,"Y":0}
 var curposx=30;
 var curposy=30;
 var startposy=0;
@@ -540,6 +540,14 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 						if(!recursive){mirror=false;rot=0;}else{mirror=!mirror;}
                     }
                     break;
+				case "x":
+				case "X":
+					drawSeal(curposx,curposy,ctx,true,isuppercase,false,false,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+					break;
+				case "y":
+				case "Y":
+					drawSeal(curposx,curposy,ctx,true,isuppercase,false,true,false,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+					break;
                 case "s":
                     if(bracket==0){
                         smaller=true;
@@ -856,6 +864,49 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				canvas.stroke();
 			}
 		}
+}
+
+function drawSeal(start,starty,canvas,strokeparse,big,keepconfig,half,filled,localrot,localmov,localscale){
+	var seallength=wedgelength
+	if(mirror){
+		localrot+=180
+		localrot=localrot%360
+		start+=lineLength+wedgelength
+	}
+	if(rot!=0){
+		localrot+=rot;
+	}
+	console.log(start+" - "+starty)
+	if(localmov){
+		start+=localmov[0]*seallength
+		starty+=localmov[1]*seallength
+	}
+	if(smaller){
+		seallength/=2;
+	}
+	if(big){
+		seallength*=1.5;
+	}
+	console.log(start+" - "+starty)
+	if(half){
+		canvas.arc(start, starty, seallength, toRadians(localrot), toRadians(localrot)+Math.PI, false);
+		var startcirc = Math.cos(toRadians(localrot)) * seallength;
+		var endcirc = Math.cos(toRadians(localrot)+Math.PI) * seallength;
+		canvas.moveTo(start+startcirc,starty+startcirc);
+        canvas.lineTo(start+endcirc,starty+endcirc);
+        canvas.lineTo(start,starty);
+		canvas.stroke();
+	}else{
+		canvas.arc(start,starty,seallength,0,2*Math.PI,false);
+		canvas.strokeStyle = strokeColor;
+		canvas.stroke();
+	}
+	if(filled){
+		canvas.fillStyle = fillColor;
+		canvas.fill();
+	}
+    canvas.strokeStyle = strokeColor;
+    canvas.stroke();
 }
 
 function clearCanvas(strokeParser){

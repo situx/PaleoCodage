@@ -109,7 +109,13 @@ Tutorial:
 <button id="E" onClick="showCharacter('E')">Big (E)</button><button id="se" onClick="showCharacter('se')">Small (se)</button></td></tr>
 <tr><td><b>f</b> <button id="diagonal4" onClick="showCharacter('f')">Diagonal Stroke4 (f)</button>
 <button id="F" onClick="showCharacter('F')">Big (F)</button><button id="sf" onClick="showCharacter('sf')">Small (sf)</button></td></tr>
-<tr><td><b>w</b> <button id="wedge" onClick="showCharacter('w')">Winkelhaken (w)</button><button id="F" onClick="showCharacter('W')">Big (W)</button><button id="sw" onClick="showCharacter('sw')">Small (sw)</button></td></tr><tr><td><b>-</b> right of the current stroke passing through other strokes</td></tr>
+<tr><td><b>w</b> <button id="wedge" onClick="showCharacter('w')">Winkelhaken (w)</button><button id="W" onClick="showCharacter('W')">Big (W)</button>
+<button id="sw" onClick="showCharacter('sw')">Small (sw)</button></td></tr>
+<tr><td><b>x</b> <button id="seal" onClick="showCharacter('x')">Seal (x)</button><button id="X" onClick="showCharacter('X')">Big (X)</button>
+<button id="sx" onClick="showCharacter('sx')">Small (sx)</button></td></tr>
+<tr><td><b>y</b> <button id="sealhalf" onClick="showCharacter('y')">Seal (Half) (y)</button><button id="Y" onClick="showCharacter('Y')">Big (Y)</button>
+<button id="sy" onClick="showCharacter('sy')">Small (sy)</button></td></tr>
+<tr><td><b>-</b> right of the current stroke passing through other strokes</td></tr>
 <tr><td><b>_</b> right of the current stroke NOT passing through other strokes</td></tr>
 <tr><td><b>:</b> under the current stroke passing through other strokes</td></tr>
 <tr><td><b>;</b> under the current stroke NOT passing through other strokes</td></tr>
@@ -474,8 +480,9 @@ $("#examples").tablesorter();
 			if(e.key==0 || e.key==1 || e.key==2 || e.key==3 || e.key==4 || e.which==8 || e.key==5 || (e.which>36 && e.which<41) || e.key==6 || e.key==7 || e.key==8 || e.key==9 || e.which==57){
 				return true;
 			}			
-		}else if (inbracket || (e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
-		|| e.which == 46 || e.which == 49 || e.which == 55 || e.which==56 || e.which==57 || e.which==60 || e.which==8 || e.which == 111 || e.which==163 || e.which==171 || e.which==173 || e.which==110 || (e.which>186 && e.which<192)) {
+		}else if (inbracket || (e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 88 || e.which == 89 ||  e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
+		|| e.which == 46 || e.which == 49 || e.which == 55 || e.which==56 || e.which==57 || e.which==60 || e.which==8 || e.which == 111 || e.which==163 
+		|| e.which==171 || e.which==173 || e.which==110 || (e.which>186 && e.which<192)) {
                 return true;
         }
         return false;
