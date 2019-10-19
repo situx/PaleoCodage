@@ -206,8 +206,8 @@ function createOpenFont(){
         var x = 50;
         var y = 120;
         var fontSize = 72;
-		console.log(strokeColor+" - "+fillColor)
-		console.log(ctxx)
+		//console.log(strokeColor+" - "+fillColor)
+		//console.log(ctxx)
         glyph.draw(ctxx, x, y, fontSize);
         glyph.drawPoints(ctxx, x, y, fontSize);
         glyph.drawMetrics(ctxx, x, y, fontSize);
@@ -504,8 +504,10 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     if(bracket==0){
 						scalemultiplier=1
 						scalemultiplierForStrokeLength=1
+						console.log(curposx+" - "+curposy)
 						drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead);
 						if(!recursiverotation){
+                            console.log(curposx+" - "+curposy)
 							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead);
 							if(svgonly){
 								scalemultiplier=15
@@ -514,6 +516,10 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 							}
 							ot=true; mirror=!mirror;
 							drawWedgeGeneric(curposx,curposy,ctx3,true,isuppercase,recursive,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead);
+                            if(svgonly){
+                                scalemultiplier=1
+								scalemultiplierForStrokeLength=scalemultiplier
+                            }
 							ot=false;
 						}
 						if(!recursive){mirror=false;rot=0;}else{mirror=!mirror;}
@@ -725,7 +731,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
         if(strokeparse==false)
             curposx+=10
 		pointarray=[]
-		console.log(big)
+		//console.log(big)
 		if(mirror){
 			localrot+=180
 			localrot=localrot%360
@@ -737,13 +743,13 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 		if(big){
 			length=multiplier*scalemultiplierForStrokeLength*strokelength*localscale;
 			if(localmov){
-				console.log(localmov[0])
+				/*console.log(localmov[0])
 				console.log(length)
 				console.log(localmov[0]*length)
-				console.log(start)
+				console.log(start)*/
 				start+=localmov[0]*length
 				starty+=localmov[1]*length
-				console.log(start)
+				//console.log(start)
 			}
 			pointarray=[{"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier},
 						   {"x":start+5*scalemultiplier, "y":starty+10*scalemultiplier},
