@@ -110,18 +110,31 @@ function changeColors(colors){
 	changeFillColor(colors.split(";")[1]);
 	document.getElementById("strokeColor").value=colors.split(";")[0]
 	document.getElementById("fillColor").value=colors.split(";")[1]
+	var paths = document.querySelectorAll("path");
+	for (i = 0; i < paths.length; ++i) {
+		paths[i].setAttribute('stroke', colors.split(";")[1]);
+		paths[i].setAttribute('fill', colors.split(";")[1]);
+	}
 }
 
-function changeStrokeColor(color){
+function changeStrokeColor(color,input){
 	strokeColor=color; 
 	console.log(color)
-	strokeParser(document.getElementById('canvasinput').value,false,false)
+	strokeParser(input,false,false)
+	var paths = document.querySelectorAll("path");
+	for (i = 0; i < paths.length; ++i) {
+		paths[i].setAttribute('stroke', strokeColor);
+	}
 }
 
-function changeFillColor(color){
+function changeFillColor(color,input){
 	fillColor=color; 
 	console.log(color)
-	strokeParser(document.getElementById('canvasinput').value,false,false)
+	strokeParser(input,false,false)
+	var paths = document.querySelectorAll("path");
+	for (i = 0; i < paths.length; ++i) {
+		paths[i].setAttribute('fill', fillColor);
+	}
 }
 
   function convertToSubstitution(str,n){
