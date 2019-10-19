@@ -810,13 +810,14 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 					canvas.stroke();
 				}
 			}else{
+                console.log(scalemultiplier)
 				var rotpoints2=rotateWedge([
 				{"x":start, "y":starty+lineLength*scalemultiplier-opentypestrokeWidth},
 				{"x":start+length, "y":starty+lineLength*scalemultiplier-opentypestrokeWidth},
 				{"x":start+length, "y":starty+lineLength*scalemultiplier+opentypestrokeWidth},
 				{"x":start, "y":starty+lineLength*scalemultiplier+opentypestrokeWidth},	
 				{"x":start, "y":starty+lineLength*scalemultiplier-opentypestrokeWidth}				
-				],rot*-1,centerwholewedge)			
+				],localrot,centerwholewedge)			
 				//console.log(rotpoints)		
 			    canvas.moveTo(rotpoints2[0]["x"],rotpoints2[0]["y"]);
                 canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);
