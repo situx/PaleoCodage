@@ -90,7 +90,7 @@ function htmlTableToJSON(filename,ext){
 Your browser does not support the HTML5 canvas tag.</canvas>
 <img id="canvasImg"/>
 <br/>
-Stroke Order Input: <input type="text" id="canvasinput" onKeyUp="strokeParser(document.getElementById('canvasinput').value)"/><br/><button id="clearcanvas" onClick="clearCanvas()">Clear Canvas</button><button id="refreshsvg" onClick="createOpenFont()">Refresh SVG</button><br/>
+Stroke Order Input: <input type="text" id="canvasinput" onKeyUp="strokeParser(document.getElementById('canvasinput').value)"/><br/><button id="clearcanvas" onClick="clearCanvas()">Clear Canvas</button><button id="refreshsvg" onClick="createOpenFont()">Refresh SVG</button><button id="simplify" onclick="simplifyPaleoCode(document.getElementById('canvasinput').value)">Simplify</button><br/>
 Style: <select id="styleselect" onchange='changeColors(document.getElementById("styleselect").value)'><option value="#000000;#000000" selected="selected">Traditional</option><option value="#000000;#FFFFFF">Variant</option></select>
 Stroke Color: <input type="color" id="strokeColor" onchange='changeStrokeColor(document.getElementById("strokeColor").value)'/>Fill Color: <input type="color" id="fillColor" onchange='changeFillColor(document.getElementById("fillColor").value)'/><br/>
 <button id="downloadImage" onClick="to_image()">Download Image</button><button id="downloadSVG" onClick="to_svg()">Download SVG</button><button id="createFont" onClick="createFont()">Create Font</button><br/>
@@ -427,6 +427,10 @@ which is demonstrated above.</p>
 <div id="graphDiv" width="1000" height="600"></div>
 <div id="jsonFont"></div>
 <script>
+	function simplifyPaleoCode(input){
+		var result=simplifyInput($('#canvasinput').val())
+		document.getElementById('canvasinput').value=result
+	}
 $(function() {
   var count = $('#examples tr').length;
 	$('#amount').html((count-1)+" characters");
@@ -438,21 +442,39 @@ $("#examples").tablesorter();
 		console.log(e.which)
 		var carpos=e.target.selectionStart
 		var inbracket=false;
+	    	var infactorbracket=false;
 		console.log(carpos)
 		console.log(bracketpositions)
+	    	console.log(factorbracketpositions)
 		for(pos in bracketpositions){
-            if(bracketpositions[pos]["start"]<carpos && (bracketpositions[pos]["end"]>carpos || bracketpositions[pos]["end"]==-1)){
-                inbracket=true;
-                break;
-            }
+            		if(bracketpositions[pos]["start"]<carpos && (bracketpositions[pos]["end"]>carpos || bracketpositions[pos]["end"]==-1)){
+                	inbracket=true;
+                	break;
+            		}
+		}
+	    	for(pos in factorbracketpositions){
+            		if(factorbracketpositions[pos]["start"]<carpos && (factorbracketpositions[pos]["end"]>carpos || factorbracketpositions[pos]["end"]==-1)){
+                	infactorbracket=true;
+                	break;
+            		}
 		}
 		console.log("InBracket: "+inbracket)
-		if(e.which==56 && inbracket){
+		if(e.which==56 && e.key=='[' && inbracket){
 			return false;
-		}else if(e.which==57 && !inbracket){
+		}else if(e.which==57 && e.key==']' && !inbracket){
 			return false;
 		}
-		if (inbracket || (e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
+	    	if(e.which==56 && e.key=='(' && infactorbracket){
+			return false;
+		}else if(e.which==57 && e.key==')' && !infactorbracket){
+			return false;
+		}
+	    	console.log("InFactorBracket: "+infactorbracket)
+	    	if(infactorbracket){
+			if(e.key==0 || e.key==1 || e.key==2 || e.key==3 || e.key==4 || e.which==8 || e.key==5 || (e.which>36 && e.which<41) || e.key==6 || e.key==7 || e.key==8 || e.key==9 || e.which==57){
+				return true;
+			}			
+		}else if (inbracket || (e.which >64 && e.which < 71) || (e.which>36 && e.which<41) || e.which == 83 || e.which == 32 || e.which == 87 || e.which == 226 || e.which == 219 
 		|| e.which == 46 || e.which == 49 || e.which == 55 || e.which==56 || e.which==57 || e.which==60 || e.which==8 || e.which == 111 || e.which==163 || e.which==171 || e.which==173 || e.which==110 || (e.which>186 && e.which<192)) {
                 return true;
         }
