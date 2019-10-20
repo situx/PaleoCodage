@@ -408,6 +408,8 @@ var halfangle=false;
 var opentypestrokeWidth=5
 var ot=false;
 var scaleop=1;
+var horizontalspaceop=0;
+var verticalspaceop=0;
 var font;
 var rot=0;
 var mirror=false;
@@ -490,6 +492,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
         factorbracketpositions=[]
 		factorbuffer=""
         scaleop=1;
+        verticalspaceop=1;
+        horizontalspaceop=1;
 		curposy=10;
         curposx=10;
 		startposx=10;
@@ -519,6 +523,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 				case "w":
 				case "W":
                     if(bracket==0){
+                        horizontalspaceop=0;
+                        verticalspaceop=0;
 						scalemultiplier=1
 						scalemultiplierForStrokeLength=1
 						console.log(curposx+" - "+curposy)
@@ -558,7 +564,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                 case "-":
                     scaleop=1
                     if(bracket==0){
-                        curposx+=10*scalemultiplier;
+                        curposx+=(10*scalemultiplier)*horizontalspaceop;
 						curposy=startposy*scalemultiplier;
                     }
                         break;
@@ -570,8 +576,9 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
                 case ":": 
                         scaleop=1;
+                        console.log(verticalspaceop)
                         if(bracket==0){
-                            curposy+=7*scalemultiplier;
+                            curposy+=(7*scalemultiplier)*verticalspaceop;
                         }
                         break;
                 case "!": //mirror character
@@ -676,14 +683,29 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                             scaleop=1;
                             scaleop+=value/100;
                             break;
-					}
+                        case ":":
+                            verticalspaceop=0;
+                            verticalspaceop+=value;
+                            console.log(verticalspaceop)
+                            console.log((7*scalemultiplier)*verticalspaceop)
+                            curposy+=(7*scalemultiplier)*verticalspaceop;
+                            break;
+                        case "-":
+                            horizontalspaceop=0;
+                            horizontalspaceop+=value;
+                            console.log(horizontalspaceop)
+                            console.log((10*scalemultiplier)*horizontalspaceop)
+                            curposx+=(10*scalemultiplier)*horizontalspaceop;
+                            curposy=startposy*scalemultiplier;
+                            break;                        
+                    }
 					console.log(rot)
 					factorbracketpositions[factorbracketpositions.length-1]["end"]=i+1;
                     roundbracket=false;
                     break;
-                        case "*":
-                            scaleop+=0.25
-                            break;
+                case "*":
+                        scaleop+=0.25
+                        break;
 		case "0":
 		case "1":
 		case "2":
