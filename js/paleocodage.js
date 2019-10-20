@@ -619,12 +619,12 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         curposx+=7*scalemultiplier;
                     }
                         break;
-				case "<":
+				case ">":
                     if(bracket==0){
 				        rot-=rotationconstant;
                     }
                         break;
-				case ">": 
+				case "<": 
 						if(bracket==0){
                             rot+=rotationconstant;
                         }
@@ -666,10 +666,10 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 					console.log(value)
 					rot=0
 					switch(lastoperator){
-						case ">":
+						case "<":
 							rot+=value
 							break;
-						case "<":
+						case ">":
 							rot-=value
 							break;
                         case "*":
