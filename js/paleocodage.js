@@ -564,7 +564,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                 case "-":
                     scaleop=1
                     if(bracket==0){
-                        curposx+=(10*scalemultiplier)*horizontalspaceop;
+                        curposx+=(10*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
 						curposy=startposy*scalemultiplier;
                     }
                         break;
@@ -578,7 +578,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         scaleop=1;
                         console.log(verticalspaceop)
                         if(bracket==0){
-                            curposy+=(7*scalemultiplier)*verticalspaceop;
+                            curposy+=(7*scalemultiplier)*(verticalspaceop==0?1:verticalspaceop);
                         }
                         break;
                 case "!": //mirror character
