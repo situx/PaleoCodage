@@ -587,6 +587,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         }
                         break;
                 case "'":
+                    scaleop=1
                     if(bracket==0){
                         curposy=10*scalemultiplier;
                     }
