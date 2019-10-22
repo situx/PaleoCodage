@@ -48,7 +48,7 @@ function rotateHead(points,angle,center){
 function rotateWedge(points,angle,center){
 	var result=[]
 	var lastcalc=0;
-	console.log(points)
+	//console.log(points)
 	var nonewcenter=false;
 	if(center){
 		nonewcenter=true;
@@ -105,15 +105,15 @@ function getCenter(origin,endPoint) {
 }
 
 
-function changeColors(colors){
-	changeStrokeColor(colors.split(";")[0]);
-	changeFillColor(colors.split(";")[1]);
+function changeColors(colors,input){
+	//changeStrokeColor(colors.split(";")[0],input);
+	//changeFillColor(colors.split(";")[1],input);
 	document.getElementById("strokeColor").value=colors.split(";")[0]
 	document.getElementById("fillColor").value=colors.split(";")[1]
 	var paths = document.querySelectorAll("path");
 	for (i = 0; i < paths.length; ++i) {
-		paths[i].setAttribute('stroke', colors.split(";")[1]);
 		paths[i].setAttribute('fill', colors.split(";")[1]);
+		paths[i].setAttribute('stroke', colors.split(";")[1]);
 	}
 }
 
@@ -369,12 +369,15 @@ var operatorToPositioning={"a":[0,0],"A":[0,0],"b":[-0.3,0.3],"B":[-0.2,0.3],"c"
 var operatorToScaling={"a":1,"A":1,"b":1,"B":1,"c":1,"C":1,"d":1,"D":1,"e":1,"E":1,"f":1,"F":1,"w":2,"W":2,"x":0,"X":0,"y":0,"Y":0}
 var curposx=30;
 var curposy=30;
+var currenthead=[{"type":"M","points":{"x":-5,"y":10}},{"type":"L","points":{"x":5,"y":10}},{"type":"L","points":{"x":0,"y":20}},{"type":"L","points":{"x":-5,"y":10}}]
+var currentstroke=[{"type":"M","points":{"x":0,"y":0}},{"type":"L","points":{"x":0,"y":strokelength-wedgelength}}]
 var startposy=0;
 var startposx=0;
 var charNameToPaleoCode={}
 var paleoCodeToCharName={}
 var strokelength=30;
 var wedgelength=10;
+var headdraw=[];
 var multiplier=1.5;
 var roundbracket=0
 var bracket=false
@@ -418,6 +421,16 @@ var ctx2height=80
 var ctx3=new opentype.Path();
 var ctx2 = new C2S(ctx2width,ctx2height);
 
+
+function scalePointArray(pointarray,scalemultiplier,start,starty){
+	for(p in pointarray){
+		pointarray[p]["x"]*=scalemultiplier
+		pointarray[p]["y"]*=scalemultiplier
+		pointarray[p]["x"]+=start
+		pointarray[p]["y"]+=starty
+	}
+	return pointarray;
+}
 
 function simplifyInput(input){
 	for(pat in simplification){
@@ -480,6 +493,7 @@ var recursiverotation=false;
 function strokeParser(input,svgonly,recursive,rotationcheck){
     var ctx = document.getElementById("myCanvas").getContext("2d");
     console.log("Input: "+input)
+	//console.log(JSON.stringify(currenthead))
 	if(!recursive){
         clearCanvas(true);
         smaller=false;
@@ -772,11 +786,42 @@ function drawHead(points,canvas){
 		minybbox=Math.min(points[0]["x"],points[1]["x"],points[2]["x"],points[3]["x"],minybbox)
 		minxbbox=Math.min(points[0]["y"],points[1]["y"],points[2]["y"],points[3]["y"],minxbbox)
 	}else{
-		canvas.moveTo(points[0]["x"], points[0]["y"]); // start at top left corner of canvas
+		for(drawit in points){
+			if(points[drawit]["type"]=="M"){
+				canvas.moveTo(points[drawit]["points"]["x"], points[drawit]["points"]["y"]);
+			}else{
+				canvas.lineTo(points[drawit]["points"]["x"], points[drawit]["points"]["y"]);
+			}
+		}
+		/*canvas.moveTo(points[0]["x"], points[0]["y"]); // start at top left corner of canvas
 		canvas.lineTo(points[1]["x"], points[1]["y"]); // go 200px to right (x), straight line from 0 to 0
 		canvas.lineTo(points[2]["x"], points[2]["y"]); // go to horizontal 100 (x) and vertical 200 (y)
-		canvas.lineTo(points[3]["x"], points[3]["y"]); 
+		canvas.lineTo(points[3]["x"], points[3]["y"]); */
 	}
+}
+
+function getCoordinatesFromSVGPath(svgpath){
+	result=[]
+	points=svgpath.split(" ")
+	newresult=null
+	for(point in points){
+		points[point]=points[point].trim();
+		if(points[point].startsWith("Z")){
+			continue;
+		}
+		if(points[point].startsWith("M") || points[point].startsWith("L")){
+			if(newresult!=null){
+				result.push(newresult)
+			}
+			newresult={type:points[point].substring(0,1),point:{"x":points[point].substring(1)}}
+		}else{
+			newresult["point"]["y"]=points[point]
+		}
+		console.log(points[point])
+		console.log(points[point].split(" "))
+	}
+	result.push(newresult)
+	return result;
 }
 
 function drawHeadArray(points,canvas){
@@ -820,41 +865,68 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 					starty+=localmov[1]*length
 					//console.log(start)
 				}
-				pointarray=[{"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier},
-						   {"x":start+5*scalemultiplier, "y":starty+10*scalemultiplier},
-						   {"x":start, "y":starty+20*scalemultiplier},
-						   {"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier},
-						   {"x":start, "y":starty+lineLength*scalemultiplier},
-						   {"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop}]
+				pointarray=[]
+				for(point in currenthead){
+					pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
+				}
+				pointarray=scalePointArray(pointarray,scalemultiplier,start,starty)
+				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier})
+				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop})
 			}else if(smaller){
 				length=0.5*scalemultiplierForStrokeLength*strokelength*localscale;
 				if(localmov){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
 				}
-						pointarray=[{"x":start-5*scalemultiplier, "y":starty+15*scalemultiplier},
+				pointarray=[]
+				for(point in currenthead){
+					pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
+				}
+				pointarray=scalePointArray(pointarray,scalemultiplier,start,starty)
+				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier})
+				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop})
+				/*		pointarray=[{"x":start-5*scalemultiplier, "y":starty+15*scalemultiplier},
 						   {"x":start+5*scalemultiplier, "y":starty+15*scalemultiplier},
 						   {"x":start, "y":starty+20*scalemultiplier},
 						   {"x":start-5*scalemultiplier, "y":starty+15*scalemultiplier},
 						   {"x":start, "y":starty+lineLength*scalemultiplier},
-						   {"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop}]
+						   {"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop}]*/
 			}else{
 				length=scalemultiplierForStrokeLength*strokelength*localscale;
 				if(localmov){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
 				}
-				pointarray=[{"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier},
+				//console.log(JSON.stringify(currenthead))
+				pointarray=[]
+				for(point in currenthead){
+					//console.log(currenthead[point]["points"])
+					pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
+				}
+				//console.log(JSON.stringify(pointarray))
+				pointarray=scalePointArray(pointarray,scalemultiplier,start,starty)
+				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier})
+				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop})
+				
+				//console.log(JSON.stringify(pointarray))
+				/*pointarray=[{"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier},
 						   {"x":start+5*scalemultiplier, "y":starty+10*scalemultiplier},
 						   {"x":start, "y":starty+20*scalemultiplier},
 						   {"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier},
 						   {"x":start, "y":starty+lineLength*scalemultiplier},
-						   {"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop}]
+						   {"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop}]*/
 			}
 			var centerwholewedge=getCenterOfWedge(pointarray)
 			rotpoints=rotateHead(pointarray,localrot*-1,centerwholewedge)
+			headdraw=[]
+			for(rot in rotpoints){
+				if(rot<currenthead.length)
+					headdraw.push({"type":currenthead[rot]["type"],"points":rotpoints[rot]})
+			}
 		}
-		drawHead(rotpoints,canvas)
+		//console.log(headdraw)
+		drawHead(headdraw,canvas)
+		//canvas.closePath()
 		//console.log(ot)
 		if(!onlyhead){
 			if(!ot){
@@ -863,10 +935,13 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				canvas.strokeStyle=strokeColor
 				canvas.stroke();
 				if(!uselastresult){
+					//currentstroke
 					var insert=[pointarray[pointarray.length-2],pointarray[pointarray.length-1]]
-					rotpoints2=rotateWedge(insert,localrot*-1,centerwholewedge)		
+					rotpoints2=rotateWedge(insert,localrot*-1,centerwholewedge)
 				}				
 				//console.log(rotpoints2)
+				//console.log(rotpoints2[0]["x"]+" - "+rotpoints2[0]["y"])
+				//console.log(rotpoints2[1]["x"]+" - "+rotpoints2[1]["y"])
 				//console.log(centerwholewedge)
 				if(recursiverotation){
 					maxxbbox=Math.max(rotpoints2[0]["x"],rotpoints2[1]["x"],maxxbbox)
