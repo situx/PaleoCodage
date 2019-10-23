@@ -695,7 +695,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 							rot-=value
 							break;
                         case "*":
-                            scaleop=1;
+                            scaleop=0;
                             scaleop+=value/100;
                             break;
                         case ":":
@@ -718,7 +718,10 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 					factorbracketpositions[factorbracketpositions.length-1]["end"]=i+1;
                     roundbracket=false;
                     break;
-                case "*":
+                case "l":
+                        scaleop-=0.25
+                        break;
+				case "L":
                         scaleop+=0.25
                         break;
 		case "0":
