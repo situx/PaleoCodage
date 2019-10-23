@@ -790,10 +790,10 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 
 function drawHead(points,canvas){
 	if(recursiverotation){
-		maxybbox=Math.max(points[0]["x"],points[1]["x"],points[2]["x"],points[3]["x"],maxybbox)
-		maxxbbox=Math.max(points[0]["y"],points[1]["y"],points[2]["y"],points[3]["y"],maxxbbox)
-		minybbox=Math.min(points[0]["x"],points[1]["x"],points[2]["x"],points[3]["x"],minybbox)
-		minxbbox=Math.min(points[0]["y"],points[1]["y"],points[2]["y"],points[3]["y"],minxbbox)
+		maxybbox=Math.max(points[0]["points"]["y"],points[1]["points"]["y"],points[2]["points"]["y"],points[3]["points"]["y"],maxybbox)
+		maxxbbox=Math.max(points[0]["points"]["x"],points[1]["points"]["x"],points[2]["points"]["x"],points[3]["points"]["x"],maxxbbox)
+		minybbox=Math.min(points[0]["points"]["y"],points[1]["points"]["y"],points[2]["points"]["y"],points[3]["points"]["y"],minybbox)
+		minxbbox=Math.min(points[0]["points"]["x"],points[1]["points"]["x"],points[2]["points"]["x"],points[3]["points"]["x"],minxbbox)
 	}else{
 		for(drawit in points){
 			if(points[drawit]["type"]=="M"){
