@@ -537,6 +537,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 				case "w":
 				case "W":
                     if(bracket==0){
+                        console.log(rot)
                         horizontalspaceop=0;
                         verticalspaceop=0;
 						scalemultiplier=1
@@ -558,8 +559,11 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 								scalemultiplierForStrokeLength=scalemultiplier
                             }
 							ot=false;
-						}
-						if(!recursive){mirror=false;rot=0;}else{mirror=!mirror;}
+                            if(!recursive){mirror=false;rot=0;}else{mirror=!mirror;}
+                            
+                        //}else{
+                        }
+
                     }
                     break;
 				case "x":
@@ -576,8 +580,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     }
                         break;
                 case "-":
-                    scaleop=1
                     if(bracket==0){
+                        scaleop=1;
                         curposx+=(10*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
 						curposy=startposy*scalemultiplier;
                     }
@@ -589,9 +593,9 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     }
                         break;
                 case ":": 
-                        scaleop=1;
                         console.log(verticalspaceop)
                         if(bracket==0){
+                            scaleop=1;
                             curposy+=(7*scalemultiplier)*(verticalspaceop==0?1:verticalspaceop);
                         }
                         break;
@@ -601,8 +605,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         }
                         break;
                 case "'":
-                    scaleop=1
                     if(bracket==0){
+                        scaleop=1;
                         curposy=10*scalemultiplier;
                     }
                         break;
@@ -613,13 +617,14 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
 				case "~": 
                     if(bracket==0){
+                        scaleop=1;
                         curposx-=10*scalemultiplier;
                         curposy=10*scalemultiplier;
                     }
                         break;
                 case "/": 
-                    scaleop=1;
                     if(bracket==0){
+                        scaleop=1;
                         curposy+=3.5*scalemultiplier;
                     }
                     break;
@@ -629,14 +634,14 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     }
                         break;
                 case ";":
-                    scaleop=1;
                     if(bracket==0){
+                        scaleop=1;
                         curposy+=strokelength;
                     }
                         break;
                 case ".": 
-                    scaleop=1;
                     if(bracket==0){
+                        scaleop=1;
                         curposy+=7*scalemultiplier;
                         curposx+=7*scalemultiplier;
                     }
@@ -664,15 +669,15 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         }
                         break;
                 case "_": 
-                    scaleop=1;
                     if(bracket==0){
+                        scaleop=1;
                         curposx+=strokelength;
                         curposy=startposy*scalemultiplier;
                     }
                         break;
                 case " ": 
-                    scaleop=1;
                     if(bracket==0){
+                        scaleop=1;
                         curposx+=1.5*strokelength*scalemultiplier;
                     }
                         break;
@@ -719,7 +724,9 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     roundbracket=false;
                     break;
                 case "*":
+                    if(bracket==0){
                         scaleop+=0.25
+                    }
                         break;
 		case "0":
 		case "1":
@@ -742,7 +749,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     bracket=false;
                     if(charnamebuffer in charNameToPaleoCode){
 						if(rot!=0){
-							strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true,true)
+							//strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true,true)
 							strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true,false)
 						}else{
 							strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
@@ -751,6 +758,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     bracketpositions[bracketpositions.length-1]["end"]=i+1;
 					smaller=false;
 					mirror=false;
+                    rot=0;
 					halfangle=false;
 					startposx=10;
 					startposy=10;
@@ -842,15 +850,19 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
         if(strokeparse==false)
             curposx+=10
 		pointarray=[]
-		//console.log(big)
+		console.log(localrot)
+        console.log(rot)
 		if(mirror){
 			localrot+=180
-			localrot=localrot%360
+			localrot=parseInt(localrot)%360
 			start+=lineLength+wedgelength
+			console.log(localrot)
 		}
 		if(rot!=0){
-			localrot+=rot;
+			localrot=parseInt(localrot)+parseInt(rot);
 		}
+		console.log(rot)
+		console.log(localrot)
 		if(!keepconfig && smaller)
 			smaller=false;
 		if(!uselastresult || ot){
@@ -919,9 +931,9 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 			var centerwholewedge=getCenterOfWedge(pointarray)
 			rotpoints=rotateHead(pointarray,localrot*-1,centerwholewedge)
 			headdraw=[]
-			for(rot in rotpoints){
-				if(rot<currenthead.length)
-					headdraw.push({"type":currenthead[rot]["type"],"points":rotpoints[rot]})
+			for(rott in rotpoints){
+				if(rott<currenthead.length)
+					headdraw.push({"type":currenthead[rott]["type"],"points":rotpoints[rott]})
 			}
 		}
 		//console.log(headdraw)
