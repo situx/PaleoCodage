@@ -364,7 +364,7 @@ function saveTextAsFile(tosave,fileext,filename)
 }
 
 var simplification={">(180)a":"!a","<(180)a":"!a",">(180)b":"!b","<(180)b":"!b",">(45)a":"f",">(90)a":"!b","s:":":s",":!":"!:","::::":";"}
-var operatorToLocalRot={"a":0,"A":0,"b":90,"B":90,"c":45,"C":45,"d":135,"D":135,"e":225,"E":225,"f":315,"F":315,"w":90,"W":90,"x":0,"X":0,"y":-90,"Y":-90}
+var operatorToLocalRot={"a":0,"A":0,"b":90,"B":90,"c":45,"C":45,"d":135,"D":135,"e":225,"E":225,"f":315,"F":315,"w":270,"W":270,"x":0,"X":0,"y":-90,"Y":-90}
 var operatorToPositioning={"a":[0,0],"A":[0,0],"b":[-0.3,0.3],"B":[-0.2,0.3],"c":[0,-0.3],"C":[0,-0.3],"d":[0,0.7],"D":[0,0.7],"e":[1,0.7],"E":[1,0.7],"f":[1,-0.3],"F":[1,-0.3],"w":[0,0.2],"W":[0,0.2],"x":[0.5,0.5],"X":[0.5,0.5],"y":[0.5,0.5],"Y":[0.5,0.5]}
 var operatorToScaling={"a":1,"A":1,"b":1,"B":1,"c":1,"C":1,"d":1,"D":1,"e":1,"E":1,"f":1,"F":1,"w":2,"W":2,"x":0,"X":0,"y":0,"Y":0}
 var curposx=30;
@@ -722,6 +722,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 					console.log(rot)
 					factorbracketpositions[factorbracketpositions.length-1]["end"]=i+1;
                     roundbracket=false;
+		    factorbuffer=""
                     break;
                 case "*":
                     if(bracket==0){
