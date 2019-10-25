@@ -28,13 +28,13 @@ var recursiverotation=false;
 var rotpoints;
 var rotpoints2;
 var maxybbox=-1;
-var maxypointbbox;
+var maxyglobalbbox;
 var maxxbbox=-1;
-var maxxpointbbox;
+var maxxglobalbbox;
 var minybbox=1000000;
-var minypointbbox;
+var minyglobalbbox;
 var minxbbox=1000000;
-var minxpointbbox;
+var minxglobalbbox;
 var paleocodes=[]
 var scalemultiplier=1
 var scalemultiplierForStrokeLength=1
@@ -498,6 +498,7 @@ function paleoCodageToSVG(paleoCode,index){
 	//ctx2.scale(10,10);
 	console.log("PaleoCode: "+paleoCode)
 	svghtml=ctx2.getSerializedSvg(true);
+	console.log(svghtml)
     if(!isNaN(index)){
         console.log(index+" - "+svghtml)
         //$('.svg :nth-child('+index+')' ).html(svghtml)
@@ -510,6 +511,8 @@ function paleoCodageToSVG(paleoCode,index){
        // var container=elem.createChild('div')
         //container.innerHTML=svghtml
         elem.html(svghtml)
+		elem.children().find(">:first-child").attr("width",(maxxglobalbbox-minxglobalbbox));
+		elem.children().find(">:first-child").attr("height",(maxyglobalbbox-minyglobalbbox));
         //$(dom).appendTo('.svg:nth-child('+index+')')
         //document.getElementById('svg').appendChild(dom.documentElement);
 	}
@@ -542,6 +545,10 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
         scaleop=1;
         verticalspaceop=1;
         horizontalspaceop=1;
+		maxxglobalbbox=0
+		minxglobalbbox=1000000
+		maxyglobalbbox=0
+		minyglobalbbox=1000000
 		curposy=10;
         curposx=30;
 		startposx=30;
@@ -867,6 +874,10 @@ function trimstr(coords,length){
 
 function drawHead(points,canvas){
 	for(drawit in points){
+		maxyglobalbbox=Math.max(points[drawit]["points"]["y"],maxyglobalbbox)
+		maxxglobalbbox=Math.max(points[drawit]["points"]["x"],maxxglobalbbox)
+		minxglobalbbox=Math.min(points[drawit]["points"]["x"],minxglobalbbox)
+		minyglobalbbox=Math.min(points[drawit]["points"]["y"],minyglobalbbox)
 		if(points[drawit]["type"]=="M"){
 			canvas.moveTo(points[drawit]["points"]["x"], points[drawit]["points"]["y"]);
 		}else{
@@ -975,6 +986,10 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 					maxybbox=Math.max(rotpoints2[0]["y"],rotpoints2[1]["y"],maxybbox)
 					minybbox=Math.min(rotpoints2[0]["y"],rotpoints2[1]["y"],minybbox)
 				}else {
+					maxxglobalbbox=Math.max(rotpoints2[0]["x"],rotpoints2[1]["x"],maxxglobalbbox)
+					minxglobalbbox=Math.min(rotpoints2[0]["x"],rotpoints2[1]["x"],minxglobalbbox)
+					maxyglobalbbox=Math.max(rotpoints2[0]["y"],rotpoints2[1]["y"],maxyglobalbbox)
+					minyglobalbbox=Math.min(rotpoints2[0]["y"],rotpoints2[1]["y"],minyglobalbbox)
 					canvas.fillStyle = fillColor;
 					canvas.fill();
 					canvas.strokeStyle=strokeColor
