@@ -473,8 +473,13 @@ console.log("substringgraph")
 						if(similar[paleocodelist[js]]==undefined){
 							similar[paleocodelist[js]]=[]
 						}
-						similar[paleocodelist[js]].push({"charname":charnamelist[js2],"code":paleocodelist[js2]})
-                }
+						similar[paleocodelist[js]][paleocodelist[js]]={"charname":charnamelist[js2],"code":paleocodelist[js2]}
+                }else if(paleocodelist[js2]!=paleocodelist[js] && paleocodelist[js].includes(paleocodelist[js2])){
+						if(similar[paleocodelist[js2]]==undefined){
+							similar[paleocodelist[js2]]=[]
+						}
+						similar[paleocodelist[js2]][paleocodelist[js]]={"charname":charnamelist[js],"code":paleocodelist[js]}
+				}
             }
     }
 	console.log(similar);
@@ -860,7 +865,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 		var output="Similar[0]: "		
 		$('#similarspan').html(trimstr(output,100))
 	}else if(input in similar){
-			var output="Similar["+similar[input].length+"]: "
+			var output="Similar["+Object.keys(similar[input]).length+"]: "
 			for(simchar in similar[input]){
 				output+="<a href=#"+similar[input][simchar]["charname"]+">"+similar[input][simchar]["charname"]+"</a>,"
 			}
