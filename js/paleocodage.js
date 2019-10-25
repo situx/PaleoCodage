@@ -1,4 +1,65 @@
-
+var simplification={">(180)a":"!a","<(180)a":"!a",">(180)b":"!b","<(180)b":"!b",">(45)a":"f",">(90)a":"!b","s:":":s",":!":"!:","::::":";"}
+var operatorToLocalRot={"a":0,"A":0,"b":90,"B":90,"c":45,"C":45,"d":135,"D":135,"e":225,"E":225,"f":315,"F":315,"w":270,"W":270,"x":0,"X":0,"y":-90,"Y":-90}
+var operatorToPositioning={"a":[0,0],"A":[0,0],"b":[0.3,-0.35],"B":[0.4,-0.4],"c":[0.2,-0.65],"C":[0.2,-0.5],"d":[0.2,-0.05],"D":[0.2,-0.3],"e":[0.8,-0.05],"E":[0.4,-0.3],"f":[0.8,-0.65],"F":[0.4,-0.5],"w":[-0.6,-0.4],"W":[-0.55,-0.38],"x":[0.5,0.5],"X":[0.5,0.5],"y":[0.5,0.5],"Y":[0.5,0.5]}
+var operatorToScaling={"a":1,"A":1,"b":1,"B":1,"c":1,"C":1,"d":1,"D":1,"e":1,"E":1,"f":1,"F":1,"w":2,"W":2,"x":0,"X":0,"y":0,"Y":0}
+var curposx=30;
+var curposy=30;
+var currenthead=[{"type":"M","points":{"x":-5,"y":10}},{"type":"L","points":{"x":5,"y":10}},{"type":"L","points":{"x":0,"y":20}},{"type":"L","points":{"x":-5,"y":10}}]
+var currentstroke=[{"type":"M","points":{"x":0,"y":0}},{"type":"L","points":{"x":0,"y":strokelength-wedgelength}}]
+var startposy=0;
+var startposx=0;
+var charNameToPaleoCode={}
+var paleoCodeToCharName={}
+var strokelength=30;
+var wedgelength=10;
+var headdraw=[];
+var multiplier=1.5;
+var roundbracket=0
+var bracket=false
+var globalCenterPoint;
+var rotationconstant=15
+var bracketpositions=[]
+var factorbracketpositions=[]
+var charnamebuffer=""
+var factorbuffer=""
+var smallermultiplier=0.5
+var rotmultiplier=5;
+var recursiverotation=false;
+var rotpoints;
+var rotpoints2;
+var maxybbox=-1;
+var maxypointbbox;
+var maxxbbox=-1;
+var maxxpointbbox;
+var minybbox=1000000;
+var minypointbbox;
+var minxbbox=1000000;
+var minxpointbbox;
+var paleocodes=[]
+var scalemultiplier=1
+var scalemultiplierForStrokeLength=1
+var smaller=false;
+var lastoperator;
+var strokeColor="#000000"
+var fillColor="#000000"
+var lineLength=strokelength-wedgelength
+var mirror=false;
+var halfangle=false;
+var opentypestrokeWidth=5
+var ot=false;
+var scaleop=1;
+var headscaleop=1;
+var horizontalspaceop=0;
+var verticalspaceop=0;
+var font;
+var rot=0;
+//var mirror=false;
+var ctx2width=170
+var ctx2height=80
+var ctx3=new opentype.Path();
+var ctx2 = new C2S(ctx2width,ctx2height);
+var doNotDraw = false;
+var wedgearray=[];
 
 function to_image(){
                 var canvas = document.getElementById("myCanvas");
@@ -25,22 +86,15 @@ function rotateLineClockWise(center, edge, angle) {
     return {"x":xRot,"y":yRot}
 }
 
-function rotate(cx, cy, x, y, angle) {
-    var radians = (Math.PI / 180) * angle,
-        cos = Math.cos(radians),
-        sin = Math.sin(radians),
-        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
-        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
-    return {"x":nx, "y":ny};
-}
-
 function rotateHead(points,angle,center){
 	var result=[]
 	if(!center){
 		center=getCenterHead(points)
 	}
 	for(point in points){
-		result.push(rotateLineClockWise(center, points[point], angle))
+		//result.push(rotateLineClockWise(center, points[point], angle))
+		arr=geometric.pointRotate([points[point]["x"],points[point]["y"]], angle, [center["x"],center["y"]])
+		result.push({"x":arr[0],"y":arr[1]})
 	}
 	return result;
 }
@@ -67,25 +121,44 @@ function rotateWedge(points,angle,center){
 	return result;
 }
 
+function rotateWedgeSVG(points,angle,center){
+	var svgresult=[]
+	console.log(points)
+	var nonewcenter=false;
+	if(center){
+		nonewcenter=true;
+	}
+	for(i=0;i<points.length;i++){
+		begin=points[i-1]
+		end=points[i]
+		if(!nonewcenter){
+			center=getCenter(begin["points"],end["points"])
+		}
+		svgresult.push({"type":end["type"],"points":rotateLineClockWise(center,end["points"],angle)})
+	}
+	return svgresult;
+}
+
 
 function getCenterOfWedge(points){
-	var minx=1000000,minxpoint,maxx=-10000,maxxpoint;
+	var minx=1000000,minxpoint,maxx=-10000,maxxpoint, miny=999999,minypoint, maxy=-999999,maxypoint;
 	for(point in points){
 		if(points[point]["x"]<minx){
 			minx=points[point]["x"]
-			minxpoint=points[point]
 		}
 		if(points[point]["x"]>maxx){
 			maxx=points[point]["x"]
-			maxxpoint=points[point]
+		}
+		if(points[point]["y"]<miny){
+			miny=points[point]["y"]
+		}
+		if(points[point]["y"]>maxy){
+			maxy=points[point]["y"]
 		}
 	}
-	return getCenter(minxpoint,maxxpoint)
-}
+	//console.log("getCenterOfWedge " + " minx " + minx + " miny " + miny + " maxx " + maxx + " maxy " + maxy);
+	return getCenter({"x":minx,"y":miny},{"x":maxx, "y":maxy})
 
-function rotateWedgeEndPoint(begin,end,angle){
-	var center=getCenter(begin,end)
-	return [rotateLineClockWise(center,end,angle)]
 }
 
 function toRadians(degrees)
@@ -137,12 +210,12 @@ function changeFillColor(color,input){
 	}
 }
 
-  function convertToSubstitution(str,n){
-        var ret=[]
-        for(var i = 0, len = str.length; i < len; i += n) {
-                ret.push(str.substr(i, n))
-        }
-        return ret;
+function convertToSubstitution(str,n){
+	var ret=[]
+	for(var i = 0, len = str.length; i < len; i += n) {
+		ret.push(str.substr(i, n))
+	}
+	return ret;
   }
 
 function buildSubstitution() {
@@ -154,12 +227,11 @@ function buildSubstitution() {
     console.log(substitutions)
     return substitutions;
   }
-
+	var paleocodelist=[]
+	var charnamelist=[]
 function createOpenFont(){
     var svglist=[]
 	var codepointlist=[]
-	var charnamelist=[]
-	var paleocodelist=[]
 	var counterr=0
 	$('#glyphs').html("")
 	$('.codebutton').each(function(i, obj) {
@@ -227,6 +299,7 @@ function createOpenFont(){
     }
         //document.getElementById('jsonFont').innerHTML=stringify(font)
     clearCanvas();
+	substringgraph();
 }
 
     function createGlyphCanvas(glyph, size) {
@@ -330,8 +403,10 @@ function createFont(){
 	svglist=[]
 	codepointlist=[]
 	charnamelist=[]
+	paleocodes=[]
 	$('.codebutton').each(function(i, obj) {
 		paleo=paleoCodageToSVG($(this).text());
+		paleocodes.push($(this).text());
 		console.log(convertOutline({"outline":paleo}))
 		svglist.push(paleo)
 	});
@@ -344,6 +419,7 @@ function createFont(){
 	console.log(svglist)
 	console.log(codepointlist)
 	console.log(charnamelist)
+
 }
 
 function saveTextAsFile(tosave,fileext,filename)
@@ -362,64 +438,6 @@ function saveTextAsFile(tosave,fileext,filename)
         window.URL.revokeObjectURL(url);  
     }, 1000);
 }
-
-var simplification={">(180)a":"!a","<(180)a":"!a",">(180)b":"!b","<(180)b":"!b",">(45)a":"f",">(90)a":"!b","s:":":s",":!":"!:","::::":";"}
-var operatorToLocalRot={"a":0,"A":0,"b":90,"B":90,"c":45,"C":45,"d":135,"D":135,"e":225,"E":225,"f":315,"F":315,"w":90,"W":90,"x":0,"X":0,"y":-90,"Y":-90}
-var operatorToPositioning={"a":[0,0],"A":[0,0],"b":[-0.3,0.3],"B":[-0.2,0.3],"c":[0,-0.3],"C":[0,-0.3],"d":[0,0.7],"D":[0,0.7],"e":[1,0.7],"E":[1,0.7],"f":[1,-0.3],"F":[1,-0.3],"w":[0,0.2],"W":[0,0.2],"x":[0.5,0.5],"X":[0.5,0.5],"y":[0.5,0.5],"Y":[0.5,0.5]}
-var operatorToScaling={"a":1,"A":1,"b":1,"B":1,"c":1,"C":1,"d":1,"D":1,"e":1,"E":1,"f":1,"F":1,"w":2,"W":2,"x":0,"X":0,"y":0,"Y":0}
-var curposx=30;
-var curposy=30;
-var currenthead=[{"type":"M","points":{"x":-5,"y":10}},{"type":"L","points":{"x":5,"y":10}},{"type":"L","points":{"x":0,"y":20}},{"type":"L","points":{"x":-5,"y":10}}]
-var currentstroke=[{"type":"M","points":{"x":0,"y":0}},{"type":"L","points":{"x":0,"y":strokelength-wedgelength}}]
-var startposy=0;
-var startposx=0;
-var charNameToPaleoCode={}
-var paleoCodeToCharName={}
-var strokelength=30;
-var wedgelength=10;
-var headdraw=[];
-var multiplier=1.5;
-var roundbracket=0
-var bracket=false
-var globalCenterPoint;
-var rotationconstant=15
-var bracketpositions=[]
-var factorbracketpositions=[]
-var charnamebuffer=""
-var factorbuffer=""
-var smallermultiplier=0.5
-var rotmultiplier=5;
-var rotpoints;
-var rotpoints2;
-var maxybbox=-1;
-var maxypointbbox;
-var maxxbbox=-1;
-var maxxpointbbox;
-var minybbox=1000000;
-var minypointbbox;
-var minxbbox=1000000;
-var minxpointbbox;
-var scalemultiplier=1
-var scalemultiplierForStrokeLength=1
-var smaller=false;
-var lastoperator;
-var strokeColor="#000000"
-var fillColor="#000000"
-var lineLength=strokelength-wedgelength
-var mirror=false;
-var halfangle=false;
-var opentypestrokeWidth=5
-var ot=false;
-var scaleop=1;
-var horizontalspaceop=0;
-var verticalspaceop=0;
-var font;
-var rot=0;
-var mirror=false;
-var ctx2width=170
-var ctx2height=80
-var ctx3=new opentype.Path();
-var ctx2 = new C2S(ctx2width,ctx2height);
 
 
 function scalePointArray(pointarray,scalemultiplier,start,starty){
@@ -444,6 +462,22 @@ function simplifyInput(input){
 		}
 	}*/
 	return input;
+}
+var similar={}
+function substringgraph(){
+console.log("substringgraph")
+    for(js in paleocodelist){
+            for(js2 in paleocodelist){
+                if(paleocodelist[js2]!=paleocodelist[js] && paleocodelist[js2].includes(paleocodelist[js])){
+                        //console.log("[ "+js+" ] is in [ "+js2+" ]");
+						if(similar[paleocodelist[js]]==undefined){
+							similar[paleocodelist[js]]=[]
+						}
+						similar[paleocodelist[js]].push({"charname":charnamelist[js2],"code":paleocodelist[js2]})
+                }
+            }
+    }
+	console.log(similar);
 }
 
 function paleoCodageToOpenTypePath(paleoCode){
@@ -483,7 +517,6 @@ function paleoCodageToSVG(paleoCode,index){
 	//console.log(svghtml.indexOf('d="')+" - "+svghtml.indexOf('"',svghtml.indexOf('d="')+3))
 	svghtml=svghtml.substring(svghtml.indexOf('d="')+3,svghtml.indexOf('"',svghtml.indexOf('d="')+3))
 	svghtml=svghtml.replace(/\.5/g,'')
-
 	return svghtml
 	//console.log(svghtml)
 }
@@ -493,6 +526,7 @@ var recursiverotation=false;
 function strokeParser(input,svgonly,recursive,rotationcheck){
     var ctx = document.getElementById("myCanvas").getContext("2d");
     console.log("Input: "+input)
+	$('#similar').html("")
 	//console.log(JSON.stringify(currenthead))
 	if(!recursive){
         clearCanvas(true);
@@ -509,8 +543,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
         verticalspaceop=1;
         horizontalspaceop=1;
 		curposy=10;
-        curposx=10;
-		startposx=10;
+        curposx=30;
+		startposx=30;
 		startposy=10;
     }else{
 		startposx=curposx;
@@ -541,10 +575,10 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         verticalspaceop=0;
 						scalemultiplier=1
 						scalemultiplierForStrokeLength=1
-						console.log(curposx+" - "+curposy)
+						//console.log(curposx+" - "+curposy)
 						drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,false);
-						if(!recursiverotation){
-                            console.log(curposx+" - "+curposy)
+						if(!recursiverotation && !doNotDraw){
+                            //console.log(curposx+" - "+curposy)
 							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,true);
 							if(svgonly){
 								scalemultiplier=15
@@ -558,17 +592,21 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 								scalemultiplierForStrokeLength=scalemultiplier
                             }
 							ot=false;
-						}
-						if(!recursive){mirror=false;rot=0;}else{mirror=!mirror;}
+                            if(!recursive){mirror=false;rot=0;}else{mirror=!mirror;}
+                        }
                     }
                     break;
 				case "x":
 				case "X":
-					drawSeal(curposx,curposy,ctx,true,isuppercase,false,false,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+					if(bracket==0){
+						drawSeal(curposx,curposy,ctx,true,isuppercase,false,false,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+					}
 					break;
 				case "y":
 				case "Y":
+					if(bracket==0){
 					drawSeal(curposx,curposy,ctx,true,isuppercase,false,true,false,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+					}
 					break;
                 case "s":
                     if(bracket==0){
@@ -576,8 +614,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     }
                         break;
                 case "-":
-                    scaleop=1
                     if(bracket==0){
+                        scaleop=1;
                         curposx+=(10*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
 						curposy=startposy*scalemultiplier;
                     }
@@ -589,9 +627,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     }
                         break;
                 case ":": 
-                        scaleop=1;
-                        console.log(verticalspaceop)
                         if(bracket==0){
+                            scaleop=1;
                             curposy+=(7*scalemultiplier)*(verticalspaceop==0?1:verticalspaceop);
                         }
                         break;
@@ -601,8 +638,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         }
                         break;
                 case "'":
-                    scaleop=1
                     if(bracket==0){
+                        scaleop=1;
                         curposy=10*scalemultiplier;
                     }
                         break;
@@ -613,13 +650,14 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
 				case "~": 
                     if(bracket==0){
+                        scaleop=1;
                         curposx-=10*scalemultiplier;
                         curposy=10*scalemultiplier;
                     }
                         break;
                 case "/": 
-                    scaleop=1;
                     if(bracket==0){
+                        scaleop=1;
                         curposy+=3.5*scalemultiplier;
                     }
                     break;
@@ -629,14 +667,14 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     }
                         break;
                 case ";":
-                    scaleop=1;
                     if(bracket==0){
+                        scaleop=1;
                         curposy+=strokelength;
                     }
                         break;
                 case ".": 
-                    scaleop=1;
                     if(bracket==0){
+                        scaleop=1;
                         curposy+=7*scalemultiplier;
                         curposx+=7*scalemultiplier;
                     }
@@ -651,12 +689,12 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                             rot+=rotationconstant;
                         }
                         break;
-                case "\\": 
+/*                case "\": 
                     if(bracket==0){    
-                        curposy+=7*scalemultiplier;
-                        curposx-=7*scalemultiplier;
+                        scaleop=1;
+                        curposy-=3.5*scalemultiplier;
                     }
-                        break;
+                        break; */
                 case ",": 
                         if(bracket==0){    
                             curposy-=7*scalemultiplier;
@@ -664,16 +702,36 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         }
                         break;
                 case "_": 
-                    scaleop=1;
                     if(bracket==0){
+                        scaleop=1;
                         curposx+=strokelength;
                         curposy=startposy*scalemultiplier;
                     }
                         break;
                 case " ": 
-                    scaleop=1;
                     if(bracket==0){
+                        scaleop=1;
                         curposx+=1.5*strokelength*scalemultiplier;
+                    }
+                        break;
+				case "h": 	// Kopf verkleinern () in %
+					if(bracket==0){
+                        // <xxx>
+                    }
+                        break;
+				case "H": 	// Kopf vergrößern () in %
+					if(bracket==0){
+                        // <xxx>
+                    }
+                        break;
+				case "l": 	// Kanten-Länge verkleinern () in %
+					if(bracket==0){
+                        scaleop-=0.2
+                    }
+                        break;
+				case "L": 	// Kanten-Länge vergrößern () in %
+					if(bracket==0){
+                        scaleop+=0.25
                     }
                         break;
                 case "(":
@@ -695,7 +753,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 							rot-=value
 							break;
                         case "*":
-                            scaleop=0;
+                            scaleop=1;
                             scaleop+=value/100;
                             break;
                         case ":":
@@ -717,13 +775,13 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 					console.log(rot)
 					factorbracketpositions[factorbracketpositions.length-1]["end"]=i+1;
                     roundbracket=false;
+					factorbuffer=""
                     break;
-                case "l":
-                        scaleop-=0.25
-                        break;
-				case "L":
+/*                case "*":
+                    if(bracket==0){
                         scaleop+=0.25
-                        break;
+                    }
+                        break; */
 		case "0":
 		case "1":
 		case "2":
@@ -741,12 +799,37 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     bracket=true;
                     bracketpositions.push({start:i,end:-1})
                     break;
-                case "]":
+                 case "]":
                     bracket=false;
                     if(charnamebuffer in charNameToPaleoCode){
 						if(rot!=0){
-							strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true,true)
-							strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true,false)
+                            	//curposy=startposy;
+								//curposx=startposx;
+							maxxbbox=0
+							minxbbox=1000000
+							maxybbox=0
+							minybbox=1000000
+							globalCenterPoint=false
+							doNotDraw=true;
+							wedgearray=[];
+							strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true,false) // Stroke parser muss merken
+							doNotDraw=false;
+							globalCenterPoint=getCenter({"x":minxbbox, "y":minybbox}, {"x":maxxbbox, "y":maxybbox});
+							console.log(globalCenterPoint)
+                            console.log(minxbbox+" "+minybbox+" "+maxxbbox+" "+maxybbox)
+								/* DRAW CENTER POINT
+								ctx.moveTo(globalCenterPoint["x"],globalCenterPoint["y"])
+								ctx.lineTo(globalCenterPoint["x"]+5,globalCenterPoint["y"]+5)
+								ctx.stroke(); */
+							var rotwedgeresult=rotateWedgeSVG(wedgearray, rot, globalCenterPoint);
+							console.log("rotwegderesult Array");
+							console.log(rotwedgeresult);
+							drawHead(rotwedgeresult, ctx);
+							ctx.fillStyle = fillColor;
+							ctx.fill();
+							ctx.strokeStyle=strokeColor
+							ctx.stroke();
+							//drawHead(rotwedgeresult, ctx2);
 						}else{
 							strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
 						}
@@ -754,6 +837,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     bracketpositions[bracketpositions.length-1]["end"]=i+1;
 					smaller=false;
 					mirror=false;
+                    rot=0;
 					halfangle=false;
 					startposx=10;
 					startposy=10;
@@ -764,43 +848,31 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
         if(bracket>0 && input.charAt(i)!="["){
             charnamebuffer+=input.charAt(i)
         }
-		if(rotationcheck){
-			var width=maxxbbox-minxbbox;
-			var height=maxybbox-minybbox;
-			var cx = (minxbbox+maxxbbox)/2
-			var cy= (minybbox+maxybbox)/2
-			globalCenterPoint={"x":cx,"y":cy}
-		}else{
-			maxxbbox=0
-			minxbbox=1000000
-			maxybbox=0
-			minybbox=1000000
-			globalCenterPoint=false
-		}
-
-        //console.log(input.charAt(i));
     }
+	if(input=="" || !(input in similar)){
+		var output="Similar[0]: "		
+		$('#similarspan').html(trimstr(output,100))
+	}else if(input in similar){
+			var output="Similar["+similar[input].length+"]: "
+			for(simchar in similar[input]){
+				output+="<a href=#"+similar[input][simchar]["charname"]+">"+similar[input][simchar]["charname"]+"</a>,"
+			}
+			$('#similarspan').html(trimstr(output,500))
+	}
+}
+
+function trimstr(coords,length){
+	return coords.length > length ? coords.replace("undefined,","").substring(0, length - 3) + "(...))" : coords;	
 }
 
 function drawHead(points,canvas){
-	if(recursiverotation){
-		maxybbox=Math.max(points[0]["x"],points[1]["x"],points[2]["x"],points[3]["x"],maxybbox)
-		maxxbbox=Math.max(points[0]["y"],points[1]["y"],points[2]["y"],points[3]["y"],maxxbbox)
-		minybbox=Math.min(points[0]["x"],points[1]["x"],points[2]["x"],points[3]["x"],minybbox)
-		minxbbox=Math.min(points[0]["y"],points[1]["y"],points[2]["y"],points[3]["y"],minxbbox)
-	}else{
-		for(drawit in points){
-			if(points[drawit]["type"]=="M"){
-				canvas.moveTo(points[drawit]["points"]["x"], points[drawit]["points"]["y"]);
-			}else{
-				canvas.lineTo(points[drawit]["points"]["x"], points[drawit]["points"]["y"]);
-			}
+	for(drawit in points){
+		if(points[drawit]["type"]=="M"){
+			canvas.moveTo(points[drawit]["points"]["x"], points[drawit]["points"]["y"]);
+		}else{
+			canvas.lineTo(points[drawit]["points"]["x"], points[drawit]["points"]["y"]);
 		}
-		/*canvas.moveTo(points[0]["x"], points[0]["y"]); // start at top left corner of canvas
-		canvas.lineTo(points[1]["x"], points[1]["y"]); // go 200px to right (x), straight line from 0 to 0
-		canvas.lineTo(points[2]["x"], points[2]["y"]); // go to horizontal 100 (x) and vertical 200 (y)
-		canvas.lineTo(points[3]["x"], points[3]["y"]); */
-	}
+	}	
 }
 
 function getCoordinatesFromSVGPath(svgpath){
@@ -816,9 +888,9 @@ function getCoordinatesFromSVGPath(svgpath){
 			if(newresult!=null){
 				result.push(newresult)
 			}
-			newresult={type:points[point].substring(0,1),point:{"x":points[point].substring(1)}}
+			newresult={type:points[point].substring(0,1),points:{"x":points[point].substring(1)}}
 		}else{
-			newresult["point"]["y"]=points[point]
+			newresult["points"]["y"]=points[point]
 		}
 		console.log(points[point])
 		console.log(points[point].split(" "))
@@ -827,32 +899,17 @@ function getCoordinatesFromSVGPath(svgpath){
 	return result;
 }
 
-function drawHeadArray(points,canvas){
-	if(recursiverotation){
-		maxybbox=Math.max(points[1],points[3],points[5],points[7],maxybbox)
-		maxxbbox=Math.max(points[0],points[2],points[4],points[6],maxxbbox)
-		minybbox=Math.min(points[1],points[3],points[5],points[7],minybbox)
-		minxbbox=Math.min(points[0],points[2],points[4],points[6],minybbox)
-	}else{
-		canvas.moveTo(points[0], points[1]); // start at top left corner of canvas
-		canvas.lineTo(points[2], points[3]); // go 200px to right (x), straight line from 0 to 0
-		canvas.lineTo(points[4], points[5]); // go to horizontal 100 (x) and vertical 200 (y)
-		canvas.lineTo(points[6], points[7]); 
-	}
-}
-
 function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localrot,localmov,localscale,onlyhead,uselastresult){
         if(strokeparse==false)
             curposx+=10
 		pointarray=[]
-		//console.log(big)
 		if(mirror){
 			localrot+=180
-			localrot=localrot%360
+			localrot=parseInt(localrot)%360
 			start+=lineLength+wedgelength
 		}
-		if(rot!=0){
-			localrot+=rot;
+		if(rot!=0 && !doNotDraw){
+			localrot=parseInt(localrot)+parseInt(rot);
 		}
 		if(!keepconfig && smaller)
 			smaller=false;
@@ -860,104 +917,75 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 			if(big){
 				length=multiplier*scalemultiplierForStrokeLength*strokelength*localscale;
 				if(localmov){
-					/*console.log(localmov[0])
-					console.log(length)
-					console.log(localmov[0]*length)
-					console.log(start)*/
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
-					//console.log(start)
 				}
-				pointarray=[]
-				for(point in currenthead){
-					pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
-				}
-				pointarray=scalePointArray(pointarray,scalemultiplier,start,starty)
-				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier})
-				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop})
 			}else if(smaller){
 				length=0.5*scalemultiplierForStrokeLength*strokelength*localscale;
 				if(localmov){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
 				}
-				pointarray=[]
-				for(point in currenthead){
-					pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
-				}
-				pointarray=scalePointArray(pointarray,scalemultiplier,start,starty)
-				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier})
-				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop})
-				/*		pointarray=[{"x":start-5*scalemultiplier, "y":starty+15*scalemultiplier},
-						   {"x":start+5*scalemultiplier, "y":starty+15*scalemultiplier},
-						   {"x":start, "y":starty+20*scalemultiplier},
-						   {"x":start-5*scalemultiplier, "y":starty+15*scalemultiplier},
-						   {"x":start, "y":starty+lineLength*scalemultiplier},
-						   {"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop}]*/
 			}else{
 				length=scalemultiplierForStrokeLength*strokelength*localscale;
 				if(localmov){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
 				}
-				//console.log(JSON.stringify(currenthead))
+			}
 				pointarray=[]
 				for(point in currenthead){
-					//console.log(currenthead[point]["points"])
 					pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
 				}
-				//console.log(JSON.stringify(pointarray))
 				pointarray=scalePointArray(pointarray,scalemultiplier,start,starty)
 				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier})
 				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop})
-				
-				//console.log(JSON.stringify(pointarray))
-				/*pointarray=[{"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier},
-						   {"x":start+5*scalemultiplier, "y":starty+10*scalemultiplier},
-						   {"x":start, "y":starty+20*scalemultiplier},
-						   {"x":start-5*scalemultiplier, "y":starty+10*scalemultiplier},
-						   {"x":start, "y":starty+lineLength*scalemultiplier},
-						   {"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop}]*/
-			}
-			var centerwholewedge=getCenterOfWedge(pointarray)
-			rotpoints=rotateHead(pointarray,localrot*-1,centerwholewedge)
-			headdraw=[]
-			for(rot in rotpoints){
-				if(rot<currenthead.length)
-					headdraw.push({"type":currenthead[rot]["type"],"points":rotpoints[rot]})
-			}
+				var centerwholewedge=getCenterOfWedge(pointarray)
+				rotpoints=rotateHead(pointarray,localrot*-1,centerwholewedge)
+				headdraw=[]
+				for(rott in rotpoints){
+				if(rott<currenthead.length)
+					headdraw.push({"type":currenthead[rott]["type"],"points":rotpoints[rott]})
+				}
 		}
 		//console.log(headdraw)
-		drawHead(headdraw,canvas)
+		if (!doNotDraw){
+			drawHead(headdraw,canvas)
+		}else {
+			wedgearray=wedgearray.concat(headdraw);
+			for(drawit in headdraw){
+				maxybbox=Math.max(headdraw[drawit]["points"]["y"],maxybbox)
+				maxxbbox=Math.max(headdraw[drawit]["points"]["x"],maxxbbox)
+				minxbbox=Math.min(headdraw[drawit]["points"]["x"],minxbbox)
+				minybbox=Math.min(headdraw[drawit]["points"]["y"],minybbox)
+			}
+		}
 		//canvas.closePath()
-		//console.log(ot)
 		if(!onlyhead){
 			if(!ot){
-				canvas.fillStyle = fillColor;
-                canvas.fill();
-				canvas.strokeStyle=strokeColor
-				canvas.stroke();
 				if(!uselastresult){
-					//currentstroke
 					var insert=[pointarray[pointarray.length-2],pointarray[pointarray.length-1]]
 					rotpoints2=rotateWedge(insert,localrot*-1,centerwholewedge)
-				}				
-				//console.log(rotpoints2)
-				//console.log(rotpoints2[0]["x"]+" - "+rotpoints2[0]["y"])
-				//console.log(rotpoints2[1]["x"]+" - "+rotpoints2[1]["y"])
-				//console.log(centerwholewedge)
-				if(recursiverotation){
+				}								
+				if (doNotDraw){
+					wedgearray.push({"type":"M","points":{"x":rotpoints2[0]["x"],"y":rotpoints2[0]["y"]}})
+					wedgearray.push({"type":"L","points":{"x":rotpoints2[1]["x"],"y":rotpoints2[1]["y"]}})
 					maxxbbox=Math.max(rotpoints2[0]["x"],rotpoints2[1]["x"],maxxbbox)
 					minxbbox=Math.min(rotpoints2[0]["x"],rotpoints2[1]["x"],minxbbox)
 					maxybbox=Math.max(rotpoints2[0]["y"],rotpoints2[1]["y"],maxybbox)
 					minybbox=Math.min(rotpoints2[0]["y"],rotpoints2[1]["y"],minybbox)
-				}else{
+				}else {
+					canvas.fillStyle = fillColor;
+					canvas.fill();
+					canvas.strokeStyle=strokeColor
+					canvas.stroke();
 					canvas.moveTo(rotpoints2[0]["x"],rotpoints2[0]["y"]);
-					canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);
+					canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]); 
 					canvas.strokeStyle=strokeColor
 					canvas.stroke();
 				}
-			}else{
+			} 
+			else {
 				rotpoints2=rotateWedge([
 				{"x":start, "y":starty+lineLength*scalemultiplier-opentypestrokeWidth},
 				{"x":start+length, "y":starty+lineLength*scalemultiplier-opentypestrokeWidth},
@@ -966,15 +994,15 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				{"x":start, "y":starty+lineLength*scalemultiplier-opentypestrokeWidth}				
 				],localrot,centerwholewedge)			
 				//console.log(rotpoints)		
-			    canvas.moveTo(rotpoints2[0]["x"],rotpoints2[0]["y"]);
-                canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);
-                canvas.lineTo(rotpoints2[2]["x"],rotpoints2[2]["y"]);
-                canvas.lineTo(rotpoints2[3]["x"],rotpoints2[3]["y"]);
-                canvas.lineTo(rotpoints2[4]["x"],rotpoints2[4]["y"]);
+			    /*canvas.moveTo(rotpoints2[0]["points"]["x"],rotpoints2[0]["points"]["y"]);
+                canvas.lineTo(rotpoints2[1]["points"]["x"],rotpoints2[1]["points"]["y"]);
+                canvas.lineTo(rotpoints2[2]["points"]["x"],rotpoints2[2]["points"]["y"]);
+                canvas.lineTo(rotpoints2[3]["points"]["x"],rotpoints2[3]["points"]["y"]);
+                canvas.lineTo(rotpoints2[4]["points"]["x"],rotpoints2[4]["points"]["y"]);*/
 				canvas.stroke=strokeColor
 			}
 		}else{
-			if(!ot){
+			if(!ot && !doNotDraw){
 				canvas.fillStyle = fillColor;
                 canvas.fill();
 				canvas.strokeStyle=strokeColor
