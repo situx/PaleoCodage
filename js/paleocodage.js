@@ -80,6 +80,20 @@ function createOpenTypeGlyph(charname,unicode,path){
     });
 }
 
+function loadHeadSVG(svgname){
+ $.ajax( "svg/"+svgname+".svg" )
+  .done(function(msg) {
+		console.log("load svg")
+		currenthead=getCoordinatesFromSVGPath(msg)
+  })
+  .fail(function() {
+    alert( "error" );
+  })
+  .always(function() {
+    alert( "complete" );
+  });
+}
+
 function rotateLineClockWise(center, edge, angle) {
     xRot = center["x"] + Math.cos(toRadians(angle)) * (edge["x"] - center["x"]) - Math.sin(toRadians(angle)) * (edge["y"] - center["y"]);
     yRot = center["y"] + Math.sin(toRadians(angle)) * (edge["x"] - center["x"]) + Math.cos(toRadians(angle)) * (edge["y"] - center["y"]);
@@ -300,6 +314,7 @@ function createOpenFont(){
         //document.getElementById('jsonFont').innerHTML=stringify(font)
     clearCanvas();
 	substringgraph();
+	loadHeadSVG("defaulthead");
 }
 
     function createGlyphCanvas(glyph, size) {
