@@ -81,17 +81,14 @@ function createOpenTypeGlyph(charname,unicode,path){
 }
 
 function loadHeadSVG(svgname){
- $.ajax( "svg/"+svgname+".svg" )
-  .done(function(msg) {
-		console.log("load svg")
-		currenthead=getCoordinatesFromSVGPath(msg)
-  })
-  .fail(function() {
-    alert( "error" );
-  })
-  .always(function() {
-    alert( "complete" );
-  });
+	$.ajax({
+            url: "svg/"+svgname+".svg"
+            async: true,
+            success: function (data){
+                console.log("load svg")
+				currenthead=getCoordinatesFromSVGPath(data)
+            }
+        });
 }
 
 function rotateLineClockWise(center, edge, angle) {
