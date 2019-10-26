@@ -81,6 +81,7 @@ function createOpenTypeGlyph(charname,unicode,path){
 }
 
 function loadHeadSVG(svgname){
+	console.log("Loading svg: "+"svg/"+svgname+".svg");
 	$.ajax({
             url: "svg/"+svgname+".svg",
             async: true,
