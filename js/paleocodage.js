@@ -923,8 +923,9 @@ function getCoordinatesFromSVGPath(svgpath){
 		}
 		console.log(points[point])
 		console.log(points[point].split(" "))
+		result.push(newresult)
 	}
-	result.push(newresult)
+	console.log(result)
 	return result;
 }
 
