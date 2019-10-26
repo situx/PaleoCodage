@@ -905,9 +905,9 @@ function drawHead(points,canvas){
 }
 
 function getCoordinatesFromSVGPath(svgpath){
-	result=[]
+	var svgpathresult=[]
 	points=svgpath.split(" ")
-	newresult=null
+	var newresult=null
 	for(point in points){
 		points[point]=points[point].trim();
 		if(points[point].startsWith("Z")){
@@ -915,7 +915,7 @@ function getCoordinatesFromSVGPath(svgpath){
 		}
 		if(points[point].startsWith("M") || points[point].startsWith("L")){
 			if(newresult!=null){
-				result.push(newresult)
+				svgpathresult.push(newresult)
 			}
 			newresult={type:points[point].substring(0,1),points:{"x":points[point].substring(1)}}
 		}else{
@@ -924,9 +924,9 @@ function getCoordinatesFromSVGPath(svgpath){
 		console.log(points[point])
 		console.log(points[point].split(" "))
 	}
-	result.push(newresult)
-	console.log(result)
-	return result;
+	svgpathresult.push(newresult)
+	console.log(svgpathresult)
+	return svgpathresult;
 }
 
 function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localrot,localmov,localscale,onlyhead,uselastresult){
