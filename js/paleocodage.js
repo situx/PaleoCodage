@@ -87,6 +87,7 @@ function loadHeadSVG(svgname){
             success: function (data){
                 console.log("load svg")
 				currenthead=getCoordinatesFromSVGPath(data)
+				console.log(currenthead)
             }
         });
 }
