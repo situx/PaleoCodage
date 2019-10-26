@@ -82,7 +82,7 @@ function createOpenTypeGlyph(charname,unicode,path){
 
 function loadHeadSVG(svgname){
 	$.ajax({
-            url: "svg/"+svgname+".svg"
+            url: "svg/"+svgname+".svg",
             async: true,
             success: function (data){
                 console.log("load svg")
