@@ -100,6 +100,11 @@ function htmlTableToJSON(filename,ext){
 					<option value="#000000;#FFFFFF">Variant</option></select>
 				Stroke Color: <input type="color" id="strokeColor" onchange='changeStrokeColor(document.getElementById("strokeColor").value,document.getElementById("canvasinput").value)'/>
 				Fill Color: <input type="color" id="fillColor" onchange='changeFillColor(document.getElementById("fillColor").value,document.getElementById("canvasinput").value)'/>		<br/>
+				Head Type: <select id="headtype" onchange='loadHeadSVG(document.getElementById("headtype").value)'>
+				<option value="defaulthead" selected="selected">Default</option>
+				<option value="rectanglehead">Rectangle</option>
+				<option value="starhead">Star</option>
+				</select><br/>
 				
 				<button id="downloadImage" onClick="to_image()">Download Image</button>
 				<button id="downloadSVG" onClick="to_svg()">Download SVG</button>
@@ -446,7 +451,6 @@ function htmlTableToJSON(filename,ext){
 		<!-- Copyright -->
 		<div class="footer-copyright text-center py-3"></div>
 		<!-- Copyright -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.6.6/processing.min.js" type="text/javascript"></script>
 	</footer>
 	
 	<div class="container">
