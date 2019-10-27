@@ -11,12 +11,19 @@
 <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/json-stringify-safe@5.0.1/stringify.min.js"></script>
  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/virtual-keyboard/1.30.1/css/keyboard.min.css"/>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/table-to-json@0.13.0/lib/jquery.tabletojson.min.js" integrity="sha256-AqDz23QC5g2yyhRaZcEGhMMZwQnp8fC6sCZpf+e7pnw=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.1/js/jquery.tablesorter.min.js"></script>
 	  <script src="https://unpkg.com/geometric@2.2.0/build/geometric.min.js"></script>
+	  
+	  <script src="https://cdnjs.cloudflare.com/ajax/libs/virtual-keyboard/1.30.1/js/jquery.keyboard.min.js"></script>
     <script src="js/paleocodage.js"></script>
   <script>
 
@@ -90,7 +97,7 @@ function htmlTableToJSON(filename,ext){
 			<div class="left col-sm-5">
 				<canvas id="myCanvas" width="300" height="100" style="border:1px solid #d3d3d3;">Your browser does not support the HTML5 canvas tag.</canvas><img id="canvasImg"/>		<br/>
 				
-				Stroke Order Input: <input type="text" id="canvasinput" onKeyUp="strokeParser(document.getElementById('canvasinput').value)"/>		<br/>
+				Stroke Order Input: <input type="text" id="canvasinput" onChange="strokeParser(document.getElementById('canvasinput').value)"/>		<br/>
 				
 				<button id="clearcanvas" onClick="clearCanvas()">Clear Canvas</button><button id="refreshsvg" onClick="createOpenFont()">Refresh Font</button>
 				<button id="simplify" onclick="simplifyPaleoCode(document.getElementById('canvasinput').value)">Simplify</button>		<br/>
@@ -160,7 +167,7 @@ function htmlTableToJSON(filename,ext){
 					<tr><td><b>\</b> above the current stroke passing through other strokes </td></tr>
 					<tr><td><b>.</b> diagonal right under the current stroke</td></tr>
 					<tr><td><b>,</b> diagonal left above the current stroke</td></tr>
-					<tr><td><b>(FACTOR)</b> using a factor on any previous operator for higher precision <i><small>(e.g. <(22) turns 22° left, :(3) uses : three times, H(120) scales up the size of the head 20%)</small></i></td></tr>
+					<tr><td><b>(FACTOR)</b> using a factor on any previous operator for higher precision <i><small>(e.g. <(22) turns 22ï¿½ left, :(3) uses : three times, H(120) scales up the size of the head 20%)</small></i></td></tr>
 					<tr><td><b>s</b> smaller version of the stroke <i><small>(e.g. sb, sc)</small></i></td></tr>
 					<tr><td><b>!</b> mirrored version of the stroke <i><small>(e.g. !a, !A, !sa)</small></i></td></tr>
 					<tr><td><b>Whitespace</b> Enough distance to start a new character</td></tr>
@@ -566,6 +573,27 @@ function htmlTableToJSON(filename,ext){
 		}
 	});
 </script>
-
+<script>
+$('#canvasinput').keyboard({
+	layout: 'custom',
+	autoAccept: true,
+	customLayout: {
+			'normal' : [
+				'A B C D E F X Y',
+				'a b c d e f x y',
+				'sa sb sc sd se sf sx sy',
+				' 1 2 3 4 5 6 7 8 9 0',
+				'- _ : ; . , [ ] ( )',
+				'{bksp}'
+			]
+		},
+		acceptValid : true,
+		validate : function(keyboard, value, isClosing){
+			// only make valid if input is 6 characters in length
+			return true;
+		},
+	usePreview: false // no preveiw
+});
+</script>
 </body>
 </html>
