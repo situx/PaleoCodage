@@ -526,12 +526,12 @@ console.log("substringgraph")
 						if(similar[paleocodelist[js]]==undefined){
 							similar[paleocodelist[js]]=[]
 						}
-						similar[paleocodelist[js]][paleocodelist[js]]={"charname":charnamelist[js2],"code":paleocodelist[js2]}
+						similar[paleocodelist[js]][paleocodelist[js]]={"charname":charnamelist[js2].replace("_cunei",""),"code":paleocodelist[js2]}
                 }else if(paleocodelist[js2]!=paleocodelist[js] && paleocodelist[js].includes(paleocodelist[js2])){
 						if(similar[paleocodelist[js2]]==undefined){
 							similar[paleocodelist[js2]]=[]
 						}
-						similar[paleocodelist[js2]][paleocodelist[js]]={"charname":charnamelist[js],"code":paleocodelist[js]}
+						similar[paleocodelist[js2]][paleocodelist[js]]={"charname":charnamelist[js].replace("_cunei",""),"code":paleocodelist[js]}
 				}
             }
     }
