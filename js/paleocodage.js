@@ -228,10 +228,10 @@ function changeFillColor(color,input){
 	}
 }
 
-function convertToSubstitution(str,n){
+function convertToSubstitution(str,n,alphabetToFontCode){
 	var ret=[]
 	for(var i = 0, len = str.length; i < len; i += n) {
-		ret.push(str.substr(i, n))
+		ret.push(alphabetToFontCode[str.substr(i, n)])
 	}
 	return ret;
   }
@@ -310,10 +310,10 @@ function createOpenFont(list){
 			gly.path.fill=fillColor;
 			gly.path.stroke=strokeColor;
             glyphs.push(gly)
+            alphabetToFontCode[charnamelist[svg]]=coun++
 			//console.log(gly)
             //opentype.gsub.add(charnamelist[svg])
         }
-        console.log(coun++)
 	}
     //glyphs.push(createOpenTypeGlyph([0],codepointlist[0],svglist[0]))
 	//console.log(glyphs)
@@ -321,7 +321,7 @@ function createOpenFont(list){
     console.log(font.toTables());
 
     for(svg in charnamelist){
-        var sub=convertToSubstitution(charnamelist[svg].replace(" ","").toLowerCase())
+        var sub=convertToSubstitution(charnamelist[svg].replace("_cunei","").replace(/ /g, ""),1,alphabetToFontCode)
         console.log(Array.from(charnamelist[svg]))
 		console.log({ "sub": [""].concat(Array.from(charnamelist[svg])), "by": charnamelist[svg] })
 		console.log(svg)
@@ -330,7 +330,7 @@ function createOpenFont(list){
 		for(elem in arrayres){
 			arrayres[elem]=arrayres[elem]+"_cunei"
 		}
-		font.substitution.addLigature("liga",{ "sub": [""].concat(arrayres), "by": charnamelist[svg] })
+		font.substitution.addLigature("liga",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
         //font.substitution.addLigature({ "sub": sub, "by": charnamelist[svg] })
     }
     console.log(font.substitution)
