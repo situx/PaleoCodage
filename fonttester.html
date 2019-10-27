@@ -7,8 +7,19 @@
   font-family: 'MyWebFont';
   src: url('e.otf');/* Legacy iOS */
 }
+@font-face {
+  font-family: 'MyWebFont2';
+  src: url('global.otf');/* Legacy iOS */
+}
 .costumfont {
   font-family: 'MyWebFont', Fallback, sans-serif;
+  -webkit-font-feature-settings: 'liga';
+  -moz-font-feature-settings: 'liga';
+  -o-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+}
+.costumfont2 {
+  font-family: 'MyWebFont2', Fallback, sans-serif;
   -webkit-font-feature-settings: 'liga';
   -moz-font-feature-settings: 'liga';
   -o-font-feature-settings: 'liga';
@@ -23,6 +34,14 @@ function activateWebFont(){
         $("#fontusage").removeAttr("class");
     }else{
         $("#fontusage").attr("class", "costumfont");
+    }
+}
+var activated2=false
+function activateWebFont2(){
+    if(activated2){
+        $("#fontusage2").removeAttr("class");
+    }else{
+        $("#fontusage2").attr("class", "costumfont2");
     }
 }
 </script>
@@ -45,6 +64,15 @@ E Ev1 Ev2 Ev3
 </span>
 <br/>
 <button id="usefont" onclick="activateWebFont()">Use Font</button>
+Example transliteration2:<br/>
+<span id="transliteration2" style="font-size:90">
+A AxA GALAM USZ &nbsp;&nbsp;|&nbsp;&nbsp;
+</span>
+<span id="fontusage2" style="font-size:90">
+A AxA GALAM USZ
+</span>
+<br/>
+<button id="usefont2" onclick="activateWebFont2()">Use Font</button>
 <h2>Frequently Asked Questions</h2>
 <ol>
 <li>What happens when I copy the character? The modified transliteration is copied</li>
