@@ -100,7 +100,7 @@ function htmlTableToJSON(filename,ext){
 				
 				Stroke Order Input: <input type="text" id="canvasinput" onChange="strokeParser(document.getElementById('canvasinput').value)"/>		<br/>
 				
-				<button id="clearcanvas" onClick="clearCanvas()">Clear Canvas</button><button id="refreshsvg" onClick="createOpenFont()">Refresh Font</button>
+				<button id="clearcanvas" onClick="clearCanvas()">Clear Canvas</button><button id="refreshsvg" onClick="createOpenFont('examples')">Refresh Font</button>
 				<button id="simplify" onclick="simplifyPaleoCode(document.getElementById('canvasinput').value)">Simplify</button><!--<button id="activatekeyboard" onclick="activateKeyboard()">Keyboard</button>--><br/>
 				
 				Style: <select id="styleselect" onchange='changeColors(document.getElementById("styleselect").value,document.getElementById("canvasinput").value)'>

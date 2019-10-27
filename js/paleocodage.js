@@ -4,6 +4,8 @@ var operatorToPositioning={"a":[0,0],"A":[0,0],"b":[0.3,-0.35],"B":[0.4,-0.4],"c
 var operatorToScaling={"a":1,"A":1,"b":1,"B":1,"c":1,"C":1,"d":1,"D":1,"e":1,"E":1,"f":1,"F":1,"w":2,"W":2,"x":0,"X":0,"y":0,"Y":0}
 var curposx=30;
 var curposy=30;
+var curposxot=30;
+var curposyot=30;
 var currenthead=[{"type":"M","points":{"x":-5,"y":10}},{"type":"L","points":{"x":5,"y":10}},{"type":"L","points":{"x":0,"y":20}},{"type":"L","points":{"x":-5,"y":10}}]
 var currentstroke=[{"type":"M","points":{"x":0,"y":0}},{"type":"L","points":{"x":0,"y":strokelength-wedgelength}}]
 var startposy=0;
@@ -36,6 +38,7 @@ var minyglobalbbox;
 var minxbbox=1000000;
 var minxglobalbbox;
 var paleocodes=[]
+var paleoCodeToOpenTypePath={}
 var scalemultiplier=1
 var scalemultiplierForStrokeLength=1
 var smaller=false;
@@ -250,14 +253,23 @@ function createOpenFont(list){
 	$('#glyphs').html("")
 	$('#'+list).find('.codebutton').each(function(i, obj) {
         paleocodelist.push($(this).text())
-		var paleo=paleoCodageToSVG($(this).text(),counterr);
-		var paleo=paleoCodageToOpenTypePath($(this).text())
+		console.log(paleoCodeToOpenTypePath)
+		ctx3=new opentype.Path();
+        ctx3.stroke=strokeColor
+		ctx3.fill=fillColor
+        ctx3.strokeWidth=2
+		strokeParser($(this).text(),true,false)
+		var svghtml=ctx2.getSerializedSvg(true)
+		var elem=$('.svgcontainer').eq(counterr)
+		var gottstein=$('.gottstein').eq(counterr)
+		gottstein.html(paleoCodeToGottstein($(this).text()))
+        elem.html(svghtml)
+		svghtml=svghtml.substring(svghtml.indexOf('d="')+3,svghtml.indexOf('"',svghtml.indexOf('d="')+3))
+		svghtml=svghtml.replace(/\.5/g,'')
+		console.log(svghtml)
+		svglist.push(ctx3)
 		counterr++;
-		//console.log(convertOutlineToType2({"outline":paleo}))
-		//console.log(i+" - "+$('.svg:nth-child('+i+')'))
-		console.log(paleo)
-		//$('.svg:nth-child('+i+')' ).html(paleo)
-		svglist.push(paleo)
+
 	});
 	$('#'+list).find('.codepoint').each(function(i, obj) {
 		codepointlist.push($(this).text())
@@ -507,6 +519,8 @@ function paleoCodageToOpenTypePath(paleoCode){
         ctx3.strokeWidth=2
         strokeParser(paleoCode,true,false)
         //ot=false;
+		console.log(paleoCode)
+		console.log(ctx3)
         return ctx3;
 }
 
@@ -570,6 +584,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 		minyglobalbbox=1000000
 		curposy=10;
         curposx=30;
+		curposyot=10;
+        curposxot=30;
 		startposx=30;
 		startposy=10;
     }else{
@@ -602,21 +618,24 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 						scalemultiplier=1
 						scalemultiplierForStrokeLength=1
 						//console.log(curposx+" - "+curposy)
+						console.log("Draw HTML")
 						drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,false);
 						if(!recursiverotation && !doNotDraw){
                             //console.log(curposx+" - "+curposy)
+							console.log("Draw SVG")
 							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,true);
-							if(svgonly){
+							//if(svgonly){
 								scalemultiplier=15
 								scalemultiplierForStrokeLength=scalemultiplier
 								//mirror=!mirror
-							}
-							ot=true; mirror=!mirror;
-							drawWedgeGeneric(curposx,curposy,ctx3,true,isuppercase,recursive,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,false);
-                            if(svgonly){
+							//}
+							ot=true; //mirror=!mirror;
+							console.log("Draw OT")
+							drawWedgeGeneric(curposxot,curposyot,ctx3,true,isuppercase,recursive,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,false);
+                            //if(svgonly){
                                 scalemultiplier=1
 								scalemultiplierForStrokeLength=scalemultiplier
-                            }
+                            //}
 							ot=false;
                             if(!recursive){mirror=false;rot=0;}else{mirror=!mirror;}
                         }
@@ -626,12 +645,16 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 				case "X":
 					if(bracket==0){
 						drawSeal(curposx,curposy,ctx,true,isuppercase,false,false,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+						drawSeal(curposx,curposy,ctx2,true,isuppercase,false,false,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+						drawSeal(curposxot,curposyot,ctx3,true,isuppercase,false,false,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
 					}
 					break;
 				case "y":
 				case "Y":
 					if(bracket==0){
-					drawSeal(curposx,curposy,ctx,true,isuppercase,false,true,false,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+						drawSeal(curposx,curposy,ctx,true,isuppercase,false,true,false,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+						drawSeal(curposx,curposy,ctx2,true,isuppercase,false,true,false,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+						drawSeal(curposxot,curposyot,ctx3,true,isuppercase,false,true,false,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
 					}
 					break;
                 case "s":
@@ -643,19 +666,24 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     if(bracket==0){
                         scaleop=1;
                         curposx+=(10*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
+						curposxot+=(10*15)*(horizontalspaceop==0?1:horizontalspaceop)
 						curposy=startposy*scalemultiplier;
+
                     }
                         break;
                 case "#":
                     if(bracket==0){
                         curposx+=5*scalemultiplier;
                         curposy=10*scalemultiplier;
+						curposyot+=(10*15)
+						curposxot+=(5*15)
                     }
                         break;
                 case ":": 
                         if(bracket==0){
                             scaleop=1;
                             curposy+=(7*scalemultiplier)*(verticalspaceop==0?1:verticalspaceop);
+							curposyot+=(7*15)*(verticalspaceop==0?1:verticalspaceop);
                         }
                         break;
                 case "!": //mirror character
@@ -667,6 +695,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     if(bracket==0){
                         scaleop=1;
                         curposy=10*scalemultiplier;
+						curposyot=10*15
                     }
                         break;
 				case "\"": 
@@ -725,6 +754,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         if(bracket==0){    
                             curposy-=7*scalemultiplier;
                             curposx-=7*scalemultiplier;
+							curposyot-=7*15;
+                            curposxot-=7*15;
                         }
                         break;
                 case "_": 
@@ -732,6 +763,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         scaleop=1;
                         curposx+=strokelength;
                         curposy=startposy*scalemultiplier;
+						curposyot=startposy*15;
+						curposxot+=strokelength*15;
                     }
                         break;
                 case " ": 
@@ -885,6 +918,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 			}
 			$('#similarspan').html(trimstr(output,500))
 	}
+	paleoCodeToOpenTypePath[input]=ctx3;
 }
 
 function trimstr(coords,length){
@@ -934,34 +968,43 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
         if(strokeparse==false)
             curposx+=10
 		pointarray=[]
-		if(mirror){
+		if(rot!=0 && !doNotDraw){
+			localrot=parseInt(localrot)+parseInt(rot);
+		}
+		if(mirror || ot){
 			localrot+=180
 			localrot=parseInt(localrot)%360
 			start+=lineLength+wedgelength
-		}
-		if(rot!=0 && !doNotDraw){
-			localrot=parseInt(localrot)+parseInt(rot);
 		}
 		if(!keepconfig && smaller)
 			smaller=false;
 		if(!uselastresult || ot){
 			if(big){
 				length=multiplier*scalemultiplierForStrokeLength*strokelength*localscale;
-				if(localmov){
+				if(localmov && !ot){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
+				}else if(localmov && ot){
+					start-=localmov[0]*length
+					starty-=localmov[1]*length
 				}
 			}else if(smaller){
 				length=0.5*scalemultiplierForStrokeLength*strokelength*localscale;
-				if(localmov){
+				if(localmov && !ot){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
+				}else if(localmov && ot){
+					start-=localmov[0]*length
+					starty-=localmov[1]*length
 				}
 			}else{
 				length=scalemultiplierForStrokeLength*strokelength*localscale;
-				if(localmov){
+				if(localmov && !ot){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
+				}else if(localmov && ot){
+					start-=localmov[0]*length
+					starty-=localmov[1]*length
 				}
 			}
 				pointarray=[]
@@ -972,7 +1015,12 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier})
 				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop})
 				var centerwholewedge=getCenterOfWedge(pointarray)
-				rotpoints=rotateHead(pointarray,localrot*-1,centerwholewedge)
+				if(ot){
+					rotpoints=rotateHead(pointarray,localrot,centerwholewedge)
+				}else{
+					rotpoints=rotateHead(pointarray,localrot*-1,centerwholewedge)
+				}
+
 				headdraw=[]
 				for(rott in rotpoints){
 				if(rott<currenthead.length)
@@ -1021,19 +1069,20 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				}
 			} 
 			else {
+				console.log("DRAW OT STROKE")
 				rotpoints2=rotateWedge([
-				{"x":start, "y":starty+lineLength*scalemultiplier-opentypestrokeWidth},
-				{"x":start+length, "y":starty+lineLength*scalemultiplier-opentypestrokeWidth},
-				{"x":start+length, "y":starty+lineLength*scalemultiplier+opentypestrokeWidth},
-				{"x":start, "y":starty+lineLength*scalemultiplier+opentypestrokeWidth},	
-				{"x":start, "y":starty+lineLength*scalemultiplier-opentypestrokeWidth}				
-				],localrot,centerwholewedge)			
+				{"x":start, "y":(starty+lineLength*scalemultiplier)-opentypestrokeWidth},
+				{"x":start+length, "y":(starty+lineLength*scalemultiplier)-opentypestrokeWidth},
+				{"x":start+length, "y":(starty+lineLength*scalemultiplier)+opentypestrokeWidth},
+				{"x":start, "y":(starty+lineLength*scalemultiplier)+opentypestrokeWidth},	
+				{"x":start, "y":(starty+lineLength*scalemultiplier)-opentypestrokeWidth}				
+				],localrot+90,centerwholewedge)			
 				//console.log(rotpoints)		
-			    /*canvas.moveTo(rotpoints2[0]["points"]["x"],rotpoints2[0]["points"]["y"]);
-                canvas.lineTo(rotpoints2[1]["points"]["x"],rotpoints2[1]["points"]["y"]);
-                canvas.lineTo(rotpoints2[2]["points"]["x"],rotpoints2[2]["points"]["y"]);
-                canvas.lineTo(rotpoints2[3]["points"]["x"],rotpoints2[3]["points"]["y"]);
-                canvas.lineTo(rotpoints2[4]["points"]["x"],rotpoints2[4]["points"]["y"]);*/
+			    canvas.moveTo(rotpoints2[0]["x"]+10*15,rotpoints2[0]["y"]+10*15);
+                canvas.lineTo(rotpoints2[1]["x"]+10*15,rotpoints2[1]["y"]+10*15);
+                canvas.lineTo(rotpoints2[2]["x"]+10*15,rotpoints2[2]["y"]+10*15);
+                canvas.lineTo(rotpoints2[3]["x"]+10*15,rotpoints2[3]["y"]+10*15);
+                canvas.lineTo(rotpoints2[4]["x"]+10*15,rotpoints2[4]["y"]+10*15);
 				canvas.stroke=strokeColor
 			}
 		}else{
