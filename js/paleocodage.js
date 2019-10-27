@@ -20,6 +20,7 @@ var roundbracket=0
 var bracket=false
 var globalCenterPoint;
 var rotationconstant=15
+var opentypescale=12
 var bracketpositions=[]
 var factorbracketpositions=[]
 var charnamebuffer=""
@@ -72,12 +73,12 @@ function to_image(){
 }
 
 function createOpenTypeGlyph(charname,unicode,path){
-	//console.log(path)
+	console.log(unicode)
 	path.stroke=strokeColor
 	path.fill=fillColor
     return new opentype.Glyph({
         name: charname,
-        unicode: unicode.replace("0x",""),
+        unicode: unicode.replace("U+","0x"),
         advanceWidth: 650,
         path: path
     });
@@ -246,6 +247,7 @@ function buildSubstitution() {
   }
 	var paleocodelist=[]
 	var charnamelist=[]
+	 var alphabetToFontCode={}
 function createOpenFont(list){
     var svglist=[]
 	var codepointlist=[]
@@ -275,7 +277,7 @@ function createOpenFont(list){
 		codepointlist.push($(this).text())
 	});
 	$('#'+list).find('.transliteration').each(function(i, obj) {
-		charnamelist.push($(this).text())
+		charnamelist.push($(this).text()+"_cunei")
 	});
     for(code in paleocodelist){
         charNameToPaleoCode[charnamelist[code]]=paleocodelist[code]
@@ -286,6 +288,22 @@ function createOpenFont(list){
 	console.log(charnamelist)
 	var glyphs=[]
 	var coun=0
+	var first=0x30, last= 0x3A;
+    for (var i=first; i<last; i++) {
+      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
+    }
+	var first = 0x41, last = 0x5B;
+    for (var i=first; i<last; i++) {
+		console.log(String.fromCharCode(i))
+      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
+    }
+    var first=0x61, last= 0x7B;
+    for (var i=first; i<last; i++) {
+      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
+    }
 	for(svg in svglist){
 	    if(svg<charnamelist.length && svg<=codepointlist.length && svg<svglist.length){
 			gly=createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist[svg])
@@ -301,10 +319,19 @@ function createOpenFont(list){
 	//console.log(glyphs)
     font = new opentype.Font({familyName: 'OpenTypeSans', styleName: 'Medium', unitsPerEm: 1000, ascender: 800, descender: -200, glyphs: glyphs});
     console.log(font.toTables());
+
     for(svg in charnamelist){
         var sub=convertToSubstitution(charnamelist[svg].replace(" ","").toLowerCase())
-        console.log(sub)
-        //font.substitution.addLigature({ "sub": convertToSubstitution(charnamelist[svg].replace(" ","").toLowerCase()), "by": charnamelist[svg] })
+        console.log(Array.from(charnamelist[svg]))
+		console.log({ "sub": [""].concat(Array.from(charnamelist[svg])), "by": charnamelist[svg] })
+		console.log(svg)
+		console.log(font.substitution)
+		var arrayres=charnamelist[svg].replace("_cunei","")
+		for(elem in arrayres){
+			arrayres[elem]=arrayres[elem]+"_cunei"
+		}
+		font.substitution.addLigature("liga",{ "sub": [""].concat(arrayres), "by": charnamelist[svg] })
+        //font.substitution.addLigature({ "sub": sub, "by": charnamelist[svg] })
     }
     console.log(font.substitution)
     var buffer = font.toArrayBuffer();
@@ -625,7 +652,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 							console.log("Draw SVG")
 							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,true);
 							//if(svgonly){
-								scalemultiplier=15
+								scalemultiplier=opentypescale
 								scalemultiplierForStrokeLength=scalemultiplier
 								//mirror=!mirror
 							//}
@@ -666,7 +693,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     if(bracket==0){
                         scaleop=1;
                         curposx+=(10*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
-						curposxot+=(10*15)*(horizontalspaceop==0?1:horizontalspaceop)
+						curposxot+=(10*opentypescale)*(horizontalspaceop==0?1:horizontalspaceop)
 						curposy=startposy*scalemultiplier;
 
                     }
@@ -675,15 +702,15 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     if(bracket==0){
                         curposx+=5*scalemultiplier;
                         curposy=10*scalemultiplier;
-						curposyot+=(10*15)
-						curposxot+=(5*15)
+						curposyot+=(10*opentypescale)
+						curposxot+=(5*opentypescale)
                     }
                         break;
                 case ":": 
                         if(bracket==0){
                             scaleop=1;
                             curposy+=(7*scalemultiplier)*(verticalspaceop==0?1:verticalspaceop);
-							curposyot+=(7*15)*(verticalspaceop==0?1:verticalspaceop);
+							curposyot+=(7*opentypescale)*(verticalspaceop==0?1:verticalspaceop);
                         }
                         break;
                 case "!": //mirror character
@@ -695,7 +722,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     if(bracket==0){
                         scaleop=1;
                         curposy=10*scalemultiplier;
-						curposyot=10*15
+						curposyot=10*opentypescale
                     }
                         break;
 				case "\"": 
@@ -754,8 +781,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         if(bracket==0){    
                             curposy-=7*scalemultiplier;
                             curposx-=7*scalemultiplier;
-							curposyot-=7*15;
-                            curposxot-=7*15;
+							curposyot-=7*opentypescale;
+                            curposxot-=7*opentypescale;
                         }
                         break;
                 case "_": 
@@ -763,8 +790,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         scaleop=1;
                         curposx+=strokelength;
                         curposy=startposy*scalemultiplier;
-						curposyot=startposy*15;
-						curposxot+=strokelength*15;
+						curposyot=startposy*opentypescale;
+						curposxot+=strokelength*opentypescale;
                     }
                         break;
                 case " ": 
@@ -1078,11 +1105,11 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				{"x":start, "y":(starty+lineLength*scalemultiplier)-opentypestrokeWidth}				
 				],localrot+90,centerwholewedge)			
 				//console.log(rotpoints)		
-			    canvas.moveTo(rotpoints2[0]["x"]+10*15,rotpoints2[0]["y"]+10*15);
-                canvas.lineTo(rotpoints2[1]["x"]+10*15,rotpoints2[1]["y"]+10*15);
-                canvas.lineTo(rotpoints2[2]["x"]+10*15,rotpoints2[2]["y"]+10*15);
-                canvas.lineTo(rotpoints2[3]["x"]+10*15,rotpoints2[3]["y"]+10*15);
-                canvas.lineTo(rotpoints2[4]["x"]+10*15,rotpoints2[4]["y"]+10*15);
+			    canvas.moveTo(rotpoints2[0]["x"]+10*opentypescale,rotpoints2[0]["y"]+10*opentypescale);
+                canvas.lineTo(rotpoints2[1]["x"]+10*opentypescale,rotpoints2[1]["y"]+10*opentypescale);
+                canvas.lineTo(rotpoints2[2]["x"]+10*opentypescale,rotpoints2[2]["y"]+10*opentypescale);
+                canvas.lineTo(rotpoints2[3]["x"]+10*opentypescale,rotpoints2[3]["y"]+10*opentypescale);
+                canvas.lineTo(rotpoints2[4]["x"]+10*opentypescale,rotpoints2[4]["y"]+10*opentypescale);
 				canvas.stroke=strokeColor
 			}
 		}else{
