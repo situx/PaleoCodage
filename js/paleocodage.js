@@ -80,6 +80,20 @@ function createOpenTypeGlyph(charname,unicode,path){
     });
 }
 
+function loadHeadSVG(svgname){
+	console.log("Loading svg: "+"svg/"+svgname+".svg");
+	$.ajax({
+            url: "https://situx.github.io/PaleoCodage/svg/"+svgname+".svg",
+            async: true,
+			dataType: "text",
+            success: function (data){
+                console.log("load svg")
+				currenthead=getCoordinatesFromSVGPath(data)
+				console.log(currenthead)
+            }
+        });
+}
+
 function rotateLineClockWise(center, edge, angle) {
     xRot = center["x"] + Math.cos(toRadians(angle)) * (edge["x"] - center["x"]) - Math.sin(toRadians(angle)) * (edge["y"] - center["y"]);
     yRot = center["y"] + Math.sin(toRadians(angle)) * (edge["x"] - center["x"]) + Math.cos(toRadians(angle)) * (edge["y"] - center["y"]);
@@ -229,12 +243,12 @@ function buildSubstitution() {
   }
 	var paleocodelist=[]
 	var charnamelist=[]
-function createOpenFont(){
+function createOpenFont(list){
     var svglist=[]
 	var codepointlist=[]
 	var counterr=0
 	$('#glyphs').html("")
-	$('.codebutton').each(function(i, obj) {
+	$('#'+list).find('.codebutton').each(function(i, obj) {
         paleocodelist.push($(this).text())
 		var paleo=paleoCodageToSVG($(this).text(),counterr);
 		var paleo=paleoCodageToOpenTypePath($(this).text())
@@ -245,10 +259,10 @@ function createOpenFont(){
 		//$('.svg:nth-child('+i+')' ).html(paleo)
 		svglist.push(paleo)
 	});
-	$('.codepoint').each(function(i, obj) {
+	$('#'+list).find('.codepoint').each(function(i, obj) {
 		codepointlist.push($(this).text())
 	});
-	$('.transliteration').each(function(i, obj) {
+	$('#'+list).find('.transliteration').each(function(i, obj) {
 		charnamelist.push($(this).text())
 	});
     for(code in paleocodelist){
@@ -300,6 +314,7 @@ function createOpenFont(){
         //document.getElementById('jsonFont').innerHTML=stringify(font)
     clearCanvas();
 	substringgraph();
+	loadHeadSVG("defaulthead");
 }
 
     function createGlyphCanvas(glyph, size) {
@@ -419,7 +434,6 @@ function createFont(){
 	console.log(svglist)
 	console.log(codepointlist)
 	console.log(charnamelist)
-
 }
 
 function saveTextAsFile(tosave,fileext,filename)
@@ -892,9 +906,9 @@ function drawHead(points,canvas){
 }
 
 function getCoordinatesFromSVGPath(svgpath){
-	result=[]
+	var svgpathresult=[]
 	points=svgpath.split(" ")
-	newresult=null
+	var newresult=null
 	for(point in points){
 		points[point]=points[point].trim();
 		if(points[point].startsWith("Z")){
@@ -902,7 +916,7 @@ function getCoordinatesFromSVGPath(svgpath){
 		}
 		if(points[point].startsWith("M") || points[point].startsWith("L")){
 			if(newresult!=null){
-				result.push(newresult)
+				svgpathresult.push(newresult)
 			}
 			newresult={type:points[point].substring(0,1),points:{"x":points[point].substring(1)}}
 		}else{
@@ -911,8 +925,9 @@ function getCoordinatesFromSVGPath(svgpath){
 		console.log(points[point])
 		console.log(points[point].split(" "))
 	}
-	result.push(newresult)
-	return result;
+	svgpathresult.push(newresult)
+	console.log(svgpathresult)
+	return svgpathresult;
 }
 
 function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localrot,localmov,localscale,onlyhead,uselastresult){
