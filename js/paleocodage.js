@@ -695,14 +695,14 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         curposx+=(10*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
 						curposxot+=(10*opentypescale)*(horizontalspaceop==0?1:horizontalspaceop)
 						curposy=startposy*scalemultiplier;
-
+						curposyot=startposy*(scalemultiplier*opentypescale)
                     }
                         break;
                 case "#":
                     if(bracket==0){
                         curposx+=5*scalemultiplier;
                         curposy=10*scalemultiplier;
-						curposyot+=(10*opentypescale)
+						curposyot=(10*opentypescale)
 						curposxot+=(5*opentypescale)
                     }
                         break;
@@ -728,6 +728,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 				case "\"": 
                     if(bracket==0){
                         curposy=0*scalemultiplier;
+                        curposyot=0*scalemultiplier;
                     }
                         break;
 				case "~": 
@@ -735,12 +736,15 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         scaleop=1;
                         curposx-=10*scalemultiplier;
                         curposy=10*scalemultiplier;
+                        curposyot=(10*opentypescale)
+						curposxot+=(10*opentypescale)
                     }
                         break;
                 case "/": 
                     if(bracket==0){
                         scaleop=1;
                         curposy+=3.5*scalemultiplier;
+                        curposyot+=(3.5*opentypescale)
                     }
                     break;
                 case "|":
@@ -752,6 +756,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     if(bracket==0){
                         scaleop=1;
                         curposy+=strokelength;
+                        curposyot+=(strokelength*opentypescale)
                     }
                         break;
                 case ".": 
@@ -759,6 +764,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         scaleop=1;
                         curposy+=7*scalemultiplier;
                         curposx+=7*scalemultiplier;
+                        curposyot+=(7*scalemultiplier*opentypescale)
+						curposxot+=(7*scalemultiplier*opentypescale)
                     }
                         break;
 				case "<":
@@ -798,6 +805,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     if(bracket==0){
                         scaleop=1;
                         curposx+=1.5*strokelength*scalemultiplier;
+						curposxot+=(1.5*strokelength*scalemultiplier*opentypescale)
                     }
                         break;
 				case "h": 	// Kopf verkleinern () in %
@@ -848,6 +856,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                             console.log(verticalspaceop)
                             console.log((7*scalemultiplier)*verticalspaceop)
                             curposy+=(7*scalemultiplier)*verticalspaceop;
+                            curposyot+=(7*scalemultiplier)*verticalspaceop*opentypescale
                             break;
                         case "-":
                             horizontalspaceop=0;
@@ -856,6 +865,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                             console.log((10*scalemultiplier)*horizontalspaceop)
                             curposx+=(10*scalemultiplier)*horizontalspaceop;
                             curposy=startposy*scalemultiplier;
+                            curposxot+=(10*scalemultiplier)*horizontalspaceop*opentypescale;
+                            curposyot=startposy*opentypescale;
                             break;                        
                     }
 					console.log(rot)
@@ -928,6 +939,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 					startposx=10;
 					startposy=10;
 					curposy=10;
+					curposyot=10;
                     break;
                 default: 
         }
