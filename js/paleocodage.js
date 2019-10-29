@@ -20,7 +20,7 @@ var roundbracket=0
 var bracket=false
 var globalCenterPoint;
 var rotationconstant=15
-var opentypescale=12
+var opentypescale=15
 var bracketpositions=[]
 var factorbracketpositions=[]
 var charnamebuffer=""
@@ -1098,18 +1098,18 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 			else {
 				console.log("DRAW OT STROKE")
 				rotpoints2=rotateWedge([
-				{"x":start, "y":(starty+lineLength*scalemultiplier)-opentypestrokeWidth},
-				{"x":start+length, "y":(starty+lineLength*scalemultiplier)-opentypestrokeWidth},
-				{"x":start+length, "y":(starty+lineLength*scalemultiplier)+opentypestrokeWidth},
-				{"x":start, "y":(starty+lineLength*scalemultiplier)+opentypestrokeWidth},	
-				{"x":start, "y":(starty+lineLength*scalemultiplier)-opentypestrokeWidth}				
-				],localrot+90,centerwholewedge)			
+				{"x":start-opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)},
+				{"x":start-opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)+length*1},
+				{"x":start+opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)+length*1},
+				{"x":start+opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)},	
+				{"x":start-opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)}				
+				],localrot,centerwholewedge)			
 				//console.log(rotpoints)		
-			    canvas.moveTo(rotpoints2[0]["x"]+10*opentypescale,rotpoints2[0]["y"]+10*opentypescale);
-                canvas.lineTo(rotpoints2[1]["x"]+10*opentypescale,rotpoints2[1]["y"]+10*opentypescale);
-                canvas.lineTo(rotpoints2[2]["x"]+10*opentypescale,rotpoints2[2]["y"]+10*opentypescale);
-                canvas.lineTo(rotpoints2[3]["x"]+10*opentypescale,rotpoints2[3]["y"]+10*opentypescale);
-                canvas.lineTo(rotpoints2[4]["x"]+10*opentypescale,rotpoints2[4]["y"]+10*opentypescale);
+			    canvas.moveTo(rotpoints2[0]["x"],rotpoints2[0]["y"]);
+                canvas.lineTo(rotpoints2[1]["x"],rotpoints2[1]["y"]);
+                canvas.lineTo(rotpoints2[2]["x"],rotpoints2[2]["y"]);
+                canvas.lineTo(rotpoints2[3]["x"],rotpoints2[3]["y"]);
+                canvas.lineTo(rotpoints2[4]["x"],rotpoints2[4]["y"]);
 				canvas.stroke=strokeColor
 			}
 		}else{
