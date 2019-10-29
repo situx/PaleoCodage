@@ -12,6 +12,8 @@ var startposy=0;
 var startposx=0;
 var charNameToPaleoCode={}
 var paleoCodeToCharName={}
+var heads=[]
+var lines=[]
 var strokelength=30;
 var wedgelength=10;
 var headdraw=[];
@@ -177,6 +179,23 @@ function getCenterOfWedge(points){
 	//console.log("getCenterOfWedge " + " minx " + minx + " miny " + miny + " maxx " + maxx + " maxy " + maxy);
 	return getCenter({"x":minx,"y":miny},{"x":maxx, "y":maxy})
 
+}
+
+function getIntersections(canvas){	
+	for(head in heads){
+		for(line in lines){
+			var intersection=turf.lineIntersect(heads[head], lines[line]);
+			canvas.moveTo(intersection[0][0],intersection[0][1]);
+			canvas.lineTo(intersection[1][0],intersection[1][1]);
+			canvas.strokeColor=fillColor;
+			canvas.stroke();
+		}
+	}
+}
+	
+var line1 = turf.lineString([[126, -11], [129, -21]]);
+var line2 = turf.lineString([[123, -18], [131, -14]]);
+var intersects = turf.lineIntersect(line1, line2);
 }
 
 function toRadians(degrees)
@@ -554,6 +573,7 @@ function paleoCodageToOpenTypePath(paleoCode){
 function paleoCodageToSVG(paleoCode,index){
 	//console.log(paleoCode)
 	strokeParser(paleoCode,false,false)
+	
     //console.log(ctx2.getSerializedSvg())
 	//ctx2.scale(10,10);
 	console.log("PaleoCode: "+paleoCode)
@@ -592,6 +612,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 	$('#similar').html("")
 	//console.log(JSON.stringify(currenthead))
 	if(!recursive){
+		heads=[]
+		lines=[]
         clearCanvas(true);
         smaller=false;
         mirror=false;
@@ -964,7 +986,7 @@ function trimstr(coords,length){
 	return coords.length > length ? coords.replace("undefined,","").substring(0, length - 3) + "(...))" : coords;	
 }
 
-function drawHead(points,canvas){
+function drawHead(points,canvas,savehead){
 	for(drawit in points){
 		maxyglobalbbox=Math.max(points[drawit]["points"]["y"],maxyglobalbbox)
 		maxxglobalbbox=Math.max(points[drawit]["points"]["x"],maxxglobalbbox)
@@ -976,6 +998,9 @@ function drawHead(points,canvas){
 			canvas.lineTo(points[drawit]["points"]["x"], points[drawit]["points"]["y"]);
 		}
 	}	
+	if(savehead){
+		heads.push(points)
+	}
 }
 
 function getCoordinatesFromSVGPath(svgpath){
@@ -1074,7 +1099,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 		}
 		//console.log(headdraw)
 		if (!doNotDraw){
-			drawHead(headdraw,canvas)
+			drawHead(headdraw,canvas,uselastresult||ot)
 		}else {
 			wedgearray=wedgearray.concat(headdraw);
 			for(drawit in headdraw){
@@ -1090,6 +1115,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				if(!uselastresult){
 					var insert=[pointarray[pointarray.length-2],pointarray[pointarray.length-1]]
 					rotpoints2=rotateWedge(insert,localrot*-1,centerwholewedge)
+					lines.push(rotpoints2)
 				}								
 				if (doNotDraw){
 					wedgearray.push({"type":"M","points":{"x":rotpoints2[0]["x"],"y":rotpoints2[0]["y"]}})
