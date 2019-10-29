@@ -1019,31 +1019,37 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 			smaller=false;
 		if(!uselastresult || ot){
 			if(big){
-				length=multiplier*scalemultiplierForStrokeLength*strokelength*localscale;
-				if(localmov && !ot){
+                if(ot){
+                    length=multiplier*(opentypescale*strokelength*localscale);
+                }else{
+				length=multiplier*scalemultiplierForStrokeLength*strokelength*localscale;                    
+                }
+
+				if(localmov){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
-				}else if(localmov && ot){
-					start-=localmov[0]*length
-					starty-=localmov[1]*length
 				}
 			}else if(smaller){
-				length=0.5*scalemultiplierForStrokeLength*strokelength*localscale;
-				if(localmov && !ot){
+                if(ot){
+                    length=0.5*(opentypescale*strokelength*localscale);
+                }else{
+                    length=0.5*scalemultiplierForStrokeLength*strokelength*localscale;                    
+                }
+
+				if(localmov){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
-				}else if(localmov && ot){
-					start-=localmov[0]*length
-					starty-=localmov[1]*length
 				}
 			}else{
-				length=scalemultiplierForStrokeLength*strokelength*localscale;
-				if(localmov && !ot){
+                if(ot){
+               				length=opentypescale*(strokelength*localscale);
+                }else{
+				length=scalemultiplierForStrokeLength*strokelength*localscale;                    
+                }
+
+				if(localmov){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
-				}else if(localmov && ot){
-					start-=localmov[0]*length
-					starty-=localmov[1]*length
 				}
 			}
 				pointarray=[]
@@ -1109,10 +1115,14 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 			} 
 			else {
 				console.log("DRAW OT STROKE")
-				rotpoints2=rotateWedge([
+                console.log("Length: "+length)
+                console.log("LineLength: "+lineLength)
+                console.log("LineLengthScaled: "+lineLength*opentypescale)
+                console.log("LineLengthTotal: "+((lineLength*opentypescale)+length))
+                rotpoints2=rotateWedge([
 				{"x":start-opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)},
-				{"x":start-opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)+length*1},
-				{"x":start+opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)+length*1},
+				{"x":start-opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)+length},
+				{"x":start+opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)+length},
 				{"x":start+opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)},	
 				{"x":start-opentypestrokeWidth*2, "y":starty+(lineLength*opentypescale)}				
 				],localrot,centerwholewedge)			
