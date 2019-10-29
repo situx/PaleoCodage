@@ -192,11 +192,7 @@ function getIntersections(canvas){
 		}
 	}
 }
-	
-var line1 = turf.lineString([[126, -11], [129, -21]]);
-var line2 = turf.lineString([[123, -18], [131, -14]]);
-var intersects = turf.lineIntersect(line1, line2);
-}
+
 
 function toRadians(degrees)
 {
