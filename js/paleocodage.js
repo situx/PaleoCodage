@@ -181,6 +181,10 @@ function getCenterOfWedge(points){
 
 }
 
+/**
+ * Calculates intersections between cuneiform heads and lines and writes them on the canvas using the fill color
+ *  @param {canvas} canvas - The canvas to draw on
+ */
 function getIntersections(canvas){	
 	for(head in heads){
 		for(line in lines){
@@ -193,7 +197,8 @@ function getIntersections(canvas){
 	}
 }
 
-
+/**
+ * Converts degree to radian */
 function toRadians(degrees)
 {
   var pi = Math.PI;
@@ -223,6 +228,11 @@ function changeColors(colors,input){
 	}
 }
 
+/**
+ * Changes the stroke color of all canvas and redraws all SVGs
+ * @param {string} color - a html color code
+ * @param {string} input - the current paleocode
+ * */
 function changeStrokeColor(color,input){
 	strokeColor=color; 
 	console.log(color)
@@ -233,6 +243,11 @@ function changeStrokeColor(color,input){
 	}
 }
 
+/**
+ * Changes the fill color of all canvas and redraws all SVGs
+ * @param {string} color - a html color code
+ * @param {string} input - the current paleocode
+ * */
 function changeFillColor(color,input){
 	fillColor=color; 
 	console.log(color)
@@ -354,6 +369,7 @@ function createOpenFont(list){
 
     document.getElementById('fontFamilyName').innerHTML = font2.names.fontFamily.en;
      for (var i = 0; i < font2.glyphs.length; i++) {
+                if(i>61){ 
         var glyph = font2.glyphs.get(i);
         var ctxx = createGlyphCanvas(glyph, 150);
         var x = 50;
@@ -364,6 +380,7 @@ function createOpenFont(list){
         glyph.draw(ctxx, x, y, fontSize);
         glyph.drawPoints(ctxx, x, y, fontSize);
         glyph.drawMetrics(ctxx, x, y, fontSize);
+                }
     }
         //document.getElementById('jsonFont').innerHTML=stringify(font)
     clearCanvas();
