@@ -89,7 +89,7 @@ function createOpenTypeGlyph(charname,unicode,path){
 function loadHeadSVG(svgname){
 	console.log("Loading svg: "+"svg/"+svgname+".svg");
 	$.ajax({
-            url: "https://situx.github.io/PaleoCodage/svg/"+svgname+".svg",
+            url: "svg/"+svgname+".svg",
             async: true,
 			dataType: "text",
             success: function (data){
