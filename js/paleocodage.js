@@ -318,18 +318,28 @@ function createOpenFont(list){
 	console.log(charnamelist)
 	var glyphs=[]
 	var coun=0
+	      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x21",""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
+	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x23",""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
+	      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x28",""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
+      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x29",""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
+	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2d",""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
 	var first=0x30, last= 0x3A;
     for (var i=first; i<last; i++) {
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
     }
-	var first = 0x41, last = 0x5B;
+	var first = 0x3F, last = 0x5B;
     for (var i=first; i<last; i++) {
 		console.log(String.fromCharCode(i))
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
     }
-    var first=0x61, last= 0x7B;
+    var first=0x61, last= 0x7E;
     for (var i=first; i<last; i++) {
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
@@ -349,9 +359,17 @@ function createOpenFont(list){
 	//console.log(glyphs)
     font = new opentype.Font({familyName: 'OpenTypeSans', styleName: 'Medium', unitsPerEm: 1000, ascender: 800, descender: -200, glyphs: glyphs});
     console.log(font.toTables());
-
+    var newsignlist={}
+    for(sign in signlist){
+        if(!(signlist[sign] in signlist)){
+            newsignlist[signlist[sign]]=[]
+        }
+        newsignlist[signlist[sign]].push(sign)
+    }
+    console.log(newsignlist)
     for(svg in charnamelist){
         var sub=convertToSubstitution(charnamelist[svg].replace("_cunei","").replace(/ /g, ""),1,alphabetToFontCode)
+        var sub2=convertToSubstitution(charnamelist[svg].toLowerCase().replace("_cunei","").replace(/ /g, ""),1,alphabetToFontCode)
         console.log(Array.from(charnamelist[svg]))
 		console.log({ "sub": [""].concat(Array.from(charnamelist[svg])), "by": charnamelist[svg] })
 		console.log(svg)
@@ -360,8 +378,30 @@ function createOpenFont(list){
 		for(elem in arrayres){
 			arrayres[elem]=arrayres[elem]+"_cunei"
 		}
-		font.substitution.addLigature("aalt",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
 		font.substitution.addLigature("liga",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
+		font.substitution.addLigature("liga",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
+        if(charnamelist[svg].includes("_v")){
+        		font.substitution.addLigature("aalt",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
+                font.substitution.addLigature("aalt",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
+        }
+        console.log(codepointlist[svg])
+        if(codepointlist[svg].includes("&")){
+            var splitted=codepointlist[svg].split("&")
+            for(spl in splitted){
+                var unicodechar=String.fromCodePoint(splitted[spl].trim().replace("U+","0x"))
+                if(unicodechar in newsignlist){
+                    font.substitution.addLigature("liga",{ "sub": convertToSubstitution(newsignlist[unicodechar][0],1,alphabetToFontCode), "by": alphabetToFontCode[charnamelist[svg]] })   
+                    console.log(newsignlist[unicodechar])
+                }      
+            }
+        }else{
+            var unicodechar=String.fromCodePoint(codepointlist[svg].replace("U+","0x"))
+            if(unicodechar in newsignlist){
+                font.substitution.addLigature("liga",{ "sub": convertToSubstitution(newsignlist[unicodechar][0],1,alphabetToFontCode), "by": alphabetToFontCode[charnamelist[svg]] })                
+                console.log(newsignlist[unicodechar])
+        }            
+            
+        }
 
         //font.substitution.addLigature({ "sub": sub, "by": charnamelist[svg] })
     }
@@ -371,7 +411,7 @@ function createOpenFont(list){
 
     document.getElementById('fontFamilyName').innerHTML = font2.names.fontFamily.en;
      for (var i = 0; i < font2.glyphs.length; i++) {
-                if(i>61){ 
+                if(i>71){ 
         var glyph = font2.glyphs.get(i);
         var ctxx = createGlyphCanvas(glyph, 150);
         var x = 50;
@@ -659,8 +699,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 	}
     for (var i = 0; i < input.length; i++) {	
 		var isuppercase=(input.charAt(i) == input.charAt(i).toUpperCase())
-		var onlyhead=(input.charAt(i)=="w" || input.charAt(i)=="W")
-		//console.log(onlyhead)
+		var winkelhaken=(input.charAt(i)=="w" || input.charAt(i)=="W")
+		//console.log(winkelhaken)
         switch(input.charAt(i)){
                 case "a":
 				case "A":
@@ -683,11 +723,11 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 						scalemultiplierForStrokeLength=1
 						//console.log(curposx+" - "+curposy)
 						console.log("Draw HTML")
-						drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,false);
+						drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
 						if(!recursiverotation && !doNotDraw){
                             //console.log(curposx+" - "+curposy)
 							console.log("Draw SVG")
-							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,true);
+							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,true);
 							/* curposx+=(2*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
 						curposxot+=(2*opentypescale)*(horizontalspaceop==0?1:horizontalspaceop)
 						curposy=startposy*scalemultiplier;
@@ -700,7 +740,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 							//}
 							ot=true; //mirror=!mirror;
 							console.log("Draw OT")
-							drawWedgeGeneric(curposxot,curposyot,ctx3,true,isuppercase,recursive,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,false);
+							drawWedgeGeneric(curposxot,curposyot,ctx3,true,isuppercase,recursive,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
                             //if(svgonly){
                                 scalemultiplier=1
 								scalemultiplierForStrokeLength=scalemultiplier
@@ -1050,7 +1090,7 @@ function getCoordinatesFromSVGPath(svgpath){
 	return svgpathresult;
 }
 
-function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localrot,localmov,localscale,onlyhead,uselastresult){
+function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localrot,localmov,localscale,winkelhaken,uselastresult){
         if(strokeparse==false)
             curposx+=10
 		pointarray=[]
@@ -1132,7 +1172,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 			}
 		}
 		//canvas.closePath()
-		if(!onlyhead){
+		if(!winkelhaken){
 			if(!ot){
 				if(!uselastresult){
 					var insert=[pointarray[pointarray.length-2],pointarray[pointarray.length-1]]
