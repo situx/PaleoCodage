@@ -360,7 +360,9 @@ function createOpenFont(list){
 		for(elem in arrayres){
 			arrayres[elem]=arrayres[elem]+"_cunei"
 		}
+		font.substitution.addLigature("aalt",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
 		font.substitution.addLigature("liga",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
+
         //font.substitution.addLigature({ "sub": sub, "by": charnamelist[svg] })
     }
     console.log(font.substitution)
@@ -686,6 +688,11 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                             //console.log(curposx+" - "+curposy)
 							console.log("Draw SVG")
 							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],onlyhead,true);
+							/* curposx+=(2*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
+						curposxot+=(2*opentypescale)*(horizontalspaceop==0?1:horizontalspaceop)
+						curposy=startposy*scalemultiplier;
+						curposyot=startposy*(scalemultiplier*opentypescale)
+*/
 							//if(svgonly){
 								scalemultiplier=opentypescale
 								scalemultiplierForStrokeLength=scalemultiplier
@@ -699,7 +706,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 								scalemultiplierForStrokeLength=scalemultiplier
                             //}
 							ot=false;
-                            if(!recursive){mirror=false;rot=0;}else{mirror=!mirror;}
+                            if(!recursive){mirror=false;rot=0;}//else{mirror=!mirror;}
                         }
                     }
                     break;
@@ -932,7 +939,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     bracketpositions.push({start:i,end:-1})
                     break;
                  case "]":
-                    bracket=false;
+				 	charnamebuffer+="_cunei";
+					bracket=false;
                     if(charnamebuffer in charNameToPaleoCode){
 						if(rot!=0){
                             	//curposy=startposy;
@@ -966,6 +974,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 							strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
 						}
 					}
+
                     bracketpositions[bracketpositions.length-1]["end"]=i+1;
 					smaller=false;
 					mirror=false;
