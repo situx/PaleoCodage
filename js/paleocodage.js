@@ -378,12 +378,12 @@ function createOpenFont(list){
 		for(elem in arrayres){
 			arrayres[elem]=arrayres[elem]+"_cunei"
 		}
-		font.substitution.addLigature("liga",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
-		font.substitution.addLigature("liga",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
         if(charnamelist[svg].includes("_v")){
-        		font.substitution.addLigature("aalt",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
-                font.substitution.addLigature("aalt",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
+        		//font.substitution.addLigature("aalt",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
+                //font.substitution.addLigature("aalt",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
         }
+        font.substitution.addLigature("liga",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
+		font.substitution.addLigature("liga",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
         console.log(codepointlist[svg])
         if(codepointlist[svg].includes("&")){
             var splitted=codepointlist[svg].split("&")
@@ -723,11 +723,12 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 						scalemultiplierForStrokeLength=1
 						//console.log(curposx+" - "+curposy)
 						console.log("Draw HTML")
-						drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
+                        if(!svgonly)
+                            drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
 						if(!recursiverotation && !doNotDraw){
                             //console.log(curposx+" - "+curposy)
 							console.log("Draw SVG")
-							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,true);
+							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,!svgonly);
 							/* curposx+=(2*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
 						curposxot+=(2*opentypescale)*(horizontalspaceop==0?1:horizontalspaceop)
 						curposy=startposy*scalemultiplier;
