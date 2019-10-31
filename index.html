@@ -109,10 +109,18 @@ function htmlTableToJSON(filename,ext){
 					<option value="#000000;#FFFFFF">Variant</option></select>
 				Stroke Color: <input type="color" id="strokeColor" onchange='changeStrokeColor(document.getElementById("strokeColor").value,document.getElementById("canvasinput").value)'/>
 				Fill Color: <input type="color" id="fillColor" onchange='changeFillColor(document.getElementById("fillColor").value,document.getElementById("canvasinput").value)'/>		<br/>
-				Head Type: <select id="headtype" onchange='loadHeadSVG(document.getElementById("headtype").value)'>
-				<option value="defaulthead" selected="selected">Default</option>
-				<option value="rectanglehead">Rectangle</option>
-				<option value="starhead">Star</option>
+				Head Type: <select name="headtype" id="headtype" onchange='loadHeadSVG(document.getElementById("headtype").value)'>
+				<option value="defaulthead" headtype="defaulthead" selected="selected">Triangular</option>
+				<option value="defaultshorthead" headtype="defaultshorthead">Triangular Short</option>
+				<option value="defaultlonghead" headtype="defaultlonghead">Triangular Long</option>
+				<option value="curvedsideshead" headtype="curvedsideshead">Curved Sides</option>
+				<option value="cursivehead" headtype="cursivehead">Cursive</option>
+				<option value="flaghead" headtype="flaghead">Flagged Head</option>
+				<option value="widestrokehead" headtype="widestrokehead">Wide Stroke</option>
+				<option value="widestrokecurvedsidehead" headtype="widestrokecurvedsidehead">Wide Stroke Curved Sides</option>
+				<option value="widestrokecurvedhead" headtype="widestrokecurvedhead">Wide Stroke Curved</option>
+				<option value="rectanglehead" headtype="rectanglehead">Rectangle</option>
+				<option value="starhead" headtype="starhead">Star</option>
 				</select><br/>
 				
 				<button id="downloadImage" onClick="to_image()">Download Image</button>
@@ -190,6 +198,7 @@ function htmlTableToJSON(filename,ext){
 <tr><th>Sign</th><th>Code point</th><th>Transliteration</th><th>Borger</th><th>PaleoCode</th><th>SVG</th><th>Gottstein</th><th>Comment</th><th>Source</th><th>Epoch</th><th>Location</th></tr><tr>
 </thead><tbody>
 <tr><td class="sign">𒀀</td><td class="codepoint">U+12000</td><td class="transliteration" id="A">A</td><td class="borger">839</td><td><button class="codebutton" onClick="showCharacter('a-a:a')">a-a:a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td><td></tr>
+<tr><td class="sign">𒀀</td><td class="codepoint">U+12000</td><td class="transliteration" id="A_v2">A_v2</td><td class="borger">839</td><td><button class="codebutton" onClick="showCharacter('a-a:a')">a-sa:sa-a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td><td></tr>
 <tr><td class="sign">𒀁</td><td class="codepoint">U+12001</td><td class="transliteration" id="A x A">A x A</td><td class="borger">845</td><td><button class="codebutton" onClick="showCharacter('a-:sa-:sa:sa-a:a')">a-:sa-:sa:sa-a:a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>EDURU</td><td></td><td></td><td></td></tr>
 <tr><td class="sign">𒀂</td><td class="codepoint">U+12002</td><td class="transliteration" id="A x BAD">A x BAD</td><td class="borger">840</td><td><button class="codebutton" onClick="showCharacter('a-b-w-a:a')">a-b-w-a:a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>AGAM</td><td></td><td></td><td></td></tr>
 <tr><td class="sign">𒋰</td><td class="codepoint">U+122F0</td><td class="transliteration" id="TAB">TAB</td><td class="borger">209</td><td><button class="codebutton" onClick="showCharacter('b:b')">b:b</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
