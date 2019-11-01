@@ -99,7 +99,7 @@ function createOpenTypeGlyph(charname,unicode,path){
 function loadWinkelhakenSVG(svgname){
 	console.log("Loading svg: "+"svg/winkelhaken/"+svgname+".svg");
 	$.ajax({
-            url: "svg/"+svgname+".svg",
+            url: "svg/winkelhaken/"+svgname+".svg",
             async: true,
 			dataType: "xml",
             success: function (data){
@@ -113,7 +113,7 @@ function loadWinkelhakenSVG(svgname){
 function loadHeadSVG(svgname){
 	console.log("Loading svg: "+"svg/head/"+svgname+".svg");
 	$.ajax({
-            url: "svg/"+svgname+".svg",
+            url: "svg/head/"+svgname+".svg",
             async: true,
 			dataType: "xml",
             success: function (data){
