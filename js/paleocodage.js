@@ -103,7 +103,8 @@ function loadWinkelhakenSVG(svgname){
             async: true,
 			dataType: "xml",
             success: function (data){
-                console.log("load svg")			
+                console.log("load svg")
+				console.log(data)				
 				currentwinkelhaken=getCoordinatesFromSVGPath($(data).find("path")[0].attr("d"))
 				console.log(currenthead)
             }
@@ -118,6 +119,8 @@ function loadHeadSVG(svgname){
 			dataType: "xml",
             success: function (data){
                 console.log("load svg")			
+				console.log(data)
+				console.log($(data).find("path")[0])
 				currenthead=getCoordinatesFromSVGPath($(data).find("path")[0].attr("d"))
 				console.log(currenthead)
             }
