@@ -121,6 +121,18 @@ function htmlTableToJSON(filename,ext){
 				<option value="widestrokecurvedhead" headtype="widestrokecurvedhead">Wide Stroke Curved</option>
 				<option value="rectanglehead" headtype="rectanglehead">Rectangle</option>
 				<option value="starhead" headtype="starhead">Star</option>
+				</select>
+				Winkelhaken Type: <select name="winkelhakentype" id="winkelhakentype" onchange='loadWinkelhakenSVG(document.getElementById("winkelhakentype").value)'><option value="defaulthead" headtype="defaulthead" selected="selected">Triangular</option>
+				<option value="defaultshorthead" headtype="defaultshorthead">Triangular Short</option>
+				<option value="defaultlonghead" headtype="defaultlonghead">Triangular Long</option>
+				<option value="curvedsideshead" headtype="curvedsideshead">Curved Sides</option>
+				<option value="cursivehead" headtype="cursivehead">Cursive</option>
+				<option value="flaghead" headtype="flaghead">Flagged Head</option>
+				<option value="widestrokehead" headtype="widestrokehead">Wide Stroke</option>
+				<option value="widestrokecurvedsidehead" headtype="widestrokecurvedsidehead">Wide Stroke Curved Sides</option>
+				<option value="widestrokecurvedhead" headtype="widestrokecurvedhead">Wide Stroke Curved</option>
+				<option value="rectanglehead" headtype="rectanglehead">Rectangle</option>
+				<option value="starhead" headtype="starhead">Star</option>
 				</select><br/>
 				
 				<button id="downloadImage" onClick="to_image()">Download Image</button>
