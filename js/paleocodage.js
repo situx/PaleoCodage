@@ -889,6 +889,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         scaleop=1;
                         curposx+=1.5*strokelength*scalemultiplier;
 						curposxot+=(1.5*strokelength*scalemultiplier*opentypescale)
+						curposy=startposy*scalemultiplier;
+						curposyot=startposy*(scalemultiplier*opentypescale)
                     }
                         break;
 				case "h": 	// Kopf verkleinern () in %
