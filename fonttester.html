@@ -81,10 +81,22 @@ $(document).ready(function() {
 		console.log(e)
 		console.log($('#copyunicode').prop('checked'))
 		if($('#copyunicode').prop('checked')){
-			var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
-			console.log(trimmed)
-			var unicodesign=getUnicodeFromTransliteration(trimmed)
-			console.log(unicodesign)
+			if(selectedText.includes("-")){
+				var spl=selectedText.split("-")
+				var unicodesign=""
+				for(chara in spl){
+					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+					console.log(trimmed)
+					unicodesign+=getUnicodeFromTransliteration(trimmed)
+					console.log(unicodesign)
+				}
+			}else{
+				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+				console.log(trimmed)
+				var unicodesign=getUnicodeFromTransliteration(trimmed)
+				console.log(unicodesign)
+			}
+
 			if(unicodesign!=null){
 				e.clipboardData.setData('text/plain', unicodesign);
 			}else{
@@ -104,10 +116,22 @@ $(document).ready(function() {
 		console.log(e)
 		console.log($('#copyunicode').prop('checked'))
 		if($('#copyunicode').prop('checked')){
-			var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
-			console.log(trimmed)
-			var unicodesign=getUnicodeFromTransliteration(trimmed)
-			console.log(unicodesign)
+			if(selectedText.includes("-")){
+				var spl=selectedText.split("-")
+				var unicodesign=""
+				for(chara in spl){
+					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+					console.log(trimmed)
+					unicodesign+=getUnicodeFromTransliteration(trimmed)
+					console.log(unicodesign)
+				}
+			}else{
+				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+				console.log(trimmed)
+				var unicodesign=getUnicodeFromTransliteration(trimmed)
+				console.log(unicodesign)
+			}
+
 			if(unicodesign!=null){
 				e.clipboardData.setData('text/plain', unicodesign);
 			}else{
@@ -127,10 +151,22 @@ $(document).ready(function() {
 		console.log(e)
 		console.log($('#copyunicode').prop('checked'))
 		if($('#copyunicode').prop('checked')){
-			var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
-			console.log(trimmed)
-			var unicodesign=getUnicodeFromTransliteration(trimmed)
-			console.log(unicodesign)
+			if(selectedText.includes("-")){
+				var spl=selectedText.split("-")
+				var unicodesign=""
+				for(chara in spl){
+					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+					console.log(trimmed)
+					unicodesign+=getUnicodeFromTransliteration(trimmed)
+					console.log(unicodesign)
+				}
+			}else{
+				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+				console.log(trimmed)
+				var unicodesign=getUnicodeFromTransliteration(trimmed)
+				console.log(unicodesign)
+			}
+
 			if(unicodesign!=null){
 				e.clipboardData.setData('text/plain', unicodesign);
 			}else{
