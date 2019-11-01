@@ -121,7 +121,7 @@ function htmlTableToJSON(filename,ext){
 				<option value="widestrokecurvedhead" headtype="widestrokecurvedhead">Wide Stroke Curved</option>
 				<option value="rectanglehead" headtype="rectanglehead">Rectangle</option>
 				<option value="starhead" headtype="starhead">Star</option>
-				</select>
+				</select><br/>
 				Winkelhaken Type: <select name="winkelhakentype" id="winkelhakentype" onchange='loadWinkelhakenSVG(document.getElementById("winkelhakentype").value)'><option value="defaulthead" headtype="defaulthead" selected="selected">Triangular</option>
 				<option value="defaultshorthead" headtype="defaultshorthead">Triangular Short</option>
 				<option value="defaultlonghead" headtype="defaultlonghead">Triangular Long</option>
@@ -210,7 +210,6 @@ function htmlTableToJSON(filename,ext){
 <tr><th>Sign</th><th>Code point</th><th>Transliteration</th><th>Borger</th><th>PaleoCode</th><th>SVG</th><th>Gottstein</th><th>Comment</th><th>Source</th><th>Epoch</th><th>Location</th></tr><tr>
 </thead><tbody>
 <tr><td class="sign">𒀀</td><td class="codepoint">U+12000</td><td class="transliteration" id="A">A</td><td class="borger">839</td><td><button class="codebutton" onClick="showCharacter('a-a:a')">a-a:a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td><td></tr>
-<tr><td class="sign">𒀀</td><td class="codepoint">U+12000</td><td class="transliteration" id="A_v2">A_v2</td><td class="borger">839</td><td><button class="codebutton" onClick="showCharacter('a-a:a')">a-sa:sa-a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td><td></tr>
 <tr><td class="sign">𒀁</td><td class="codepoint">U+12001</td><td class="transliteration" id="A x A">A x A</td><td class="borger">845</td><td><button class="codebutton" onClick="showCharacter('a-:sa-:sa:sa-a:a')">a-:sa-:sa:sa-a:a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>EDURU</td><td></td><td></td><td></td></tr>
 <tr><td class="sign">𒀂</td><td class="codepoint">U+12002</td><td class="transliteration" id="A x BAD">A x BAD</td><td class="borger">840</td><td><button class="codebutton" onClick="showCharacter('a-b-w-a:a')">a-b-w-a:a</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td>AGAM</td><td></td><td></td><td></td></tr>
 <tr><td class="sign">𒋰</td><td class="codepoint">U+122F0</td><td class="transliteration" id="TAB">TAB</td><td class="borger">209</td><td><button class="codebutton" onClick="showCharacter('b:b')">b:b</button></td><td class="svg"><div class="svgcontainer"></div></td><td class="gottstein"></td><td></td><td></td><td></td><td></td></tr>
@@ -467,6 +466,12 @@ function htmlTableToJSON(filename,ext){
 					  </li>
 					  <li>
 						<a href="https://situx.github.io/PaleoCodage/graph.html" target="_blank">Similarity Graph</a>
+					  </li>
+					  <li>
+						<a href="https://situx.github.io/PaleoCodage/fonttester.html" target="_blank">Fonttester</a>
+					  </li>
+					  <li>
+						<a href="https://situx.github.io/PaleoCodage/fontbuilder.html" target="_blank">Fontbuilder</a>
 					  </li>
 					  <li>
 						<a href="https://www.mainzed.org" target="_blank">mainzed</a>
