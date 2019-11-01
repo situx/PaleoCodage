@@ -109,30 +109,31 @@ function htmlTableToJSON(filename,ext){
 					<option value="#000000;#FFFFFF">Variant</option></select>
 				Stroke Color: <input type="color" id="strokeColor" onchange='changeStrokeColor(document.getElementById("strokeColor").value,document.getElementById("canvasinput").value)'/>
 				Fill Color: <input type="color" id="fillColor" onchange='changeFillColor(document.getElementById("fillColor").value,document.getElementById("canvasinput").value)'/>		<br/>
-				Head Type: <select name="headtype" id="headtype" onchange='loadHeadSVG(document.getElementById("headtype").value)'>
-				<option value="defaulthead" headtype="defaulthead" selected="selected">Triangular</option>
-				<option value="defaultshorthead" headtype="defaultshorthead">Triangular Short</option>
-				<option value="defaultlonghead" headtype="defaultlonghead">Triangular Long</option>
-				<option value="curvedsideshead" headtype="curvedsideshead">Curved Sides</option>
-				<option value="cursivehead" headtype="cursivehead">Cursive</option>
-				<option value="flaghead" headtype="flaghead">Flagged Head</option>
-				<option value="widestrokehead" headtype="widestrokehead">Wide Stroke</option>
-				<option value="widestrokecurvedsidehead" headtype="widestrokecurvedsidehead">Wide Stroke Curved Sides</option>
-				<option value="widestrokecurvedhead" headtype="widestrokecurvedhead">Wide Stroke Curved</option>
-				<option value="rectanglehead" headtype="rectanglehead">Rectangle</option>
-				<option value="starhead" headtype="starhead">Star</option>
+				Head Type: <select id="headtype" onchange='loadHeadSVG(document.getElementById("headtype").value)'>
+				<option value="defaulthead" selected="selected">Triangular</option>
+				<option value="defaultshorthead">Triangular Short</option>
+				<option value="defaultlonghead">Triangular Long</option>
+				<option value="curvedsideshead">Curved Sides</option>
+				<option value="cursivehead">Cursive</option>
+				<option value="flaghead">Flagged Head</option>
+				<option value="widestrokehead">Wide Stroke</option>
+				<option value="widestrokecurvedsidehead">Wide Stroke Curved Sides</option>
+				<option value="widestrokecurvedhead">Wide Stroke Curved</option>
+				<option value="rectanglehead">Rectangle</option>
+				<option value="starhead">Star</option>
 				</select><br/>
-				Winkelhaken Type: <select name="winkelhakentype" id="winkelhakentype" onchange='loadWinkelhakenSVG(document.getElementById("winkelhakentype").value)'><option value="defaulthead" headtype="defaulthead" selected="selected">Triangular</option>
-				<option value="defaultshorthead" headtype="defaultshorthead">Triangular Short</option>
-				<option value="defaultlonghead" headtype="defaultlonghead">Triangular Long</option>
-				<option value="curvedsideshead" headtype="curvedsideshead">Curved Sides</option>
-				<option value="cursivehead" headtype="cursivehead">Cursive</option>
-				<option value="flaghead" headtype="flaghead">Flagged Head</option>
-				<option value="widestrokehead" headtype="widestrokehead">Wide Stroke</option>
-				<option value="widestrokecurvedsidehead" headtype="widestrokecurvedsidehead">Wide Stroke Curved Sides</option>
-				<option value="widestrokecurvedhead" headtype="widestrokecurvedhead">Wide Stroke Curved</option>
-				<option value="rectanglehead" headtype="rectanglehead">Rectangle</option>
-				<option value="starhead" headtype="starhead">Star</option>
+				Winkelhaken Type: <select id="winkelhakentype" onchange='loadWinkelhakenSVG(document.getElementById("winkelhakentype").value)'>
+				<option value="defaulthead" selected="selected">Triangular</option>
+				<option value="defaultshorthead">Triangular Short</option>
+				<option value="defaultlonghead">Triangular Long</option>
+				<option value="curvedsideshead">Curved Sides</option>
+				<option value="cursivehead">Cursive</option>
+				<option value="flaghead">Flagged Head</option>
+				<option value="widestrokehead" >Wide Stroke</option>
+				<option value="widestrokecurvedsidehead">Wide Stroke Curved Sides</option>
+				<option value="widestrokecurvedhead">Wide Stroke Curved</option>
+				<option value="rectanglehead">Rectangle</option>
+				<option value="starhead">Star</option>
 				</select><br/>
 				
 				<button id="downloadImage" onClick="to_image()">Download Image</button>
