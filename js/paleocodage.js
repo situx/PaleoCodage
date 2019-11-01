@@ -104,7 +104,7 @@ function loadWinkelhakenSVG(svgname){
 			dataType: "xml",
             success: function (data){
                 console.log("load svg")			
-				currentwinkelhaken=getCoordinatesFromSVGPath(data.find("path")[0].attr("d"))
+				currentwinkelhaken=getCoordinatesFromSVGPath($(data).find("path")[0].attr("d"))
 				console.log(currenthead)
             }
         });
@@ -118,7 +118,7 @@ function loadHeadSVG(svgname){
 			dataType: "xml",
             success: function (data){
                 console.log("load svg")			
-				currenthead=getCoordinatesFromSVGPath(data.find("path")[0].attr("d"))
+				currenthead=getCoordinatesFromSVGPath($(data).find("path")[0].attr("d"))
 				console.log(currenthead)
             }
         });
@@ -437,7 +437,7 @@ function createOpenFont(list){
 
     document.getElementById('fontFamilyName').innerHTML = font2.names.fontFamily.en;
      for (var i = 0; i < font2.glyphs.length; i++) {
-                if(i>72){ 
+                if(i>75){ 
         var glyph = font2.glyphs.get(i);
         var ctxx = createGlyphCanvas(glyph, 150);
         var x = 50;
