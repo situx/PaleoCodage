@@ -44,7 +44,7 @@ function activateWebFont(){
 function getUnicodeFromTransliteration(signname){
 	console.log(paleocode)
 	for(code in paleocode){
-		if(signname==paleocode[code]["Transliteration"].replace(/ /g,"") || signname.toLowerCase()==paleocode[code]["Transliteration"].replace(/ /g,"")){
+		if(signname==paleocode[code]["Transliteration"].replace(/ /g,"") || signname.toUpperCase()==paleocode[code]["Transliteration"].replace(/ /g,"")){
 			return paleocode[code]["Sign"]
 		}
 	}
@@ -81,7 +81,9 @@ $(document).ready(function() {
 		console.log(e)
 		console.log($('#copyunicode').prop('checked'))
 		if($('#copyunicode').prop('checked')){
-			var unicodesign=getUnicodeFromTransliteration(selectedText)
+			var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+			console.log(trimmed)
+			var unicodesign=getUnicodeFromTransliteration(trimmed)
 			console.log(unicodesign)
 			if(unicodesign!=null){
 				e.clipboardData.setData('text/plain', unicodesign);
@@ -102,7 +104,32 @@ $(document).ready(function() {
 		console.log(e)
 		console.log($('#copyunicode').prop('checked'))
 		if($('#copyunicode').prop('checked')){
-			var unicodesign=getUnicodeFromTransliteration(selectedText).replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"")
+			var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+			console.log(trimmed)
+			var unicodesign=getUnicodeFromTransliteration(trimmed)
+			console.log(unicodesign)
+			if(unicodesign!=null){
+				e.clipboardData.setData('text/plain', unicodesign);
+			}else{
+				e.clipboardData.setData('text/plain', selectedText);
+			}
+		}else{
+			e.clipboardData.setData('text/plain', selectedText);
+		}
+		console.log(e.clipboardData)
+    });
+	document.getElementById("fontusage3").addEventListener('copy', function(e){
+		e.preventDefault();
+        console.log('copy behaviour detected!');
+		var selectedText = window.getSelection().toString(); 
+        selectedText = selectedText.replace(/\u200B/g, "");
+		console.log(selectedText)
+		console.log(e)
+		console.log($('#copyunicode').prop('checked'))
+		if($('#copyunicode').prop('checked')){
+			var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+			console.log(trimmed)
+			var unicodesign=getUnicodeFromTransliteration(trimmed)
 			console.log(unicodesign)
 			if(unicodesign!=null){
 				e.clipboardData.setData('text/plain', unicodesign);
