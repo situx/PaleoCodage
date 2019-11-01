@@ -400,7 +400,7 @@ function createOpenFont(list){
         font.substitution.addLigature("liga",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
 		font.substitution.addLigature("liga",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
         console.log(codepointlist[svg])
-        if(codepointlist[svg].includes("&")){
+        if(svg in codepointlist && codepointlist[svg].includes("&")){
             var splitted=codepointlist[svg].split("&")
             for(spl in splitted){
                 var unicodechar=String.fromCodePoint(splitted[spl].trim().replace("U+","0x"))
