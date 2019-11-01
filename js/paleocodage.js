@@ -105,7 +105,7 @@ function loadWinkelhakenSVG(svgname){
             success: function (data){
                 console.log("load svg")
 				console.log(data)				
-				currentwinkelhaken=getCoordinatesFromSVGPath($(data).find("path")[0].attr("d"))
+				currentwinkelhaken=getCoordinatesFromSVGPath($($(data).find("path")[0]).attr("d"))
 				console.log(currenthead)
             }
         });
@@ -121,7 +121,7 @@ function loadHeadSVG(svgname){
                 console.log("load svg")			
 				console.log(data)
 				console.log($(data).find("path")[0])
-				currenthead=getCoordinatesFromSVGPath($(data).find("path")[0].attr("d"))
+				currenthead=getCoordinatesFromSVGPath($($(data).find("path")[0]).attr("d"))
 				console.log(currenthead)
             }
         });
