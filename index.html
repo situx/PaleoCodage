@@ -602,6 +602,25 @@ function htmlTableToJSON(filename,ext){
 	});
 </script>
 <script>
+//Gitlab API here https://docs.gitlab.com/ee/api/repository_files.html#update-existing-file-in-repository
+function commitChangesToGitlab(){
+	commitChanges("",paleocodes)
+}
+
+function commitChangesToGithub(){
+	commitChanges("",paleocodes)
+}
+
+function commitChanges(url,changes){
+ $.ajax({
+   url: url,
+   type: 'POST',
+   contentType:'application/json',
+   data: JSON.stringify(changes),
+   dataType:'json'
+ });
+}
+
 function activateKeyboard(){
 
 $('#canvasinput').keyboard({

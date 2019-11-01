@@ -7,6 +7,7 @@ var curposy=30;
 var curposxot=30;
 var curposyot=30;
 var currenthead=[{"type":"M","points":{"x":-5,"y":10}},{"type":"L","points":{"x":5,"y":10}},{"type":"L","points":{"x":0,"y":20}},{"type":"L","points":{"x":-5,"y":10}}]
+var currentwinkelhaken=[{"type":"M","points":{"x":-5,"y":10}},{"type":"L","points":{"x":5,"y":10}},{"type":"L","points":{"x":0,"y":20}},{"type":"L","points":{"x":-5,"y":10}}]
 var currentstroke=[{"type":"M","points":{"x":0,"y":0}},{"type":"L","points":{"x":0,"y":strokelength-wedgelength}}]
 var startposy=0;
 var startposx=0;
@@ -86,15 +87,29 @@ function createOpenTypeGlyph(charname,unicode,path){
     });
 }
 
-function loadHeadSVG(svgname){
-	console.log("Loading svg: "+"svg/"+svgname+".svg");
+function loadWinkelhakenSVG(svgname){
+	console.log("Loading svg: "+"svg/winkelhaken/"+svgname+".svg");
 	$.ajax({
             url: "svg/"+svgname+".svg",
             async: true,
-			dataType: "text",
+			dataType: "xml",
             success: function (data){
-                console.log("load svg")
-				currenthead=getCoordinatesFromSVGPath(data)
+                console.log("load svg")			
+				currentwinkelhaken=getCoordinatesFromSVGPath(data.find("path")[0].attr("d"))
+				console.log(currenthead)
+            }
+        });
+}
+
+function loadHeadSVG(svgname){
+	console.log("Loading svg: "+"svg/head/"+svgname+".svg");
+	$.ajax({
+            url: "svg/"+svgname+".svg",
+            async: true,
+			dataType: "xml",
+            success: function (data){
+                console.log("load svg")			
+				currenthead=getCoordinatesFromSVGPath(data.find("path")[0].attr("d"))
 				console.log(currenthead)
             }
         });
@@ -1114,7 +1129,6 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
                 }else{
 				length=multiplier*scalemultiplierForStrokeLength*strokelength*localscale;                    
                 }
-
 				if(localmov){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
@@ -1132,7 +1146,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				}
 			}else{
                 if(ot){
-               				length=opentypescale*(strokelength*localscale);
+               		length=opentypescale*(strokelength*localscale);
                 }else{
 				length=scalemultiplierForStrokeLength*strokelength*localscale;                    
                 }
@@ -1143,8 +1157,14 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				}
 			}
 				pointarray=[]
-				for(point in currenthead){
-					pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
+				if(winkelhaken){
+					for(point in currentwinkelhaken){
+						pointarray.push({"x":currentwinkelhaken[point]["points"]["x"],"y":currentwinkelhaken[point]["points"]["y"]})
+					}
+				}else{
+					for(point in currenthead){
+						pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
+					}
 				}
 				pointarray=scalePointArray(pointarray,scalemultiplier,start,starty)
 				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier})
@@ -1155,7 +1175,6 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				}else{
 					rotpoints=rotateHead(pointarray,localrot*-1,centerwholewedge)
 				}
-
 				headdraw=[]
 				for(rott in rotpoints){
 				if(rott<currenthead.length)
