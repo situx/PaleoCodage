@@ -44,10 +44,15 @@ function activateWebFont2(){
         $("#fontusage2").attr("class", "costumfont2");
     }
 }
+document.addEventListener('copy', function(e){
+  var text = window.getSelection().toString().replace(/[\n\r]+/g, '');
+  e.clipboardData.setData('text/plain', text);
+  e.preventDefault();
+});
 </script>
 </head>
 <body>
-<h1 align="center">Modified transliteration to cuneiform</h1>
+<h1>Modified transliteration to cuneiform</h1>
 How does it work? 
 <ul>
 <li>Cuneiform sign variants can be created using the PaleoCodage encoding which can be tested <a href="https://situx.github.io/PaleoCodage">here</a></li>
