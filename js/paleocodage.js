@@ -79,12 +79,21 @@ function createOpenTypeGlyph(charname,unicode,path){
 	console.log(unicode)
 	path.stroke=strokeColor
 	path.fill=fillColor
-    return new opentype.Glyph({
+	if(charname.includes("_v")){
+	    return new opentype.Glyph({
+        name: charname,
+        advanceWidth: 650,
+        path: path
+    });
+	}else{
+	    return new opentype.Glyph({
         name: charname,
         unicode: unicode.replace("U+","0x"),
         advanceWidth: 650,
         path: path
     });
+	}
+
 }
 
 function loadWinkelhakenSVG(svgname){
@@ -343,12 +352,14 @@ function createOpenFont(list){
       alphabetToFontCode[String.fromCharCode(i)]=coun++
 	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2d",""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
+	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2e",""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
 	var first=0x30, last= 0x3A;
     for (var i=first; i<last; i++) {
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
     }
-	var first = 0x3F, last = 0x5B;
+	var first = 0x3F, last = 0x5E;
     for (var i=first; i<last; i++) {
 		console.log(String.fromCharCode(i))
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
@@ -394,8 +405,8 @@ function createOpenFont(list){
 			arrayres[elem]=arrayres[elem]+"_cunei"
 		}
         if(charnamelist[svg].includes("_v")){
-        		//font.substitution.addLigature("aalt",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
-                //font.substitution.addLigature("aalt",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
+        		//font.substitution.addLigature("salt",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
+                //font.substitution.addLigature("salt",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
         }
         font.substitution.addLigature("liga",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
 		font.substitution.addLigature("liga",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
@@ -409,13 +420,13 @@ function createOpenFont(list){
                     console.log(newsignlist[unicodechar])
                 }      
             }
-        }else{
+        }else if(svg in codepointlist){
             var unicodechar=String.fromCodePoint(codepointlist[svg].replace("U+","0x"))
             if(unicodechar in newsignlist){
                 font.substitution.addLigature("liga",{ "sub": convertToSubstitution(newsignlist[unicodechar][0],1,alphabetToFontCode), "by": alphabetToFontCode[charnamelist[svg]] })                
                 console.log(newsignlist[unicodechar])
-        }            
-            
+        }           
+           
         }
 
         //font.substitution.addLigature({ "sub": sub, "by": charnamelist[svg] })
@@ -426,7 +437,7 @@ function createOpenFont(list){
 
     document.getElementById('fontFamilyName').innerHTML = font2.names.fontFamily.en;
      for (var i = 0; i < font2.glyphs.length; i++) {
-                if(i>71){ 
+                if(i>72){ 
         var glyph = font2.glyphs.get(i);
         var ctxx = createGlyphCanvas(glyph, 150);
         var x = 50;
