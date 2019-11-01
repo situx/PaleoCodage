@@ -106,7 +106,7 @@ function loadWinkelhakenSVG(svgname){
                 console.log("load svg")
 				console.log(data)				
 				currentwinkelhaken=getCoordinatesFromSVGPath($($(data).find("path")[0]).attr("d"))
-				console.log(currenthead)
+				console.log(currentwinkelhaken)
             }
         });
 }
@@ -1190,9 +1190,16 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 					rotpoints=rotateHead(pointarray,localrot*-1,centerwholewedge)
 				}
 				headdraw=[]
-				for(rott in rotpoints){
-				if(rott<currenthead.length)
-					headdraw.push({"type":currenthead[rott]["type"],"points":rotpoints[rott]})
+				if(winkelhaken){
+					for(rott in rotpoints){
+						if(rott<currentwinkelhaken.length)
+							headdraw.push({"type":currentwinkelhaken[rott]["type"],"points":rotpoints[rott]})
+					}
+				}else{
+					for(rott in rotpoints){
+						if(rott<currenthead.length)
+							headdraw.push({"type":currenthead[rott]["type"],"points":rotpoints[rott]})
+					}
 				}
 		}
 		//console.log(headdraw)
