@@ -5,41 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>jQuery UI Sortable - Connect lists</title>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
-  <style>
-  #sortable1, #sortable2 {
-    border: 1px solid #eee;
-
-    min-height: 20px;
-    list-style-type: none;
-    margin: 0;
-    padding: 5px 0 0 0;
-    float: left;
-    margin-right: 10px;
-  }
-  #sortable1 li, #sortable2 li {
-    margin: 0 5px 5px 5px;
-    padding: 5px;
-    font-size: 1.2em;
-    
-  }
-.cod { 
-      display: flex;
-      flex-wrap: wrap;
-      width: 100px;
-	  max-width: 80px;
-      padding: 10px;
-		white-space: normal;
-      }
-
-.table-wrapper-scroll-y {
-  display: block;
-  max-height: 600px;
-  max-width: 100%;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-</style>
-
+  <script src="js/signlist.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/paleocodage.css" />
   <script src="https://hongru.github.io/proj/canvas2image/canvas2image.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -77,6 +44,37 @@
   <div class="container">
     <div class="row">
     <div class="left col-sm-6">
+					Style: <select id="styleselect" onchange='changeColors(document.getElementById("styleselect").value,document.getElementById("canvasinput").value)'>
+					<option value="#000000;#000000" selected="selected">Traditional</option>
+					<option value="#000000;#FFFFFF">Variant</option></select>
+				Stroke Color: <input type="color" id="strokeColor" onchange='changeStrokeColor(document.getElementById("strokeColor").value,document.getElementById("canvasinput").value)'/>
+				Fill Color: <input type="color" id="fillColor" onchange='changeFillColor(document.getElementById("fillColor").value,document.getElementById("canvasinput").value)'/>		<br/>
+				Head Type: <select id="headtype" onchange='loadHeadSVG(document.getElementById("headtype").value)'>
+				<option value="defaulthead" selected="selected">Triangular</option>
+				<option value="defaultshorthead">Triangular Short</option>
+				<option value="defaultlonghead">Triangular Long</option>
+				<option value="curvedsideshead">Curved Sides</option>
+				<option value="cursivehead">Cursive</option>
+				<option value="flaghead">Flagged Head</option>
+				<option value="widestrokehead">Wide Stroke</option>
+				<option value="widestrokecurvedsidehead">Wide Stroke Curved Sides</option>
+				<option value="widestrokecurvedhead">Wide Stroke Curved</option>
+				<option value="rectanglehead">Rectangle</option>
+				<option value="starhead">Star</option>
+				</select><br/>
+				Winkelhaken Type: <select id="winkelhakentype" onchange='loadWinkelhakenSVG(document.getElementById("winkelhakentype").value)'>
+				<option value="defaulthead" selected="selected">Triangular</option>
+				<option value="defaultshorthead">Triangular Short</option>
+				<option value="defaultlonghead">Triangular Long</option>
+				<option value="curvedsideshead">Curved Sides</option>
+				<option value="cursivehead">Cursive</option>
+				<option value="flaghead">Flagged Head</option>
+				<option value="widestrokehead" >Wide Stroke</option>
+				<option value="widestrokecurvedsidehead">Wide Stroke Curved Sides</option>
+				<option value="widestrokecurvedhead">Wide Stroke Curved</option>
+				<option value="rectanglehead">Rectangle</option>
+				<option value="starhead">Star</option>
+				</select><br/>
 	<button id="createFont" onClick="createOpenFont('sortable2')">Create Font</button>
 	</div></div>
   <div class="row">

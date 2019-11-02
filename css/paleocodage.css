@@ -1,0 +1,102 @@
+.tablesorter-scroller-bar-spacer {
+  background: #eee;
+}
+/* add border to right side (LTR pages) of fixed column */
+.tablesorter-scroller-fixed:after {
+  content: '';
+  border-right: 1px solid #444;
+  width: 1px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  /* set to zero for non-jquery ui themes; use "left" here for RTL pages */
+  right: 0;
+  /* match the margins set to the table to keep the border the same height as the table */
+  margin: 10px 0 15px;
+}
+
+/* using-x-theme added by the demo code */
+.using-jui-theme .tablesorter-scroller-fixed:after {
+  /* use "left" here for RTL pages */
+  right: 0;
+}
+.using-green-theme .tablesorter-scroller-fixed:after,
+.using-black-ice-theme .tablesorter-scroller-fixed:after,
+.using-dark-theme .tablesorter-scroller-fixed:after,
+.using-dropbox-theme .tablesorter-scroller-fixed:after {
+  /* match the margins set to the table to keep the border the same height as the table */
+  margin: 0;
+}
+body {
+		font: 13px Helvetica, arial, freesans, sans-serif;
+		line-height: 1.4;
+		color: #333;
+		margin: 0 0 50px 0;
+		padding: 0;
+	}
+
+	.container {
+		width: 1200px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	#glyphs {
+		clear: both;
+	}
+
+	.wrapper {
+		float: left;
+		margin: 5px;
+		border: 1px solid #ccc;
+	}
+
+	.wrapper span {
+		text-align: center;
+		background: #ddd;
+		display: block;
+	}
+	tablex {
+		width: 100%;
+		font: 17px Calibri;
+	}
+	tablex, thx, tdx {
+		border: solid 1px #DDD;
+		border-collapse: collapse;
+		padding: 2px 3px;
+		text-align: center;
+	}
+	.cod { 
+		display: flex;
+		flex-wrap: wrap;
+		width: 100px;
+		max-width: 80px;
+		padding: 10px;
+		white-space: normal;
+	}
+
+	.table-wrapper-scroll-y {
+	  display: block;
+	  max-height: 600px;
+	  max-width: 100%;
+	  overflow-y: auto;
+	  -ms-overflow-style: -ms-autohiding-scrollbar;
+	}
+	
+	  #sortable1, #sortable2 {
+    border: 1px solid #eee;
+
+    min-height: 20px;
+    list-style-type: none;
+    margin: 0;
+    padding: 5px 0 0 0;
+    float: left;
+    margin-right: 10px;
+  }
+  #sortable1 li, #sortable2 li {
+    margin: 0 5px 5px 5px;
+    padding: 5px;
+    font-size: 1.2em;
+    
+  }

@@ -1328,6 +1328,7 @@ function clearCanvas(strokeParser){
 }
 
 function showCharacter(character){
+		console.log(document.getElementById('A_button').textContent)
         strokeParser(character,false,false)
         document.getElementById('canvasinput').value=character
 }
