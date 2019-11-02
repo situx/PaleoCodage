@@ -423,7 +423,7 @@ function createOpenFont(list){
                     console.log(newsignlist[unicodechar])
                 }      
             }
-        }else if(svg in codepointlist){
+        }else if(svg in codepointlist && !(isNaN(codepointlist[svg]))){
             var unicodechar=String.fromCodePoint(codepointlist[svg].replace("U+","0x"))
             if(unicodechar in newsignlist){
                 font.substitution.addLigature("liga",{ "sub": convertToSubstitution(newsignlist[unicodechar][0],1,alphabetToFontCode), "by": alphabetToFontCode[charnamelist[svg]] })                
