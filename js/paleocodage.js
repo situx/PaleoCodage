@@ -785,7 +785,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 					if(bracket==0){
 						drawSeal(curposx,curposy,ctx,true,isuppercase,false,false,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
 						drawSeal(curposx,curposy,ctx2,true,isuppercase,false,false,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
-						drawSeal(curposxot,curposyot,ctx3,true,isuppercase,false,false,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+						//drawSeal(curposxot,curposyot,ctx3,true,isuppercase,false,false,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
 					}
 					break;
 				case "y":
@@ -793,7 +793,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 					if(bracket==0){
 						drawSeal(curposx,curposy,ctx,true,isuppercase,false,true,false,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
 						drawSeal(curposx,curposy,ctx2,true,isuppercase,false,true,false,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
-						drawSeal(curposxot,curposyot,ctx3,true,isuppercase,false,true,false,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
+						//drawSeal(curposxot,curposyot,ctx3,true,isuppercase,false,true,false,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)])
 					}
 					break;
                 case "s":
