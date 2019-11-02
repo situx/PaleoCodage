@@ -16,6 +16,10 @@
   margin: 10px 0 15px;
 }
 
+.tablesorter, .tablesorter .tablesorter-filter {
+    width: auto;
+}
+
 /* using-x-theme added by the demo code */
 .using-jui-theme .tablesorter-scroller-fixed:after {
   /* use "left" here for RTL pages */
@@ -78,7 +82,7 @@ body {
 
 	.table-wrapper-scroll-y {
 	  display: block;
-	  max-height: 600px;
+	  max-height: 900px;
 	  max-width: 100%;
 	  overflow-y: auto;
 	  -ms-overflow-style: -ms-autohiding-scrollbar;
