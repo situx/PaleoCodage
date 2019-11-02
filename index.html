@@ -31,7 +31,7 @@
 	  <script src="https://cdnjs.cloudflare.com/ajax/libs/virtual-keyboard/1.30.1/js/jquery.keyboard.min.js"></script>
     <script src="js/paleocodage.js"></script>
   <script>
-
+	var signcounter=0;
 function htmlTableToJSON(filename,ext){
   var table = $('#examples').tableToJSON(); // Convert the table into a javascript object
   saveTextAsFile(JSON.stringify(table),ext,filename)
@@ -163,7 +163,7 @@ function htmlTableToJSON(filename,ext){
 				<div class="table-wrapper-scroll-y">
 					<table align="center" id="examples" class="tablesorter" cellpadding="2">
 <thead>
-<tr><th>Sign</th><th>Code point</th><th>Transliteration</th><th>Borger</th><th>PaleoCode</th><th>SVG</th><th>Gottstein</th><th>Comment</th><th>Source</th><th>Epoch</th><th>Location</th></tr><tr>
+<tr><th>Sign</th><th>Code point</th><th>Transliteration</th><th>Borger</th><th>PaleoCode</th><th>SVG</th><th>Gottstein</th><th>Comment</th><th>Source</th><th>Epoch</th><th>Location</th><th>Options</th></tr><tr>
 </thead><tbody id="exampleContent">
 <!--<tr><td contenteditable class="sign">𒀀</td><td contenteditable class="codepoint">U+12000</td><td contenteditable class="transliteration" id="A">A</td><td contenteditable class="borger">839</td><td><button class="codebutton" onClick="showCharacter('a-a:a')">a-a:a</button></td><td contenteditable class="svg"><div class="svgcontainer"></div></td><td contenteditable class="gottstein"></td><td></td><td></td><td></td><td></td><td></tr>
 <tr><td contenteditable class="sign">𒀁</td><td contenteditable class="codepoint">U+12001</td><td contenteditable class="transliteration" id="A x A">A x A</td><td contenteditable class="borger">845</td><td><button class="codebutton" onClick="showCharacter('a-:sa-:sa:sa-a:a')">a-:sa-:sa:sa-a:a</button></td><td contenteditable class="svg"><div class="svgcontainer"></div></td><td contenteditable class="gottstein"></td><td>EDURU</td><td></td><td></td><td></td></tr>
@@ -616,19 +616,26 @@ function htmlTableToJSON(filename,ext){
 	function exampleListing(){
     var tablehtml="";
     for(code in paleocodestore){
-		console.log("YAY");
-		tablehtml+="<tr><td contenteditable class=\"sign\">"+paleocodestore[code]["Sign"]+"</td><td contenteditable  class=\"codepoint\">"+paleocodestore[code]["Code point"]+"</td>"
+		tablehtml+="<tr id="+signcounter+"><td contenteditable class=\"sign\">"+paleocodestore[code]["Sign"]+"</td><td contenteditable  class=\"codepoint\">"+paleocodestore[code]["Code point"]+"</td>"
 		tablehtml+="<td contenteditable class=\"transliteration\" id=\""+paleocodestore[code]["Transliteration"]+"\">"+paleocodestore[code]["Transliteration"]+"</td>"
 		tablehtml+="<td contenteditable class=\"borger\">"+paleocodestore[code]["Borger"]+"</td><td contenteditable ><button class=\"codebutton\" id=\""+paleocodestore[code]["Transliteration"]+"_button\" onClick=\"showCharacter(document.getElementById('"+(paleocodestore[code]["Transliteration"]?paleocodestore[code]["Transliteration"].trim():"")+"_button').textContent)\">"+paleocodestore[code]["PaleoCode"]+"</button></td><td class=\"svg\"><div class=\"svgcontainer\"></div></td>"
-		tablehtml+="<td class=\"gottstein\">"+paleocodestore[code]["Gottstein"]+"</td><td contenteditable class=\"comment\">"+paleocodestore[code]["Comment"]+"</td><td contenteditable >"+paleocodestore[code]["Source"]+"</td><td contenteditable >"+paleocodestore[code]["Epoch"]+"</td><td>"+paleocodestore[code]["Location"]+"</td></tr>"
+		tablehtml+="<td class=\"gottstein\">"+paleocodestore[code]["Gottstein"]+"</td><td contenteditable class=\"comment\">"+paleocodestore[code]["Comment"]+"</td><td contenteditable >"+paleocodestore[code]["Source"]+"</td><td contenteditable >"+paleocodestore[code]["Epoch"]+"</td><td>"+paleocodestore[code]["Location"]+"</td><td><button onClick=\"deleteRow("+signcounter+++")\">Delete</button></td></tr>"
 	} 
 	console.log("Table: " + tablehtml);
 	$('#exampleContent').html(tablehtml)
 }
 
+function deleteRow(rownumber){
+	$( "#"+rownumber ).remove();
+	var count = $('#examples tr').length;
+	$('#amount').html((count-1)+" characters");
+}
+
 function addSignToTable(signname,paleocode){
-	$("#exampleContent").append("<tr><td contenteditable class=\"sign\"></td><td contenteditable  class=\"codepoint\"></td><td contenteditable class=\"transliteration\" id=\""+signname+"\">"+signname+"</td><td contenteditable class=\"borger\"></td><td contenteditable><button class=\"codebutton\" id=\""+signname+"_button\" onClick=\"showCharacter(document.getElementById('"+signname.trim()+"_button').textContent)\">"+paleocode+"</button></td><td class=\"svgcontainer\"></td><td class=\"gottstein\"></td><td contenteditable class=\"comment\"></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>");
+	$("#exampleContent").append("<tr id="+signcounter+"><td contenteditable class=\"sign\"></td><td contenteditable  class=\"codepoint\"></td><td contenteditable class=\"transliteration\" id=\""+signname+"\">"+signname+"</td><td contenteditable class=\"borger\"></td><td contenteditable><button class=\"codebutton\" id=\""+signname+"_button\" onClick=\"showCharacter(document.getElementById('"+signname.trim()+"_button').textContent)\">"+paleocode+"</button></td><td class=\"svgcontainer\"></td><td class=\"gottstein\"></td><td contenteditable class=\"comment\"></td><td contenteditable></td><td contenteditable></td><td contenteditable></td><td><button onClick=\"deleteRow("+signcounter+++")\">Delete</button></td></tr>");
 	$('#examples').trigger('updateAll');
+	var count = $('#examples tr').length;
+	$('#amount').html((count-1)+" characters");
 }
 
 	
