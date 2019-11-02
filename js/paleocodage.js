@@ -7,6 +7,7 @@ var curposy=30;
 var curposxot=30;
 var curposyot=30;
 var currenthead=[{"type":"M","points":{"x":-5,"y":10}},{"type":"L","points":{"x":5,"y":10}},{"type":"L","points":{"x":0,"y":20}},{"type":"L","points":{"x":-5,"y":10}}]
+var currentwinkelhaken=[{"type":"M","points":{"x":-5,"y":10}},{"type":"L","points":{"x":5,"y":10}},{"type":"L","points":{"x":0,"y":20}},{"type":"L","points":{"x":-5,"y":10}}]
 var currentstroke=[{"type":"M","points":{"x":0,"y":0}},{"type":"L","points":{"x":0,"y":strokelength-wedgelength}}]
 var startposy=0;
 var startposx=0;
@@ -78,23 +79,49 @@ function createOpenTypeGlyph(charname,unicode,path){
 	console.log(unicode)
 	path.stroke=strokeColor
 	path.fill=fillColor
-    return new opentype.Glyph({
+	if(charname.includes("_v")){
+	    return new opentype.Glyph({
+        name: charname,
+        advanceWidth: 650,
+        path: path
+    });
+	}else{
+	    return new opentype.Glyph({
         name: charname,
         unicode: unicode.replace("U+","0x"),
         advanceWidth: 650,
         path: path
     });
+	}
+
+}
+
+function loadWinkelhakenSVG(svgname){
+	console.log("Loading svg: "+"svg/winkelhaken/"+svgname+".svg");
+	$.ajax({
+            url: "svg/winkelhaken/"+svgname+".svg",
+            async: true,
+			dataType: "xml",
+            success: function (data){
+                console.log("load svg")
+				console.log(data)				
+				currentwinkelhaken=getCoordinatesFromSVGPath($($(data).find("path")[0]).attr("d"))
+				console.log(currentwinkelhaken)
+            }
+        });
 }
 
 function loadHeadSVG(svgname){
-	console.log("Loading svg: "+"svg/"+svgname+".svg");
+	console.log("Loading svg: "+"svg/head/"+svgname+".svg");
 	$.ajax({
-            url: "svg/"+svgname+".svg",
+            url: "svg/head/"+svgname+".svg",
             async: true,
-			dataType: "text",
+			dataType: "xml",
             success: function (data){
-                console.log("load svg")
-				currenthead=getCoordinatesFromSVGPath(data)
+                console.log("load svg")			
+				console.log(data)
+				console.log($(data).find("path")[0])
+				currenthead=getCoordinatesFromSVGPath($($(data).find("path")[0]).attr("d"))
 				console.log(currenthead)
             }
         });
@@ -328,12 +355,14 @@ function createOpenFont(list){
       alphabetToFontCode[String.fromCharCode(i)]=coun++
 	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2d",""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
+	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2e",""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
 	var first=0x30, last= 0x3A;
     for (var i=first; i<last; i++) {
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
     }
-	var first = 0x3F, last = 0x5B;
+	var first = 0x3F, last = 0x5E;
     for (var i=first; i<last; i++) {
 		console.log(String.fromCharCode(i))
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
@@ -379,13 +408,13 @@ function createOpenFont(list){
 			arrayres[elem]=arrayres[elem]+"_cunei"
 		}
         if(charnamelist[svg].includes("_v")){
-        		//font.substitution.addLigature("aalt",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
-                //font.substitution.addLigature("aalt",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
+        		//font.substitution.addLigature("salt",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
+                //font.substitution.addLigature("salt",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
         }
         font.substitution.addLigature("liga",{ "sub": sub, "by": alphabetToFontCode[charnamelist[svg]] })
 		font.substitution.addLigature("liga",{ "sub": sub2, "by": alphabetToFontCode[charnamelist[svg]] })
         console.log(codepointlist[svg])
-        if(codepointlist[svg].includes("&")){
+        if(svg in codepointlist && codepointlist[svg].includes("&")){
             var splitted=codepointlist[svg].split("&")
             for(spl in splitted){
                 var unicodechar=String.fromCodePoint(splitted[spl].trim().replace("U+","0x"))
@@ -394,13 +423,13 @@ function createOpenFont(list){
                     console.log(newsignlist[unicodechar])
                 }      
             }
-        }else{
+        }else if(svg in codepointlist){
             var unicodechar=String.fromCodePoint(codepointlist[svg].replace("U+","0x"))
             if(unicodechar in newsignlist){
                 font.substitution.addLigature("liga",{ "sub": convertToSubstitution(newsignlist[unicodechar][0],1,alphabetToFontCode), "by": alphabetToFontCode[charnamelist[svg]] })                
                 console.log(newsignlist[unicodechar])
-        }            
-            
+        }           
+           
         }
 
         //font.substitution.addLigature({ "sub": sub, "by": charnamelist[svg] })
@@ -411,7 +440,7 @@ function createOpenFont(list){
 
     document.getElementById('fontFamilyName').innerHTML = font2.names.fontFamily.en;
      for (var i = 0; i < font2.glyphs.length; i++) {
-                if(i>71){ 
+                if(i>75){ 
         var glyph = font2.glyphs.get(i);
         var ctxx = createGlyphCanvas(glyph, 150);
         var x = 50;
@@ -889,6 +918,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         scaleop=1;
                         curposx+=1.5*strokelength*scalemultiplier;
 						curposxot+=(1.5*strokelength*scalemultiplier*opentypescale)
+						curposy=startposy*scalemultiplier;
+						curposyot=startposy*(scalemultiplier*opentypescale)
                     }
                         break;
 				case "h": 	// Kopf verkleinern () in %
@@ -1112,7 +1143,6 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
                 }else{
 				length=multiplier*scalemultiplierForStrokeLength*strokelength*localscale;                    
                 }
-
 				if(localmov){
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
@@ -1130,7 +1160,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				}
 			}else{
                 if(ot){
-               				length=opentypescale*(strokelength*localscale);
+               		length=opentypescale*(strokelength*localscale);
                 }else{
 				length=scalemultiplierForStrokeLength*strokelength*localscale;                    
                 }
@@ -1141,8 +1171,14 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				}
 			}
 				pointarray=[]
-				for(point in currenthead){
-					pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
+				if(winkelhaken){
+					for(point in currentwinkelhaken){
+						pointarray.push({"x":currentwinkelhaken[point]["points"]["x"],"y":currentwinkelhaken[point]["points"]["y"]})
+					}
+				}else{
+					for(point in currenthead){
+						pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
+					}
 				}
 				pointarray=scalePointArray(pointarray,scalemultiplier,start,starty)
 				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier})
@@ -1153,11 +1189,17 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				}else{
 					rotpoints=rotateHead(pointarray,localrot*-1,centerwholewedge)
 				}
-
 				headdraw=[]
-				for(rott in rotpoints){
-				if(rott<currenthead.length)
-					headdraw.push({"type":currenthead[rott]["type"],"points":rotpoints[rott]})
+				if(winkelhaken){
+					for(rott in rotpoints){
+						if(rott<currentwinkelhaken.length)
+							headdraw.push({"type":currentwinkelhaken[rott]["type"],"points":rotpoints[rott]})
+					}
+				}else{
+					for(rott in rotpoints){
+						if(rott<currenthead.length)
+							headdraw.push({"type":currenthead[rott]["type"],"points":rotpoints[rott]})
+					}
 				}
 		}
 		//console.log(headdraw)

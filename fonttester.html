@@ -26,64 +26,249 @@
   font-feature-settings: 'liga';
 }
 </style>
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+ <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="js/paleocodes.js"></script>
 <script>
 var activated=false
 function activateWebFont(){
     if(activated){
         $("#fontusage").removeAttr("class");
+		activated=false;
     }else{
         $("#fontusage").attr("class", "costumfont");
+		activated=true;
     }
+}
+function getUnicodeFromTransliteration(signname){
+	console.log(paleocode)
+	for(code in paleocode){
+		if(signname==paleocode[code]["Transliteration"].replace(/ /g,"") || signname.toUpperCase()==paleocode[code]["Transliteration"].replace(/ /g,"")){
+			return paleocode[code]["Sign"]
+		}
+	}
+	return null;
 }
 var activated2=false
 function activateWebFont2(){
     if(activated2){
         $("#fontusage2").removeAttr("class");
+		activated2=false;
     }else{
         $("#fontusage2").attr("class", "costumfont2");
+		activated2=true
     }
 }
-document.addEventListener('copy', function(e){
-  var text = window.getSelection().toString().replace(/[\n\r]+/g, '');
-  e.clipboardData.setData('text/plain', text);
-  e.preventDefault();
+var activated3=false
+function activateWebFont3(){
+    if(activated3){
+        $("#fontusage3").removeAttr("class");
+		activated3=false;
+    }else{
+        $("#fontusage3").attr("class", "costumfont2");
+		activated3=true;
+    }
+}
+$(document).ready(function() {
+	document.getElementById("fontusage").addEventListener('copy', function(e){
+		e.preventDefault();
+        console.log('copy behaviour detected!');
+		var selectedText = window.getSelection().toString(); 
+        selectedText = selectedText.replace(/\u200B/g, "");
+		console.log(selectedText)
+		console.log(e)
+		console.log($('#copyunicode').prop('checked'))
+		if($('#copyunicode').prop('checked')){
+			if(selectedText.includes("-")){
+				var spl=selectedText.split("-")
+				var unicodesign=""
+				for(chara in spl){
+					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+					console.log(trimmed)
+					unicodesign+=getUnicodeFromTransliteration(trimmed)
+					console.log(unicodesign)
+				}
+			}else{
+				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+				console.log(trimmed)
+				var unicodesign=getUnicodeFromTransliteration(trimmed)
+				console.log(unicodesign)
+			}
+
+			if(unicodesign!=null){
+				e.clipboardData.setData('text/plain', unicodesign);
+			}else{
+				e.clipboardData.setData('text/plain', selectedText);
+			}
+		}else{
+			e.clipboardData.setData('text/plain', selectedText);
+		}
+		console.log(e.clipboardData)
+    });
+	document.getElementById("fontusage2").addEventListener('copy', function(e){
+		e.preventDefault();
+        console.log('copy behaviour detected!');
+		var selectedText = window.getSelection().toString(); 
+        selectedText = selectedText.replace(/\u200B/g, "");
+		console.log(selectedText)
+		console.log(e)
+		console.log($('#copyunicode').prop('checked'))
+		if($('#copyunicode').prop('checked')){
+			if(selectedText.includes("-")){
+				var spl=selectedText.split("-")
+				var unicodesign=""
+				for(chara in spl){
+					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+					console.log(trimmed)
+					unicodesign+=getUnicodeFromTransliteration(trimmed)
+					console.log(unicodesign)
+				}
+			}else{
+				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+				console.log(trimmed)
+				var unicodesign=getUnicodeFromTransliteration(trimmed)
+				console.log(unicodesign)
+			}
+
+			if(unicodesign!=null){
+				e.clipboardData.setData('text/plain', unicodesign);
+			}else{
+				e.clipboardData.setData('text/plain', selectedText);
+			}
+		}else{
+			e.clipboardData.setData('text/plain', selectedText);
+		}
+		console.log(e.clipboardData)
+    });
+	document.getElementById("fontusage3").addEventListener('copy', function(e){
+		e.preventDefault();
+        console.log('copy behaviour detected!');
+		var selectedText = window.getSelection().toString(); 
+        selectedText = selectedText.replace(/\u200B/g, "");
+		console.log(selectedText)
+		console.log(e)
+		console.log($('#copyunicode').prop('checked'))
+		if($('#copyunicode').prop('checked')){
+			if(selectedText.includes("-")){
+				var spl=selectedText.split("-")
+				var unicodesign=""
+				for(chara in spl){
+					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+					console.log(trimmed)
+					unicodesign+=getUnicodeFromTransliteration(trimmed)
+					console.log(unicodesign)
+				}
+			}else{
+				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+				console.log(trimmed)
+				var unicodesign=getUnicodeFromTransliteration(trimmed)
+				console.log(unicodesign)
+			}
+
+			if(unicodesign!=null){
+				e.clipboardData.setData('text/plain', unicodesign);
+			}else{
+				e.clipboardData.setData('text/plain', selectedText);
+			}
+		}else{
+			e.clipboardData.setData('text/plain', selectedText);
+		}
+		console.log(e.clipboardData)
+    });
 });
 </script>
 </head>
 <body>
-<h1>Modified transliteration to cuneiform</h1>
+<div class="page-header text-center">
+   <h1 align="center">Modified transliteration to cuneiform</h1>
+</div>
+<br/><br/>
+	<div class="container">
+	<div class="row">
+	<div class="left col-sm-12">
 How does it work? 
 <ul>
 <li>Cuneiform sign variants can be created using the PaleoCodage encoding which can be tested <a href="https://situx.github.io/PaleoCodage">here</a></li>
 <li>PaleoCodage cuneiform sign variants get a distinct ID which is used to identify the character.</li>
-<li>IDs are used as teh basis for the modified transliteration</li>
+<li>IDs are used as the basis for the modified transliteration</li>
 <li>A WOFF font is generated and included in this homepage so that the transliteration can be converted to cuneiform</li>
 </ul>
+Copy Unicode<input type="checkbox" id="copyunicode"><br/>
 Example transliteration:<br/>
-<span id="transliteration" style="font-size:90">
-E Ev1 Ev2 Ev3 &nbsp;&nbsp;|&nbsp;&nbsp;
-</span>
-<span id="fontusage" style="font-size:90">
+</div></div>
+<div class="row">
+	<div class="left col-sm-5">
+	<span id="transliteration" style="font-size:80">
+		E Ev1 Ev2 Ev3 
+	</span><br/>
+	<button id="usefont" onclick="activateWebFont()">Switch Font</button>
+	</div>
+	<div class="left col-sm-2" style="font-size:80">
+	&nbsp;&nbsp;|&nbsp;&nbsp;
+	</div>
+	<div class="left col-sm-5">
+<span id="fontusage" style="font-size:80">
 E Ev1 Ev2 Ev3
 </span>
-<br/>
-<button id="usefont" onclick="activateWebFont()">Use Font</button>
-Example transliteration2:<br/>
-<span id="transliteration2" style="font-size:90">
-A AxA GALAM USZ &nbsp;&nbsp;|&nbsp;&nbsp;
+	</div>
+</div>
+<div class="row">
+	<div class="left col-sm-5">
+<span id="transliteration2" style="font-size:80">
+A AxA GALAM USZ 
 </span>
-<span id="fontusage2" style="font-size:90">
-A AxA GALAM USZ
+<button id="usefont2" onclick="activateWebFont2()">Switch Font</button>
+	</div>
+	<div class="left col-sm-2" style="font-size:80">
+	&nbsp;&nbsp;|&nbsp;&nbsp;
+	</div>
+	<div class="left col-sm-5">
+	<span id="fontusage2" style="font-size:80">
+A AxA GALAM USZ 
 </span>
-<br/>
-<button id="usefont2" onclick="activateWebFont2()">Use Font</button>
+</div></div>
+<div class="row">
+<div  class="left col-sm-5">
+<span id="transliteration3" style="font-size:30">
+1. 1  MA.NA KU3.BABBAR e-lu <br/>
+2. i-na li-ib-bi sza3 i-na  <br/>
+3. ri-isz-sz u#-ud-da  <br/>
+4. u3 ri-x [i] -sz-x na-pa-ah-szu  <br/>
+5. [a] -na 4 sze-me-ri  <br/>
+@bottom <br/>
+6. sza3 SZU i-na-bu-ub-lu  <br/>
+# oder  la  <br/>
+7. le-e-qu2  <br/>
+</span>
+<button id="usefont3" onclick="activateWebFont3()">Switch Font</button>
+</div>
+	<div class="left col-sm-2" style="font-size:80">
+	&nbsp;&nbsp;|&nbsp;&nbsp;
+	</div>
+<div class="left col-sm-5">
+<span id="fontusage3" style="font-size:30">
+1. 1  MA.NA KU3.BABBAR e-lu <br/>
+2. i-na li-ib-bi sza3 i-na <br/>
+3. ri-isz-sz u#-ud-da <br/>
+4. u3 ri-x [i] -sz-x na-pa-ah-szu <br/>
+5. [a] -na 4 sze-me-ri <br/>
+@bottom<br/>
+6. sza3 SZU i-na-bu-ub-lu <br/>
+# oder  la <br/>
+7. le-e-qu2 <br/>
+</span>
+</div>
+</div>
+<div class="row">
+<div class="left col-sm-12">
 <h2>Frequently Asked Questions</h2>
 <ol>
 <li>What happens when I copy the character? The modified transliteration is copied</li>
-<li>I want to copy the unicode representation of the cuneiform character! : No problem! We provide a shortcut for this in JavaScript!</li>
+<li>I want to copy the unicode representation of the cuneiform character! : No problem! On this homepage you can achieve this using a checkbox setting!</li>
 <li>Can I convert the modified transliteration to a common transliteration? Certainly, but not the other way around</li>
 <li>How does the modified transliteration differ from the common transliteration? Sign variant information is appended using v-Suffixes</li>
 </ol>
+</div></div>
 </body>
 </html>
