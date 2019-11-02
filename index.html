@@ -55,7 +55,7 @@ function htmlTableToJSON(filename,ext){
 				<canvas id="myCanvas" width="300" height="100" style="border:1px solid #d3d3d3;">Your browser does not support the HTML5 canvas tag.</canvas><img id="canvasImg"/>		<br/>
 				
 				Stroke Order Input: <input type="text" id="canvasinput" onKeyUp="strokeParser(document.getElementById('canvasinput').value)"/>		<br/>
-				
+				Assign Sign Name: <input type="text" id="signnameinput"/><button id="addsigntotable" onclick="addSignToTable(document.getElementById('signnameinput').value,document.getElementById('canvasinput').value)">Add Sign</button><br/>
 				<button id="clearcanvas" onClick="clearCanvas()">Clear Canvas</button><button id="refreshsvg" onClick="createOpenFont('examples')">Refresh Font</button>
 				<button id="simplify" onclick="simplifyPaleoCode(document.getElementById('canvasinput').value)">Simplify</button><!--<button id="activatekeyboard" onclick="activateKeyboard()">Keyboard</button>--><br/>
 				
@@ -620,14 +620,15 @@ function htmlTableToJSON(filename,ext){
 		tablehtml+="<tr><td contenteditable class=\"sign\">"+paleocodestore[code]["Sign"]+"</td><td contenteditable  class=\"codepoint\">"+paleocodestore[code]["Code point"]+"</td>"
 		tablehtml+="<td contenteditable class=\"transliteration\" id=\""+paleocodestore[code]["Transliteration"]+"\">"+paleocodestore[code]["Transliteration"]+"</td>"
 		tablehtml+="<td contenteditable class=\"borger\">"+paleocodestore[code]["Borger"]+"</td><td contenteditable ><button class=\"codebutton\" id=\""+paleocodestore[code]["Transliteration"]+"_button\" onClick=\"showCharacter(document.getElementById('"+(paleocodestore[code]["Transliteration"]?paleocodestore[code]["Transliteration"].trim():"")+"_button').textContent)\">"+paleocodestore[code]["PaleoCode"]+"</button></td><td class=\"svg\"><div class=\"svgcontainer\"></div></td>"
-		tablehtml+="<td class=\"gottstein\">"+paleocodestore[code]["Gottstein"]+"</td><td contenteditable >"+paleocodestore[code]["Comment"]+"</td><td contenteditable >"+paleocodestore[code]["Source"]+"</td><td contenteditable >"+paleocodestore[code]["Epoch"]+"</td><td>"+paleocodestore[code]["Location"]+"</td></tr>"
+		tablehtml+="<td class=\"gottstein\">"+paleocodestore[code]["Gottstein"]+"</td><td contenteditable class=\"comment\">"+paleocodestore[code]["Comment"]+"</td><td contenteditable >"+paleocodestore[code]["Source"]+"</td><td contenteditable >"+paleocodestore[code]["Epoch"]+"</td><td>"+paleocodestore[code]["Location"]+"</td></tr>"
 	} 
 	console.log("Table: " + tablehtml);
 	$('#exampleContent').html(tablehtml)
 }
 
-function addNewRow(){
-	$("#exampleContent").append("<tr><td contenteditable class=\"sign\"></td><td contenteditable  class=\"codepoint\"></td>");
+function addSignToTable(signname,paleocode){
+	$("#exampleContent").append("<tr><td contenteditable class=\"sign\"></td><td contenteditable  class=\"codepoint\"></td><td contenteditable class=\"transliteration\" id=\""+signname+"\">"+signname+"</td><td contenteditable class=\"borger\"></td><td contenteditable><button class=\"codebutton\" id=\""+signname+"_button\" onClick=\"showCharacter(document.getElementById('"+signname.trim()+"_button').textContent)\">"+paleocode+"</button></td><td class=\"svgcontainer\"></td><td class=\"gottstein\"></td><td contenteditable class=\"comment\"></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>");
+	$('#examples').trigger('updateAll');
 }
 
 	
