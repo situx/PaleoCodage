@@ -11,6 +11,7 @@ var currentwinkelhaken=[{"type":"M","points":{"x":-5,"y":10}},{"type":"L","point
 var currentstroke=[{"type":"M","points":{"x":0,"y":0}},{"type":"L","points":{"x":0,"y":strokelength-wedgelength}}]
 var startposy=0;
 var startposx=0;
+var curlybrace=false;
 var charNameToPaleoCode={}
 var paleoCodeToCharName={}
 var heads=[]
@@ -753,11 +754,11 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 						//console.log(curposx+" - "+curposy)
 						console.log("Draw HTML")
                         if(!svgonly)
-                            drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
+                            drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
 						if(!recursiverotation && !doNotDraw){
                             //console.log(curposx+" - "+curposy)
 							console.log("Draw SVG")
-							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,true,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,!svgonly);
+							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,!svgonly);
 							/* curposx+=(2*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
 						curposxot+=(2*opentypescale)*(horizontalspaceop==0?1:horizontalspaceop)
 						curposy=startposy*scalemultiplier;
@@ -770,7 +771,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 							//}
 							ot=true; //mirror=!mirror;
 							console.log("Draw OT")
-							drawWedgeGeneric(curposxot,curposyot,ctx3,true,isuppercase,recursive,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
+							drawWedgeGeneric(curposxot,curposyot,ctx3,true,isuppercase,recursive||curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
                             //if(svgonly){
                                 scalemultiplier=1
 								scalemultiplierForStrokeLength=scalemultiplier
@@ -942,6 +943,12 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         scaleop+=0.25
                     }
                         break;
+                case "{":
+                    curlybrace=true;
+                break;
+                case "}":
+                    curlybrace=false;
+                break;
                 case "(":
 					lastoperator=input.charAt(i-1)
 					factorbracketpositions.push({start:i,end:-1})

@@ -26,11 +26,11 @@ function levenshteinDistance (s, t) {
 function editdistancegraph(){
 var remembermap={}
 var i=1;
-	    for(let js of paleocode){
+	    for(let js of paleocodestore){
 			alert(i)
 			alert(JSON.stringify(remembermap))
 			i++;
-            for(let js2 of paleocode){
+            for(let js2 of paleocodestore){
 				
 				if(!(js2["PaleoCode"] in remembermap)){
 					remembermap[js["PaleoCode"]]=js2["PaleoCode"]
