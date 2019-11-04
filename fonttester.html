@@ -44,7 +44,7 @@ function activateWebFont(){
 function getUnicodeFromTransliteration(signname){
 	console.log(paleocodestore)
 	for(code in paleocodestore){
-		if(signname==paleocodestore[code]["Transliteration"].replace(/ /g,"") || signname.toUpperCase()==paleocodestore[code]["Transliteration"].replace(/ /g,"")){
+		if("Transliteration" in paleocodestore[code] && signname==paleocodestore[code]["Transliteration"].replace(/ /g,"") || signname.toUpperCase()==paleocodestore[code]["Transliteration"].replace(/ /g,"")){
 			return paleocodestore[code]["Sign"]
 		}
 	}
