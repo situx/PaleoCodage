@@ -68,7 +68,7 @@ var similar={}
 //Â´graph.addLink(1, 2);
     for(let js of paleocodestore){
             for(let js2 of paleocodestore){
-                if(js2["PaleoCode"]!=js["PaleoCode"] && js2["PaleoCode"].includes(js["PaleoCode"])){
+                if("PaleoCode" in js && "PaleoCode" in js2 && js2["PaleoCode"]!=js["PaleoCode"] && js2["PaleoCode"].includes(js["PaleoCode"])){
                         //console.log("[ "+js["PaleoCode"]+" ] is in [ "+js2["PaleoCode"]+" ]");
 						if(similar[js["PaleoCode"]]==undefined){
 							similar[js["PaleoCode"]]=""
