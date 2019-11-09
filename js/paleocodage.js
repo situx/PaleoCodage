@@ -125,7 +125,7 @@ function loadWinkelhakenSVG(svgname){
                 console.log("load svg")
 				console.log(data)				
 				currentwinkelhaken=getCoordinatesFromSVGPath($($(data).find("path")[0]).attr("d"))
-				console.log(currentwinkelhaken)
+				console.log(JSON.stringify(currentwinkelhaken))
             }
         });
 }
@@ -146,7 +146,7 @@ function loadHeadSVG(svgname){
 				console.log(data)
 				console.log($(data).find("path")[0])
 				currenthead=getCoordinatesFromSVGPath($($(data).find("path")[0]).attr("d"))
-				console.log(currenthead)
+				console.log(JSON.stringify(currenthead))
             }
         });
 }
@@ -518,7 +518,6 @@ function createOpenFont(list){
         //document.getElementById('jsonFont').innerHTML=stringify(font)
     clearCanvas();
 	substringgraph();
-	loadHeadSVG("defaulthead");
 }
 
     function createGlyphCanvas(glyph, size) {
