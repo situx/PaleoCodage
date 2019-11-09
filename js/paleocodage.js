@@ -56,6 +56,9 @@ var halfangle=false;
 var opentypestrokeWidth=5
 var ot=false;
 var scaleop=1;
+var smallop=1;
+var headresizing=false;
+var headscaleop=1;
 var headscaleop=1;
 var horizontalspaceop=0;
 var verticalspaceop=0;
@@ -69,6 +72,9 @@ var ctx2 = new C2S(ctx2width,ctx2height);
 var doNotDraw = false;
 var wedgearray=[];
 
+/**
+ * Converts the content of the canvas into an PNG-type image
+ */
 function to_image(){
                 var canvas = document.getElementById("myCanvas");
                 document.getElementById("canvasImg").src = canvas.toDataURL();
@@ -76,6 +82,13 @@ function to_image(){
                 document.getElementById("canvasImg").style.visibility = 'hidden';
 }
 
+/**
+ * Creates a OT glyph
+ * @param {string} charname - The glyph name
+ * @param {string} unicode - Unicode codepoint
+ * @param {string} path - OT path
+ * @returns {opentype.Glyph} OT glyph JSON object
+ */
 function createOpenTypeGlyph(charname,unicode,path){
 	console.log(unicode)
 	path.stroke=strokeColor
@@ -97,11 +110,16 @@ function createOpenTypeGlyph(charname,unicode,path){
 
 }
 
+/**
+ * Loads the SVG path out of a given SVG file and loads the coordinates into the currentwinkelhaken array.
+ * @async
+ * @param {String} svgname - The filename of the Winkelhaken SVG-file.
+ */
 function loadWinkelhakenSVG(svgname){
 	console.log("Loading svg: "+"svg/winkelhaken/"+svgname+".svg");
 	$.ajax({
             url: "svg/winkelhaken/"+svgname+".svg",
-            async: true,
+            async: false,
 			dataType: "xml",
             success: function (data){
                 console.log("load svg")
@@ -112,11 +130,16 @@ function loadWinkelhakenSVG(svgname){
         });
 }
 
+/**
+ * Loads the SVG path out of a given SVG file and loads the coordinates into the currenthead array.
+ * @async
+ * @param {String} svgname - The filename of the head SVG-file.
+ */
 function loadHeadSVG(svgname){
 	console.log("Loading svg: "+"svg/head/"+svgname+".svg");
 	$.ajax({
             url: "svg/head/"+svgname+".svg",
-            async: true,
+            async: false,
 			dataType: "xml",
             success: function (data){
                 console.log("load svg")			
@@ -128,12 +151,28 @@ function loadHeadSVG(svgname){
         });
 }
 
+
+/**
+ * Changes the "x" & "y" coordinates of a Point Object according to rotating it around a given center.
+ * @param {{"x":number, "y":number}} center - The centerpoint that the line shall be rotated around.
+ * @param {{"x":number, "y":number}} edge - The coordinate that shall get rotated.
+ * @param {number} angle - Tha angle in grades defining how much shall the line be rotated.
+ * @returns {{"x":number, "y":number}} RotatedPoint
+ */
+
 function rotateLineClockWise(center, edge, angle) {
     xRot = center["x"] + Math.cos(toRadians(angle)) * (edge["x"] - center["x"]) - Math.sin(toRadians(angle)) * (edge["y"] - center["y"]);
     yRot = center["y"] + Math.sin(toRadians(angle)) * (edge["x"] - center["x"]) + Math.cos(toRadians(angle)) * (edge["y"] - center["y"]);
     return {"x":xRot,"y":yRot}
 }
 
+/**
+ * Changes the "x" & "y" coordinates of all Point-Objects within a Point-Object-Array according to rotating it around a given center.
+ * @param {Array.<Points>} points - The pointarray to be rotated.
+ * @param {{"x":number, "y":number}} angle - Tha angle in grades defining how much shall the line be rotated.
+ * @param {{"x":number, "y":number}} center - The centerpoint that the line shall be rotated around.
+ * @returns {Array.<Points>} RotatedPointArray
+ */
 function rotateHead(points,angle,center){
 	var result=[]
 	if(!center){
@@ -147,6 +186,13 @@ function rotateHead(points,angle,center){
 	return result;
 }
 
+/**
+ * Changes the "x" & "y" coordinates of all Point-Objects within a Point-Object-Array according to rotating it around a given center.
+ * @param {Array.<Points>} points - The pointarray to be rotated.
+ * @param {{"x":number, "y":number}} angle - Tha angle in grades defining how much shall the line be rotated.
+ * @param {{"x":number, "y":number}} center - The centerpoint that the line shall be rotated around.
+ * @returns {Array.<Points>} result - RotatedPointArray
+ */
 function rotateWedge(points,angle,center){
 	var result=[]
 	var lastcalc=0;
@@ -226,24 +272,30 @@ function getIntersections(canvas){
 }
 
 /**
- * Converts degree to radian */
+ * Converts degree to radian 
+ * @param {degrees} degrees - The value of degrees to convert into radians.
+ */
 function toRadians(degrees)
 {
   var pi = Math.PI;
   return degrees * (pi/180);
 }
 
-function getCenterHead(origins) {
-	cx=(origins[0]["x"]+origins[1]["x"]+origins[2]["x"])/3
-	cy=(origins[0]["y"]+origins[1]["y"]+origins[2]["y"])/3
-    return {"x":cx, "y":cy};
-}
-
+/**
+ * Calculates the center between two given points.
+ * @param {{"x":number, "y":number}} origin - The first point.
+ * @param {{"x":number, "y":number}} endPoint - The second point.
+ * @returns {{"x":number, "y":number}} CenterPoint - The coordinates of the center.
+ */
 function getCenter(origin,endPoint) {
     return {"x":(origin["x"] + endPoint["x"]) / 2, "y":(origin["y"] + endPoint["y"]) / 2};
 }
 
-
+/**
+ * Changes the color of all  drawn SVG objects within the canvas and the OT font list.
+ * @param {string} color - a html color code
+ * @param {string} input - the current paleocode
+ */
 function changeColors(colors,input){
 	//changeStrokeColor(colors.split(";")[0],input);
 	//changeFillColor(colors.split(";")[1],input);
@@ -303,9 +355,14 @@ function buildSubstitution() {
     console.log(substitutions)
     return substitutions;
   }
+  
 	var paleocodelist=[]
 	var charnamelist=[]
 	 var alphabetToFontCode={}
+/**
+ * Builds SVG images and the OT font
+ * @param {string} list - ID of the character list.
+ */
 function createOpenFont(list){
     var svglist=[]
 	var codepointlist=[]
@@ -350,9 +407,13 @@ function createOpenFont(list){
       alphabetToFontCode[String.fromCharCode(i)]=coun++
 	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x23",""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
+	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x24",""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
 	      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x28",""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x29",""));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
+	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2c",""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
 	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2d",""));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
@@ -441,7 +502,7 @@ function createOpenFont(list){
 
     document.getElementById('fontFamilyName').innerHTML = font2.names.fontFamily.en;
      for (var i = 0; i < font2.glyphs.length; i++) {
-                if(i>75){ 
+                if(i>77){ 
         var glyph = font2.glyphs.get(i);
         var ctxx = createGlyphCanvas(glyph, 150);
         var x = 50;
@@ -475,12 +536,18 @@ function createOpenFont(list){
         return ctxxx;
     }
 
+/**
+ * Creates an SVG file out of the current canvas input.
+ */
 function to_svg(){
 	svg=ctx2.getSerializedSvg(true)
 	saveTextAsFile(svg,".svg","graphic")
 	paleoCodageToSVG($('#canvasinput').val());
 }
 
+/**
+ * Creates the TTL representation.
+ */
 function createTTL(){
 	ttlstring="@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n@prefix owl: <http://www.w3.org/2002/07/owl#> .\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n@prefix lemon: <http://lemon-model.net/lemon#> .\n@prefix paleo: <http://www.github.com/situx/PaleoCodage#> .\n@prefix iso: <http://www.isocat.org/datcat/> .\n\n";
 	baseuri="http://www.github.com/situx/PaleoCodage#"
@@ -533,6 +600,12 @@ function createTTL(){
 	saveTextAsFile(ttlstring,".ttl","paleocodes")
 }
 
+/**
+ * Counts the ammount of characters of a given type within a string.
+ * @param {string} checkstr - String input.
+ * @param {string} c - Character to get counted.
+ * @returns {number} result - Ammount of characters that have been searched.
+ */
 function countChars(checkstr,c) { 
   var result = 0, i = 0;
   for(i;i<checkstr.length;i++)if(checkstr[i]==c)result++;
@@ -607,6 +680,28 @@ function scalePointArray(pointarray,scalemultiplier,start,starty){
 	return pointarray;
 }
 
+/**
+ * Gets the index position of a head/winkelhaken point array fixpoint - the point with the highest "y" value.
+ * @param {Array.<Points>} pointarray - The object array that the fixpoint shall be drawn from.
+ * @returns {number} index - The number indicating the fixpoint's index position.
+ */
+function findFixpoint(pointarray) {
+    var max = -99999999999
+	var index = 0
+	for (point in pointarray){
+		if (pointarray[point]["y"]>max){
+			max = pointarray[point]["y"];
+			index = point;
+		}
+	}
+	return parseInt(index);
+}     
+
+/**
+ * Simplifies the imput according to the formulated paleocode unifying rules. The rules are listed within the documentation.
+ * @param {string} input - The input string as it was entered by the user.
+ * @returns {string} input - The simplified string.
+ */
 function simplifyInput(input){
 	for(pat in simplification){
 		if(input.includes(pat)){
@@ -923,26 +1018,39 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 						curposyot=startposy*(scalemultiplier*opentypescale)
                     }
                         break;
-				case "h": 	// Kopf verkleinern () in %
+				case "h": 	
 					if(bracket==0){
-                        // <xxx>
+                        if (smallop>0){
+							smallop-=0.2;
+						}
+						if (smallop<0){
+							smallop=0;
+						}
+						headresizing=true;
                     }
-                        break;
-				case "H": 	// Kopf vergrößern () in %
+					break;
+				case "H": 
 					if(bracket==0){
-                        // <xxx>
+                        smallop+=0.2;
+						headresizing=true;
                     }
-                        break;
-				case "l": 	// Kanten-Länge verkleinern () in %
+					break;
+				case "l": 
 					if(bracket==0){
-                        scaleop-=0.2
+                        if (scaleop>0){
+							scaleop-=0.2;
+						}
+						if (scaleop<0){
+							scaleop=0;
+						}
                     }
-                        break;
-				case "L": 	// Kanten-Länge vergrößern () in %
+					break;
+				case "L":
 					if(bracket==0){
                         scaleop+=0.25
                     }
-                        break;
+					break;
+
                 case "{":
                     curlybrace=true;
                 break;
@@ -1133,6 +1241,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
         if(strokeparse==false)
             curposx+=10
 		pointarray=[]
+		referencearray=[]
 		if(rot!=0 && !doNotDraw){
 			localrot=parseInt(localrot)+parseInt(rot);
 		}
@@ -1141,8 +1250,6 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 			localrot=parseInt(localrot)%360
 			start+=lineLength+wedgelength
 		}
-		if(!keepconfig && smaller)
-			smaller=false;
 		if(!uselastresult || ot){
 			if(big){
                 if(ot){
@@ -1169,7 +1276,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
                 if(ot){
                		length=opentypescale*(strokelength*localscale);
                 }else{
-				length=scalemultiplierForStrokeLength*strokelength*localscale;                    
+					length=scalemultiplierForStrokeLength*strokelength*localscale;                    
                 }
 
 				if(localmov){
@@ -1178,34 +1285,90 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				}
 			}
 				pointarray=[]
+				referencearray=[]
+				var fixpointindex = 0
+				//console.log("currenthead:");
+				//console.log(currenthead);
 				if(winkelhaken){
 					for(point in currentwinkelhaken){
 						pointarray.push({"x":currentwinkelhaken[point]["points"]["x"],"y":currentwinkelhaken[point]["points"]["y"]})
+						referencearray.push({"x":currentwinkelhaken[point]["points"]["x"],"y":currentwinkelhaken[point]["points"]["y"]})
+                        console.log("pointarray for loop insertung currWH points into pointarray: ");
+						console.log(pointarray)
 					}
 				}else{
 					for(point in currenthead){
 						pointarray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
+						referencearray.push({"x":currenthead[point]["points"]["x"],"y":currenthead[point]["points"]["y"]})
+						console.log("pointarray for loop inserting currheadpoints into pointarray: ");
+						console.log(pointarray);
 					}
 				}
+				fixpointindex = findFixpoint(pointarray)
+				//console.log("fixpointindex: " + fixpointindex);
+				//console.log("pointarray after loading headpoints:");
+				//console.log(pointarray);
+				referencearray=scalePointArray(referencearray,scalemultiplier,start,starty)
 				pointarray=scalePointArray(pointarray,scalemultiplier,start,starty)
+				if (headresizing){
+					//console.log("pointarray after general scaling:");
+					//console.log(pointarray);
+					for (point in pointarray) {
+						pointarray[point]["x"]*=smallop
+						pointarray[point]["y"]*=smallop
+					}
+					//console.log("pointarray after Headresizing:");
+					//console.log(pointarray);
+						
+					if(winkelhaken){
+						offset = ({"x":pointarray[fixpointindex]["x"]-referencearray[fixpointindex]["x"],"y":pointarray[fixpointindex]["y"]-referencearray[fixpointindex]["y"]})
+					}else{
+						offset = ({"x":pointarray[fixpointindex]["x"]-referencearray[fixpointindex]["x"],"y":pointarray[fixpointindex]["y"]-referencearray[fixpointindex]["y"]})
+					}
+					//console.log("calculated offset:");
+					//console.log(offset);
+					
+					for (point in pointarray) {
+						pointarray[point]["x"]-=offset["x"]
+						pointarray[point]["y"]-=offset["y"]
+					}
+					//console.log("pointarray after run with offset:");
+					//console.log(pointarray);
+				}
+				headresizing=false;
+				
+				//referencearray=scalePointArray(referencearray,scalemultiplier,start,starty)
+				referencearray.push({"x":start, "y":starty+lineLength*scalemultiplier})
+				referencearray.push({"x":start, "y":starty+lineLength*scalemultiplier+length})
+				var centerreferencewedge=getCenterOfWedge(referencearray)
+				//pointarray=scalePointArray(pointarray,scalemultiplier,start,starty)
 				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier})
 				pointarray.push({"x":start, "y":starty+lineLength*scalemultiplier+length*scaleop})
-				var centerwholewedge=getCenterOfWedge(pointarray)
+				var centerwholewedge=centerreferencewedge
+				referencearray.length=0;
+								
 				if(ot){
 					rotpoints=rotateHead(pointarray,localrot,centerwholewedge)
 				}else{
 					rotpoints=rotateHead(pointarray,localrot*-1,centerwholewedge)
 				}
+				
 				headdraw=[]
 				if(winkelhaken){
 					for(rott in rotpoints){
-						if(rott<currentwinkelhaken.length)
+						if(rott<currentwinkelhaken.length){
+							//rotpoints[rott]["x"]*=smallop
+							//rotpoints[rott]["y"]*=smallop
 							headdraw.push({"type":currentwinkelhaken[rott]["type"],"points":rotpoints[rott]})
+						}
 					}
 				}else{
 					for(rott in rotpoints){
-						if(rott<currenthead.length)
+						if(rott<currenthead.length){
+							//rotpoints[rott]["x"]*=smallop
+							//rotpoints[rott]["y"]*=smallop
 							headdraw.push({"type":currenthead[rott]["type"],"points":rotpoints[rott]})
+						}
 					}
 				}
 		}
