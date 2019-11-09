@@ -152,8 +152,9 @@ How does it work?
 <li>A WOFF font is generated and included in this homepage so that the transliteration can be converted to cuneiform</li>
 </ul>
 Copy Unicode<input type="checkbox" id="copyunicode"><br/>
-Load CDLI Text: Language:<select id="cdlilanguages" onchange="recreateTextTable(document.getElementById('cdlilanguages').value)"></select>Text:<select id="cdlitextselect" onchange="loadText(document.getElementById('cdlitextselect').value)">
-</select><br/>
+Load CDLI Text: Language:<select id="cdlilanguages" onchange="recreateTextTable(document.getElementById('cdlilanguages').value)"></select>
+Text:<select id="cdlitextselect" onchange="loadText(document.getElementById('cdlitextselect').value)">
+</select><a id="cdlilink" href="#" target="_blank">Link To CDLI</a><br/>
 Example transliteration:<br/>
 <button id="usefont3" onclick="activateWebFont3()">Switch Font</button>
 </div></div>
@@ -189,6 +190,7 @@ $.ajax({
 			dataType: "text",
             success: function (data){
 				activated3=false;
+				$('#cdlilink').attr("href","https://cdli.ucla.edu/search/archival_view.php?ObjectID="+textid);
 				var restable="";
 				var lines=data.split(/(?:\r\n|\r|\n)/g)
 				for(line in lines){
