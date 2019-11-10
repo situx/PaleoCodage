@@ -30,7 +30,19 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script src="js/paleocodes.js"></script>
+<script src="js/cdlitexts.js"></script>
+<script src="js/signlist.js"></script>
 <script>
+function recreateTextTable(language){
+	var res="";
+	for(item in cdlitexts[language]){
+		if(item<1001){
+			res+="<option value=\""+cdlitexts[language][item]+"\">"+cdlitexts[language][item]+"</option>"
+		}
+	}
+	$('#cdlitextselect').html(res);
+}
+
 var activated=false
 function activateWebFont(){
     if(activated){
@@ -43,35 +55,49 @@ function activateWebFont(){
 }
 function getUnicodeFromTransliteration(signname){
 	console.log(paleocodestore)
-	for(code in paleocodestore){
-		if(("Transliteration" in paleocodestore[code] && signname==paleocodestore[code]["Transliteration"].replace(/ /g,"")) || ("Transliteration" in paleocodestore[code] && signname.toUpperCase()==paleocodestore[code]["Transliteration"].replace(/ /g,""))){
-			return paleocodestore[code]["Sign"]
-		}
+	if(signname in signlist){
+		return signlist[signname];
 	}
+	if(signname.toLowerCase() in signlist){
+		return signlist[signname.toLowerCase()];
+	}	
 	return "";
-}
-var activated2=false
-function activateWebFont2(){
-    if(activated2){
-        $("#fontusage2").removeAttr("class");
-		activated2=false;
-    }else{
-        $("#fontusage2").attr("class", "costumfont2");
-		activated2=true
-    }
 }
 var activated3=false
 function activateWebFont3(){
+$(".fontusage3").each(function(){
+	 if(activated3){
+        $(".fontusage3").removeClass("costumfont2");
+    }else{
+        $(".fontusage3").addClass("costumfont2");
+    }
+});
     if(activated3){
-        $("#fontusage3").removeAttr("class");
 		activated3=false;
     }else{
-        $("#fontusage3").attr("class", "costumfont2");
 		activated3=true;
     }
 }
+
 $(document).ready(function() {
-	document.getElementById("fontusage").addEventListener('copy', function(e){
+	var res=""
+	var languages="";
+	var firstlang="";
+	for(item in cdlitexts){
+		if(firstlang==""){
+			firstlang=item
+		}
+		languages+="<option value=\""+item+"\">"+item+"</option>"
+	}
+    $('#cdlilanguages').html(languages);	
+	for(item in cdlitexts[firstlang]){
+		if(item<1001){
+			res+="<option value=\""+cdlitexts[firstlang][item]+"\">"+cdlitexts[firstlang][item]+"</option>"
+		}
+	}
+	$('#cdlitextselect').html(res);
+	$(".fontusage3").each(function () {
+	$(this).bind("copy", function(e){
 		e.preventDefault();
         console.log('copy behaviour detected!');
 		var selectedText = window.getSelection().toString(); 
@@ -97,85 +123,16 @@ $(document).ready(function() {
 			}
 
 			if(unicodesign!=null){
-				e.clipboardData.setData('text/plain', unicodesign);
+				e.originalEvent.clipboardData.setData('text/plain', unicodesign);
 			}else{
-				e.clipboardData.setData('text/plain', selectedText);
+				e.originalEvent.clipboardData.setData('text/plain', selectedText);
 			}
 		}else{
-			e.clipboardData.setData('text/plain', selectedText);
+			e.originalEvent.clipboardData.setData('text/plain', selectedText);
 		}
-		console.log(e.clipboardData)
+		console.log(e.originalEvent.clipboardData)
     });
-	document.getElementById("fontusage2").addEventListener('copy', function(e){
-		e.preventDefault();
-        console.log('copy behaviour detected!');
-		var selectedText = window.getSelection().toString(); 
-        selectedText = selectedText.replace(/\u200B/g, "");
-		console.log(selectedText)
-		console.log(e)
-		console.log($('#copyunicode').prop('checked'))
-		if($('#copyunicode').prop('checked')){
-			if(selectedText.includes("-")){
-				var spl=selectedText.split("-")
-				var unicodesign=""
-				for(chara in spl){
-					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
-					console.log(trimmed)
-					unicodesign+=getUnicodeFromTransliteration(trimmed)
-					console.log(unicodesign)
-				}
-			}else{
-				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
-				console.log(trimmed)
-				var unicodesign=getUnicodeFromTransliteration(trimmed)
-				console.log(unicodesign)
-			}
-
-			if(unicodesign!=null){
-				e.clipboardData.setData('text/plain', unicodesign);
-			}else{
-				e.clipboardData.setData('text/plain', selectedText);
-			}
-		}else{
-			e.clipboardData.setData('text/plain', selectedText);
-		}
-		console.log(e.clipboardData)
-    });
-	document.getElementById("fontusage3").addEventListener('copy', function(e){
-		e.preventDefault();
-        console.log('copy behaviour detected!');
-		var selectedText = window.getSelection().toString(); 
-        selectedText = selectedText.replace(/\u200B/g, "");
-		console.log(selectedText)
-		console.log(e)
-		console.log($('#copyunicode').prop('checked'))
-		if($('#copyunicode').prop('checked')){
-			if(selectedText.includes("-")){
-				var spl=selectedText.split("-")
-				var unicodesign=""
-				for(chara in spl){
-					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
-					console.log(trimmed)
-					unicodesign+=getUnicodeFromTransliteration(trimmed)
-					console.log(unicodesign)
-				}
-			}else{
-				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
-				console.log(trimmed)
-				var unicodesign=getUnicodeFromTransliteration(trimmed)
-				console.log(unicodesign)
-			}
-
-			if(unicodesign!=null){
-				e.clipboardData.setData('text/plain', unicodesign);
-			}else{
-				e.clipboardData.setData('text/plain', selectedText);
-			}
-		}else{
-			e.clipboardData.setData('text/plain', selectedText);
-		}
-		console.log(e.clipboardData)
-    });
+				});
 });
 </script>
 </head>
@@ -194,88 +151,42 @@ How does it work?
 <li>IDs are used as the basis for the modified transliteration</li>
 <li>A WOFF font is generated and included in this homepage so that the transliteration can be converted to cuneiform</li>
 </ul>
-Copy Unicode<input type="checkbox" id="copyunicode"><br/>
-Example transliteration:<br/>
-</div></div>
+<h3>Sign variant example</h3>
 <div class="row">
 	<div class="left col-sm-5">
-	<span id="transliteration" style="font-size:80">
+	<span id="transliteration" style="font-size:70">
 		E Ev1 Ev2 Ev3 
 	</span><br/>
 	<button id="usefont" onclick="activateWebFont()">Switch Font</button>
 	</div>
-	<div class="left col-sm-2" style="font-size:80">
+	<div class="left col-sm-2" style="font-size:70">
 	&nbsp;&nbsp;|&nbsp;&nbsp;
 	</div>
 	<div class="left col-sm-5">
-<span id="fontusage" style="font-size:80">
+<span id="fontusage" style="font-size:70">
 E Ev1 Ev2 Ev3
 </span>
 	</div>
-</div>
-<div class="row">
-	<div class="left col-sm-5">
-<span id="transliteration2" style="font-size:80">
-A AxA GALAM USZ 
-</span>
-<button id="usefont2" onclick="activateWebFont2()">Switch Font</button>
-	</div>
-	<div class="left col-sm-2" style="font-size:80">
-	&nbsp;&nbsp;|&nbsp;&nbsp;
-	</div>
-	<div class="left col-sm-5">
-	<span id="fontusage2" style="font-size:80">
-A AxA GALAM USZ 
-</span>
+</div><br/>
+<h3>Application of the approach on CDLI texts</h3>
+Copy Unicode<input type="checkbox" id="copyunicode"><br/>
+Load CDLI Text: Language:<select id="cdlilanguages" onchange="recreateTextTable(document.getElementById('cdlilanguages').value)"></select>
+Text:<select id="cdlitextselect" onchange="loadText(document.getElementById('cdlitextselect').value)">
+</select><a id="cdlilink" href="#" target="_blank">Link To CDLI</a><br/>
+<button id="usefont3" onclick="activateWebFont3()">Switch Font</button>
 </div></div>
 <div class="row">
-<div  class="left col-sm-5">
-<span id="transliteration3" style="font-size:30">
-1. 1  MA.NA KU3.BABBAR e-lu <br/>
-2. i-na li-ib-bi sza3 i-na  <br/>
-3. ri-isz-sz u#-ud-da  <br/>
-4. u3 ri-x [i] -sz-x na-pa-ah-szu  <br/>
-5. [a] -na 4 sze-me-ri  <br/>
-@bottom <br/>
-6. sza3 SZU i-na-bu-ub-lu  <br/>
-# oder  la  <br/>
-7. le-e-qu2  <br/>
-</span>
-<button id="usefont3" onclick="activateWebFont3()">Switch Font</button>
-</div>
-	<div class="left col-sm-2" style="font-size:80">
-	&nbsp;&nbsp;|&nbsp;&nbsp;
-	</div>
-<div class="left col-sm-5">
-<span id="fontusage3" style="font-size:30">
-1. 1  MA.NA KU3.BABBAR e-lu <br/>
-2. i-na li-ib-bi sza3 i-na <br/>
-3. ri-isz-sz u#-ud-da <br/>
-4. u3 ri-x [i] -sz-x na-pa-ah-szu <br/>
-5. [a] -na 4 sze-me-ri <br/>
-@bottom<br/>
-6. sza3 SZU i-na-bu-ub-lu <br/>
-# oder  la <br/>
-7. le-e-qu2 <br/>
-</span>
-</div>
-</div>
-<div class="row">
-<div class="left col-sm-12">
-<select id="cdlitext">
-</select>
-</div>
-</div>
-<div class="row">
-<div class="left col-sm-5">
-<span id="cdlitextleft">
-</span>
-</div>
-<div class="left col-sm-2">
-</div>
-<div class="left col-sm-5">
-<span id="cdlitextright">
-</span>
+<div  class="left col-sm-12">
+<table border="1" width="100%" id="texttable">
+<tr><td>1. 1  MA.NA KU3.BABBAR e-lu</td><td class="fontusage3">1. 1  MA.NA KU3.BABBAR e-lu</td></tr>
+<tr><td>2. i-na li-ib-bi sza3 i-na</td><td class="fontusage3">2. i-na li-ib-bi sza3 i-na</td></tr>
+<tr><td>3. ri-isz-sz u#-ud-da</td><td class="fontusage3">3. ri-isz-sz u#-ud-da</td></tr>
+<tr><td>4. u3 ri-x [i] -sz-x na-pa-ah-szu</td><td class="fontusage3">4. u3 ri-x [i] -sz-x na-pa-ah-szu</td></tr>
+<tr><td>5. [a] -na 4 sze-me-ri</td><td class="fontusage3">5. [a] -na 4 sze-me-ri</td></tr>
+<tr><td>@bottom</td><td class="fontusage3">@bottom</td></tr>
+<tr><td>6. sza3 SZU i-na-bu-ub-lu</td><td class="fontusage3">6. sza3 SZU i-na-bu-ub-lu</td></tr>
+<tr><td># oder  la</td><td class="fontusage3"># oder  la</td></tr>
+<tr><td>7. le-e-qu2</td><td class="fontusage3">7. le-e-qu2</td></tr></table>
 </div>
 </div>
 <div class="row">
@@ -289,29 +200,62 @@ A AxA GALAM USZ
 </ol>
 </div></div>
 <script>
-	$.ajax({
-            url: "https://services.mainzed.org/cdli/getCDLITexts",
+function loadText(textid){
+$.ajax({
+            url: "https://www.i3mainz.de/projekte/cdli/getText?cdliNumber="+textid,
             async: true,
-			dataType: "json",
+			dataType: "text",
             success: function (data){
-                var res=""
-                for(elem in data){
-                    res+="<option value=\""+data[elem]+"\">"+data[elem]+"</option>"
-                }
-                $('#cdlitext').html(res)
+				activated3=false;
+				$('#cdlilink').attr("href","https://cdli.ucla.edu/search/archival_view.php?ObjectID="+textid);
+				var restable="";
+				var lines=data.split(/(?:\r\n|\r|\n)/g)
+				for(line in lines){
+					if(lines[line].trim()!=""){
+						restable+="<tr><td>"+lines[line]+"</td><td class=\"fontusage3\">"+lines[line]+"</td></tr>"
+					}
+				}
+				$('#texttable').html(restable)
+				$(".fontusage3").each(function () {
+	$(this).bind("copy", function(e){
+		e.preventDefault();
+        console.log('copy behaviour detected!');
+		var selectedText = window.getSelection().toString(); 
+        selectedText = selectedText.replace(/\u200B/g, "");
+		console.log(selectedText)
+		console.log(e)
+		console.log($('#copyunicode').prop('checked'))
+		if($('#copyunicode').prop('checked')){
+			if(selectedText.includes("-")){
+				var spl=selectedText.split("-")
+				var unicodesign=""
+				for(chara in spl){
+					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+					console.log(trimmed)
+					unicodesign+=getUnicodeFromTransliteration(trimmed)
+					console.log(unicodesign)
+				}
+			}else{
+				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+				console.log(trimmed)
+				var unicodesign=getUnicodeFromTransliteration(trimmed)
+				console.log(unicodesign)
+			}
+
+			if(unicodesign!=null){
+				e.originalEvent.clipboardData.setData('text/plain', unicodesign);
+			}else{
+				e.originalEvent.clipboardData.setData('text/plain', selectedText);
+			}
+		}else{
+			e.originalEvent.clipboardData.setData('text/plain', selectedText);
+		}
+		console.log(e.originalEvent.clipboardData)
+    });
+				});
             }
         });
-    function loadCDLIText(textnumber,target){
-        	$.ajax({
-            url: "https://services.mainzed.org/cdli/getText?CDLInumber="+textnumber,
-            async: true,
-			dataType: "json",
-            success: function (data){
-                $('#cdlitextleft').html(data)
-                $('#cdlitextright').html(data)
-            }
-        });
-    }
+}
 </script>
 </body>
 </html>
