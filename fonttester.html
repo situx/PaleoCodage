@@ -262,6 +262,24 @@ A AxA GALAM USZ
 </div>
 <div class="row">
 <div class="left col-sm-12">
+<select id="cdlitext">
+</select>
+</div>
+</div>
+<div class="row">
+<div class="left col-sm-5">
+<span id="cdlitextleft">
+</span>
+</div>
+<div class="left col-sm-2">
+</div>
+<div class="left col-sm-5">
+<span id="cdlitextright">
+</span>
+</div>
+</div>
+<div class="row">
+<div class="left col-sm-12">
 <h2>Frequently Asked Questions</h2>
 <ol>
 <li>What happens when I copy the character? The modified transliteration is copied</li>
@@ -270,5 +288,30 @@ A AxA GALAM USZ
 <li>How does the modified transliteration differ from the common transliteration? Sign variant information is appended using v-Suffixes</li>
 </ol>
 </div></div>
+<script>
+	$.ajax({
+            url: "https://services.mainzed.org/cdli/getCDLITexts",
+            async: true,
+			dataType: "json",
+            success: function (data){
+                var res=""
+                for(elem in data){
+                    res+="<option value=\""+data[elem]+"\">"+data[elem]+"</option>"
+                }
+                $('#cdlitext').html(res)
+            }
+        });
+    function loadCDLIText(textnumber,target){
+        	$.ajax({
+            url: "https://services.mainzed.org/cdli/getText?CDLInumber="+textnumber,
+            async: true,
+			dataType: "json",
+            success: function (data){
+                $('#cdlitextleft').html(data)
+                $('#cdlitextright').html(data)
+            }
+        });
+    }
+</script>
 </body>
 </html>
