@@ -177,7 +177,7 @@ Text:<select id="cdlitextselect" onchange="loadText(document.getElementById('cdl
 </div></div>
 <div class="row">
 <div  class="left col-sm-12">
-<table border="1" width="100%" id="texttable" style="font-size:50">
+<table border="0" width="100%" id="texttable" style="font-size:50">
 <tr><td>1. 1  MA.NA KU3.BABBAR e-lu</td><td class="fontusage3">1. 1  MA.NA KU3.BABBAR e-lu</td></tr>
 <tr><td>2. i-na li-ib-bi sza3 i-na</td><td class="fontusage3">2. i-na li-ib-bi sza3 i-na</td></tr>
 <tr><td>3. ri-isz-sz u#-ud-da</td><td class="fontusage3">3. ri-isz-sz u#-ud-da</td></tr>
@@ -211,10 +211,10 @@ $.ajax({
 				var restable="";
 				var lines=data.split(/(?:\r\n|\r|\n)/g)
 				for(line in lines){
-                    if(lines[line].trim()!="" && (lines[line].startsWith("@") || lines[line].startsWith("#"))){
-                        restable+="<tr><td  style=\"font-size:14\">"+lines[line]+"</td><td style=\"font-size:14\"></td><td class=\"fontusage3\"></td></tr>"
+                    if(lines[line].trim()!="" && (lines[line].startsWith("@") || lines[line].startsWith("#") || lines[line].startsWith("$"))){
+                        restable+="<tr><td  style=\"font-size:18\">"+lines[line]+"</td><td style=\"font-size:14\"></td><td class=\"fontusage3\"></td></tr>"
                     }else if(lines[line].trim()!=""){
-						restable+="<tr><td  style=\"font-size:14\">"+lines[line].substring(0,lines[line].indexOf('.'))+"</td><td style=\"font-size:14\">"+lines[line].substring(lines[line].indexOf('.')+1)+"</td><td class=\"fontusage3\">"+lines[line].substring(lines[line].indexOf('.')+1)+"</td></tr>"
+						restable+="<tr><td  style=\"font-size:18\">"+lines[line].substring(0,lines[line].indexOf('.')+1)+"</td><td style=\"font-size:14\">"+lines[line].substring(lines[line].indexOf('.')+1)+"</td><td class=\"fontusage3\">"+lines[line].substring(lines[line].indexOf('.')+1)+"</td></tr>"
 					}
 				}
 				$('#texttable').html(restable)
