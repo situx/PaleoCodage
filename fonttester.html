@@ -211,8 +211,10 @@ $.ajax({
 				var restable="";
 				var lines=data.split(/(?:\r\n|\r|\n)/g)
 				for(line in lines){
-					if(lines[line].trim()!=""){
-						restable+="<tr><td>"+lines[line]+"</td><td class=\"fontusage3\">"+lines[line]+"</td></tr>"
+                    if(lines[line].trim()!="" && (lines[line].startsWith("@") || lines[line].startsWith("#"))){
+                        restable+="<tr><td  style=\"font-size:14\">"+lines[line]+"</td><td style=\"font-size:14\"></td><td class=\"fontusage3\"></td></tr>"
+                    }else if(lines[line].trim()!=""){
+						restable+="<tr><td  style=\"font-size:14\">"+lines[line].substring(0,lines[line].indexOf('.'))+"</td><td style=\"font-size:14\">"+lines[line].substring(lines[line].indexOf('.')+1)+"</td><td class=\"fontusage3\">"+lines[line].substring(lines[line].indexOf('.')+1)+"</td></tr>"
 					}
 				}
 				$('#texttable').html(restable)
