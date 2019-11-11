@@ -89,21 +89,24 @@ function to_image(){
  * @param {string} path - OT path
  * @returns {opentype.Glyph} OT glyph JSON object
  */
-function createOpenTypeGlyph(charname,unicode,path){
+function createOpenTypeGlyph(charname,unicode,path,width){
+	if(!width || typeof(width)=='undefined'){
+		width=1;
+	}
 	console.log(unicode)
 	path.stroke=strokeColor
 	path.fill=fillColor
 	if(charname.includes("_v")){
 	    return new opentype.Glyph({
         name: charname,
-        advanceWidth: 650,
+        advanceWidth: width,
         path: path
     });
 	}else{
 	    return new opentype.Glyph({
         name: charname,
         unicode: unicode.replace("U+","0x"),
-        advanceWidth: 650,
+        advanceWidth: width,
         path: path
     });
 	}
@@ -403,41 +406,41 @@ function createOpenFont(list){
 	console.log(charnamelist)
 	var glyphs=[]
 	var coun=0
-	      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x21",""));
+	      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x21","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
-	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x23",""));
+	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x23","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
-	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x24",""));
+	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x24","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
-	      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x28",""));
+	      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x28","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
-      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x29",""));
+      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x29","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
-	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2c",""));
+	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2c","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
-	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2d",""));
+	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2d","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
-	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2e",""));
+	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2e","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
 	var first=0x30, last= 0x3A;
     for (var i=first; i<last; i++) {
-      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
+      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),"",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
     }
 	var first = 0x3F, last = 0x5E;
     for (var i=first; i<last; i++) {
 		console.log(String.fromCharCode(i))
-      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
+      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),"",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
     }
     var first=0x61, last= 0x7E;
     for (var i=first; i<last; i++) {
-      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),""));
+      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),"",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
     }
 	for(svg in svglist){
 	    if(svg<charnamelist.length && svg<=codepointlist.length && svg<svglist.length){
-			gly=createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist[svg])
+			gly=createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist[svg],650)
 			gly.path.fill=fillColor;
 			gly.path.stroke=strokeColor;
             glyphs.push(gly)
@@ -449,7 +452,7 @@ function createOpenFont(list){
     //glyphs.push(createOpenTypeGlyph([0],codepointlist[0],svglist[0]))
 	//console.log(glyphs)
     font = new opentype.Font({familyName: 'OpenTypeSans', styleName: 'Medium', unitsPerEm: 1000, ascender: 800, descender: -200, glyphs: glyphs});
-    console.log(font.toTables());
+    //console.log(font.toTables());
     var newsignlist={}
     for(sign in signlist){
         if(!(signlist[sign] in signlist)){
