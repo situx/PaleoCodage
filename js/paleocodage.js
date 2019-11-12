@@ -37,6 +37,7 @@ var rotpoints2;
 var maxybbox=-1;
 var maxyglobalbbox;
 var maxxbbox=-1;
+var maxxopenfont=0;
 var maxxglobalbbox;
 var minybbox=1000000;
 var minyglobalbbox;
@@ -370,6 +371,7 @@ function createOpenFont(list){
     var svglist=[]
 	var codepointlist=[]
 	var counterr=0
+	var maxxarray=[]
 	$('#glyphs').html("")
 	$('#'+list).find('.codebutton').each(function(i, obj) {
         paleocodelist.push($(this).text())
@@ -379,6 +381,7 @@ function createOpenFont(list){
 		ctx3.fill=fillColor
         ctx3.strokeWidth=2
 		strokeParser($(this).text(),true,false)
+        maxxarray.push(maxxopenfont)
 		var svghtml=ctx2.getSerializedSvg(true)
 		var elem=$('.svgcontainer').eq(counterr)
 		var gottstein=$('.gottstein').eq(counterr)
@@ -416,19 +419,23 @@ function createOpenFont(list){
       alphabetToFontCode[String.fromCharCode(i)]=coun++
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x29","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
-	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2c","",0));
+	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2b","",0));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
+      glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2c","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
 	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2d","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
 	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2e","",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
-	var first=0x30, last= 0x3A;
+	  	glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x2f","",0));
+      alphabetToFontCode[String.fromCharCode(i)]=coun++
+      var first=0x30, last= 0x3A;
     for (var i=first; i<last; i++) {
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),"",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
     }
-	var first = 0x3F, last = 0x5E;
-    for (var i=first; i<last; i++) {
+	var first = 0x3F, last = 0x5F;
+    for (var i=first; i<=last; i++) {
 		console.log(String.fromCharCode(i))
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),"",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
@@ -440,7 +447,7 @@ function createOpenFont(list){
     }
 	for(svg in svglist){
 	    if(svg<charnamelist.length && svg<=codepointlist.length && svg<svglist.length){
-			gly=createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist[svg],650)
+			gly=createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist[svg],maxxarray[svg])
 			gly.path.fill=fillColor;
 			gly.path.stroke=strokeColor;
             glyphs.push(gly)
@@ -505,7 +512,7 @@ function createOpenFont(list){
 
     document.getElementById('fontFamilyName').innerHTML = font2.names.fontFamily.en;
      for (var i = 0; i < font2.glyphs.length; i++) {
-                if(i>77){ 
+                if(i>81){ 
         var glyph = font2.glyphs.get(i);
         var ctxx = createGlyphCanvas(glyph, 150);
         var x = 50;
@@ -809,6 +816,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
         scaleop=1;
         verticalspaceop=1;
         horizontalspaceop=1;
+        maxxopenfont=0;
 		maxxglobalbbox=0
 		minxglobalbbox=1000000
 		maxyglobalbbox=0
@@ -1384,6 +1392,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				maxxbbox=Math.max(headdraw[drawit]["points"]["x"],maxxbbox)
 				minxbbox=Math.min(headdraw[drawit]["points"]["x"],minxbbox)
 				minybbox=Math.min(headdraw[drawit]["points"]["y"],minybbox)
+                maxxopenfont=Math.max(headdraw[drawit]["points"]["x"],maxxopenfont);
 			}
 		}
 		//canvas.closePath()
@@ -1436,6 +1445,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
                 canvas.lineTo(rotpoints2[3]["x"],rotpoints2[3]["y"]);
                 canvas.lineTo(rotpoints2[4]["x"],rotpoints2[4]["y"]);
 				canvas.stroke=strokeColor
+				maxxopenfont=Math.max(rotpoints2[0]["x"],rotpoints2[1]["x"],rotpoints2[2]["x"],rotpoints2[3]["x"],rotpoints2[4]["x"],maxxopenfont);
 			}
 		}else{
 			if(!ot && !doNotDraw){
