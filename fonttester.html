@@ -169,11 +169,15 @@ E Ev1 Ev2 Ev3
 	</div>
 </div><br/>
 <h3>Application of the approach on CDLI texts</h3>
+<table><tr><td>
 Copy Unicode<input type="checkbox" id="copyunicode"><br/>
 Load CDLI Text: Language:<select id="cdlilanguages" onchange="recreateTextTable(document.getElementById('cdlilanguages').value)"></select>
 Text:<select id="cdlitextselect" onchange="loadText(document.getElementById('cdlitextselect').value)">
 </select><a id="cdlilink" href="#" target="_blank">Link To CDLI</a><br/>
 <button id="usefont3" onclick="activateWebFont3()">Switch Font</button>
+</td><td><table><tr><th colspan="3" align="center">Legend of Text markings</th></tr><tr><td style="background-color:yellow">&nbsp;&nbsp;</td><td>Determinative<br/>(e.g. {ki})</td>
+<td style="background-color:orange">&nbsp;&nbsp;</td><td>Broken Sign<br/>(e.g. usz#)</td><td style="background-color:red">&nbsp;&nbsp;</td><td>Assignment unsure<br/>(e.g. ki?)</td></tr><tr>
+<td style="background-color:green"></td><td>Broken away material</td><td style="background-color:blue"></td><td>Sign correction<br/>(e.g. ki!)</td><td style="background-color:grey">&nbsp;&nbsp;</td><td>Not yet assigned....</td></tr></table></td></tr></table>
 </div></div>
 <div class="row">
 <div  class="left col-sm-12">
@@ -207,9 +211,13 @@ var words=line.trim().split("-");
 		if(words[word].includes("#")){
 			resstring+="<span style=\"background-color:orange\">"+words[word]+"</span>-"		
 		}else if(words[word].includes("!")){
-			resstring+="<span style=\"background-color:green\">"+words[word]+"</span>-"	
+			resstring+="<span style=\"background-color:blue\">"+words[word]+"</span>-"	
+		}else if(words[word].includes("?")){
+			resstring+="<span style=\"background-color:red\">"+words[word]+"</span>-"	
 		}else if(words[word].includes("{") && words[word].includes("}")){
 			resstring+=words[word].substring(0,words[word].indexOf('{'))+"<span style=\"background-color:yellow\">"+words[word].substring(words[word].indexOf('{'),words[word].lastIndexOf('}')+1)+"</span>"+words[word].substring(words[word].lastIndexOf('}')+1,words[word].length)+"-"	
+		}else if(words[word].includes("[") && words[word].includes("]")){
+			resstring+=words[word].substring(0,words[word].indexOf('['))+"<span style=\"background-color:green\">"+words[word].substring(words[word].indexOf('{'),words[word].lastIndexOf('}')+1)+"</span>"+words[word].substring(words[word].lastIndexOf(']')+1,words[word].length)+"-"	
 		}
 		else{
 		  	resstring+=words[word]+"-"
