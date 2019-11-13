@@ -110,13 +110,13 @@ $(document).ready(function() {
 				var spl=selectedText.split("-")
 				var unicodesign=""
 				for(chara in spl){
-					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").replace(/_/g,"").replace(/\[/g,"").replace(/\]/g,"").replace(/\}/g,"").replace(/\{/g,"").trim()
 					console.log(trimmed)
 					unicodesign+=getUnicodeFromTransliteration(trimmed)
 					console.log(unicodesign)
 				}
 			}else{
-				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").replace(/_/g,"").replace(/\[/g,"").replace(/\]/g,"").replace(/\{/g,"").replace(/\}/g,"").trim()
 				console.log(trimmed)
 				var unicodesign=getUnicodeFromTransliteration(trimmed)
 				console.log(unicodesign)
@@ -202,18 +202,20 @@ Text:<select id="cdlitextselect" onchange="loadText(document.getElementById('cdl
 <script>
 function formatWords(line){
 var resstring=""
-var words=line.split("-");
+var words=line.trim().split("-");
 	for(word in words){
 		if(words[word].includes("#")){
-			resstring+="<span style=\"background-color:orange\">"+words[word]+"</span>"		
+			resstring+="<span style=\"background-color:orange\">"+words[word]+"</span>-"		
 		}else if(words[word].includes("!")){
-			resstring+="<span style=\"background-color:green\">"+words[word]+"</span>"	
+			resstring+="<span style=\"background-color:green\">"+words[word]+"</span>-"	
+		}else if(words[word].includes("{") && words[word].includes("}")){
+			resstring+=words[word].substring(0,words[word].indexOf('{'))+"<span style=\"background-color:yellow\">"+words[word].substring(words[word].indexOf('{'),words[word].lastIndexOf('}')+1)+"</span>"+words[word].substring(words[word].lastIndexOf('}')+1,words[word].length)+"-"	
 		}
 		else{
-		  	resstring+=words[word]
+		  	resstring+=words[word]+"-"
 		}
 	}
-	return resstring;
+	return resstring.substring(0,resstring.length-1);
 }
 
 function loadText(textid){
@@ -248,13 +250,13 @@ $.ajax({
 				var spl=selectedText.split("-")
 				var unicodesign=""
 				for(chara in spl){
-					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+					var trimmed=spl[chara].replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").replace(/\[/g,"").replace(/\]/g,"").replace(/\{/g,"").replace(/\}/g,"").trim()
 					console.log(trimmed)
 					unicodesign+=getUnicodeFromTransliteration(trimmed)
 					console.log(unicodesign)
 				}
 			}else{
-				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").trim()
+				var trimmed=selectedText.replace(/-/g,"").replace(/\./g,"").replace(/#/g,"").replace(/ /g,"").replace(/\[/g,"").replace(/\]/g,"").replace(/\{/g,"").replace(/\}/g,"").trim()
 				console.log(trimmed)
 				var unicodesign=getUnicodeFromTransliteration(trimmed)
 				console.log(unicodesign)
