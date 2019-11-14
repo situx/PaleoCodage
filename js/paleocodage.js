@@ -823,7 +823,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 		minyglobalbbox=1000000
 		curposy=10;
         curposx=30;
-		curposyot=10;
+		curposyot=30;
         curposxot=30;
 		startposx=30;
 		startposy=10;
