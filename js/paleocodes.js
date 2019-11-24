@@ -1162,6 +1162,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "potter",
+	"Concept": "https://www.wikidata.org/wiki/Q3400050",
 	"Location": ""
 }, {
 	"Sign": "𒃾",
@@ -1186,6 +1188,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "joy",
+	"Concept": "https://www.wikidata.org/wiki/Q935526",
 	"Location": ""
 }, {
 	"Sign": "𒅕",
@@ -1258,6 +1262,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "three",
+	"Concept": "https://www.wikidata.org/wiki/Q201",
 	"Location": ""
 }, {
 	"Sign": "𒑗",
@@ -1294,6 +1300,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "meadow",
+	"Concept": "https://www.wikidata.org/wiki/Q7777019",
 	"Location": ""
 }, {
 	"Sign": "𒑙",
@@ -1318,6 +1326,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "left hand",
+	"Concept": "https://www.wikidata.org/wiki/Q24206676",
 	"Location": ""
 }, {
 	"Sign": "𒆐",
@@ -1366,6 +1376,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "an insect",
+	"Concept": "https://www.wikidata.org/wiki/Q1390",
 	"Location": ""
 }, {
 	"Sign": "𒁁",
@@ -1426,6 +1438,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "needle",
+	"Concept": "https://www.wikidata.org/wiki/Q142690",
 	"Location": ""
 }, {
 	"Sign": "𒁓",
@@ -1522,6 +1536,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "festival",
+	"Concept": "https://www.wikidata.org/wiki/Q132241",
 	"Location": ""
 }, {
 	"Sign": "𒂠",
@@ -1582,6 +1598,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "flax",
+	"Concept": "https://www.wikidata.org/wiki/Q47089651",
 	"Location": ""
 }, {
 	"Sign": "𒄥",
@@ -1618,6 +1636,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "disease",
+	"Concept": "https://www.wikidata.org/wiki/Q12136",
 	"Location": ""
 }, {
 	"Sign": "𒃴",
@@ -1654,6 +1674,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "penis",
+	"Concept": "https://www.wikidata.org/wiki/Q58",
 	"Location": ""
 }, {
 	"Sign": "𒆤",
