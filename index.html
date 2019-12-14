@@ -643,6 +643,7 @@ function addSignToTable(signname,paleocode){
 		exampleListing();
 		var count = $('#examples tr').length;
 		$('#amount').html((count-1)+" characters");
+		createOpenFont('examples');
 		$("#examples").tablesorter({ theme: 'blue',widthFixed: false,widgets: [ 'uitheme', 'zebra', 'filter', 'scroller' ],widgetOptions: {
               zebra: ["even", "odd"],
               filter_reset: ".reset",
@@ -655,7 +656,7 @@ function addSignToTable(signname,paleocode){
               scroller_rowHighlight: 'hover',
               scroller_barWidth: null
           }});
-		createOpenFont('examples');
+
 		//console.log(getCoordinatesFromSVGPath("M150 0 L75 200 L225 200 Z"));
 	});
 	
