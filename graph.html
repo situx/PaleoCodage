@@ -26,11 +26,11 @@ function levenshteinDistance (s, t) {
 function editdistancegraph(){
 var remembermap={}
 var i=1;
-	    for(let js of paleocode){
+	    for(let js of paleocodestore){
 			alert(i)
 			alert(JSON.stringify(remembermap))
 			i++;
-            for(let js2 of paleocode){
+            for(let js2 of paleocodestore){
 				
 				if(!(js2["PaleoCode"] in remembermap)){
 					remembermap[js["PaleoCode"]]=js2["PaleoCode"]
@@ -66,9 +66,9 @@ function graphToGraphML(){
   function substringgraph(){
 var similar={}
 //Â´graph.addLink(1, 2);
-    for(let js of paleocode){
-            for(let js2 of paleocode){
-                if(js2["PaleoCode"]!=js["PaleoCode"] && js2["PaleoCode"].includes(js["PaleoCode"])){
+    for(let js of paleocodestore){
+            for(let js2 of paleocodestore){
+                if("PaleoCode" in js && "PaleoCode" in js2 && js2["PaleoCode"]!=js["PaleoCode"] && js2["PaleoCode"].includes(js["PaleoCode"])){
                         //console.log("[ "+js["PaleoCode"]+" ] is in [ "+js2["PaleoCode"]+" ]");
 						if(similar[js["PaleoCode"]]==undefined){
 							similar[js["PaleoCode"]]=""
