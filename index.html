@@ -103,49 +103,49 @@ function htmlTableToJSON(filename,ext){
 				Tutorial:
 				<table>
 					<tr><td><b>a</b>
-						<button id="horizontal" onClick="appendCharacter('a')">Horizontal Stroke (a)</button>
-						<button id="D" onClick="appendCharacter('A')">Big (A)</button>
-						<button id="sa" onClick="appendCharacter('sa')">Small (sa)</button>
+						<button id="horizontal" onClick="appendCharacter('a',document.getElementById('canvasinput'))">Horizontal Stroke (a)</button>
+						<button id="D" onClick="appendCharacter('A',document.getElementById('canvasinput'))">Big (A)</button>
+						<button id="sa" onClick="appendCharacter('sa',document.getElementById('canvasinput'))">Small (sa)</button>
 					</td></tr>
 					<tr><td><b>b</b>
 						<button id="vertical" onClick="appendCharacter('b')">Vertical Stroke (b)</button>
-						<button id="D" onClick="appendCharacter('B')">Big (B)</button>
-						<button id="sb" onClick="appendCharacter('sb')">Small (sb)</button>
+						<button id="D" onClick="appendCharacter('B',document.getElementById('canvasinput'))">Big (B)</button>
+						<button id="sb" onClick="appendCharacter('sb',document.getElementById('canvasinput'))">Small (sb)</button>
 					</td></tr>
 					<tr><td><b>c</b> 
-						<button id="diagonal1" onClick="appendCharacter('c')">Diagonal Stroke1 (c)</button>
-						<button id="C" onClick="appendCharacter('C')">Big (C)</button>
-						<button id="sc" onClick="appendCharacter('sc')">Small (sc)</button>
+						<button id="diagonal1" onClick="appendCharacter('c',document.getElementById('canvasinput'))">Diagonal Stroke1 (c)</button>
+						<button id="C" onClick="appendCharacter('C',document.getElementById('canvasinput'))">Big (C)</button>
+						<button id="sc" onClick="appendCharacter('sc',document.getElementById('canvasinput'))">Small (sc)</button>
 					</td></tr>
 					<tr><td><b>d</b> 
-						<button id="diagonal2" onClick="appendCharacter('d')">Diagonal Stroke2 (d)</button>
-						<button id="D" onClick="appendCharacter('D')">Big (D)</button>
-						<button id="sd" onClick="appendCharacter('sd')">Small (sd)</button>
+						<button id="diagonal2" onClick="appendCharacter('d',document.getElementById('canvasinput'))">Diagonal Stroke2 (d)</button>
+						<button id="D" onClick="appendCharacter('D',document.getElementById('canvasinput'))">Big (D)</button>
+						<button id="sd" onClick="appendCharacter('sd',document.getElementById('canvasinput'))">Small (sd)</button>
 					</td></tr>
 					<tr><td><b>e</b> 
-						<button id="diagonal3" onClick="appendCharacter('e')">Diagonal Stroke3 (e)</button>
-						<button id="E" onClick="appendCharacter('E')">Big (E)</button>
-						<button id="se" onClick="appendCharacter('se')">Small (se)</button>
+						<button id="diagonal3" onClick="appendCharacter('e',document.getElementById('canvasinput'))">Diagonal Stroke3 (e)</button>
+						<button id="E" onClick="appendCharacter('E',document.getElementById('canvasinput'))">Big (E)</button>
+						<button id="se" onClick="appendCharacter('se',document.getElementById('canvasinput'))">Small (se)</button>
 					</td></tr>
 					<tr><td><b>f</b> 
-						<button id="diagonal4" onClick="appendCharacter('f')">Diagonal Stroke4 (f)</button>
-						<button id="F" onClick="appendCharacter('F')">Big (F)</button>
-						<button id="sf" onClick="appendCharacter('sf')">Small (sf)</button>
+						<button id="diagonal4" onClick="appendCharacter('f',document.getElementById('canvasinput'))">Diagonal Stroke4 (f)</button>
+						<button id="F" onClick="appendCharacter('F',document.getElementById('canvasinput'))">Big (F)</button>
+						<button id="sf" onClick="appendCharacter('sf',document.getElementById('canvasinput'))">Small (sf)</button>
 					</td></tr>
 					<tr><td><b>w</b> 
-						<button id="wedge" onClick="appendCharacter('w')">Winkelhaken (w)</button>
-						<button id="W" onClick="appendCharacter('W')">Big (W)</button>
-						<button id="sw" onClick="appendCharacter('sw')">Small (sw)</button>
+						<button id="wedge" onClick="appendCharacter('w',document.getElementById('canvasinput'))">Winkelhaken (w)</button>
+						<button id="W" onClick="appendCharacter('W',document.getElementById('canvasinput'))">Big (W)</button>
+						<button id="sw" onClick="appendCharacter('sw',document.getElementById('canvasinput'))">Small (sw)</button>
 					</td></tr>
 					<tr><td><b>x</b> 
-						<button id="seal" onClick="appendCharacter('x')">Seal (x)</button>
-						<button id="X" onClick="appendCharacter('X')">Big (X)</button>
-						<button id="sx" onClick="appendCharacter('sx')">Small (sx)</button>
+						<button id="seal" onClick="appendCharacter('x',document.getElementById('canvasinput'))">Seal (x)</button>
+						<button id="X" onClick="appendCharacter('X',document.getElementById('canvasinput'))">Big (X)</button>
+						<button id="sx" onClick="appendCharacter('sx',document.getElementById('canvasinput'))">Small (sx)</button>
 					</td></tr>
 					<tr><td><b>y</b> 
-						<button id="sealhalf" onClick="appendCharacter('y')">Seal (Half) (y)</button>
-						<button id="Y" onClick="appendCharacter('Y')">Big (Y)</button>
-						<button id="sy" onClick="appendCharacter('sy')">Small (sy)</button>
+						<button id="sealhalf" onClick="appendCharacter('y',document.getElementById('canvasinput'))">Seal (Half) (y)</button>
+						<button id="Y" onClick="appendCharacter('Y',document.getElementById('canvasinput'))">Big (Y)</button>
+						<button id="sy" onClick="appendCharacter('sy',document.getElementById('canvasinput'))">Small (sy)</button>
 					</td></tr>
 					<tr><td><b>-</b> right of the current stroke passing through other strokes</td></tr>
 					<tr><td><b>_</b> right of the current stroke NOT passing through other strokes</td></tr>
@@ -168,7 +168,7 @@ function htmlTableToJSON(filename,ext){
 				<div class="table-wrapper-scroll-y">
 					<table align="center" id="examples" class="tablesorter" cellpadding="2">
 <thead>
-<tr><th>Sign</th><th>Code point</th><th>Transliteration</th><th>Borger</th><th>PaleoCode</th><th>SVG</th><th>Gottstein</th><th>Comment</th><th>Source</th><th>Epoch</th><th>Location</th><th>Options</th></tr><tr>
+<tr><th>Sign</th><th>Code point</th><th>Transliteration</th><th>Borger</th><th>PaleoCode</th><th>SVG</th><th>Gottstein</th><th>Comment</th><th>Source</th><th>Epoch</th><th>Location</th><th>Meaning</th><th>Options</th></tr><tr>
 </thead><tbody id="exampleContent">
 <!--<tr><td contenteditable class="sign">𒀀</td><td contenteditable class="codepoint">U+12000</td><td contenteditable class="transliteration" id="A">A</td><td contenteditable class="borger">839</td><td><button class="codebutton" onClick="showCharacter('a-a:a')">a-a:a</button></td><td contenteditable class="svg"><div class="svgcontainer"></div></td><td contenteditable class="gottstein"></td><td></td><td></td><td></td><td></td><td></tr>
 <tr><td contenteditable class="sign">𒀁</td><td contenteditable class="codepoint">U+12001</td><td contenteditable class="transliteration" id="A x A">A x A</td><td contenteditable class="borger">845</td><td><button class="codebutton" onClick="showCharacter('a-:sa-:sa:sa-a:a')">a-:sa-:sa:sa-a:a</button></td><td contenteditable class="svg"><div class="svgcontainer"></div></td><td contenteditable class="gottstein"></td><td>EDURU</td><td></td><td></td><td></td></tr>
@@ -624,7 +624,9 @@ function htmlTableToJSON(filename,ext){
 		tablehtml+="<tr id="+signcounter+"><td contenteditable class=\"sign\">"+paleocodestore[code]["Sign"]+"</td><td contenteditable  class=\"codepoint\">"+paleocodestore[code]["Code point"]+"</td>"
 		tablehtml+="<td contenteditable class=\"transliteration\" id=\""+paleocodestore[code]["Transliteration"]+"\">"+paleocodestore[code]["Transliteration"]+"</td>"
 		tablehtml+="<td contenteditable class=\"borger\">"+paleocodestore[code]["Borger"]+"</td><td contenteditable ><button class=\"codebutton\" id=\""+paleocodestore[code]["Transliteration"]+"_button\" onClick=\"showCharacter(document.getElementById('"+(paleocodestore[code]["Transliteration"]?paleocodestore[code]["Transliteration"].trim():"")+"_button').textContent)\">"+paleocodestore[code]["PaleoCode"]+"</button></td><td class=\"svg\"><div class=\"svgcontainer\"></div></td>"
-		tablehtml+="<td class=\"gottstein\">"+paleocodestore[code]["Gottstein"]+"</td><td contenteditable class=\"comment\">"+paleocodestore[code]["Comment"]+"</td><td contenteditable >"+paleocodestore[code]["Source"]+"</td><td contenteditable >"+paleocodestore[code]["Epoch"]+"</td><td>"+paleocodestore[code]["Location"]+"</td><td><button onClick=\"deleteRow("+signcounter+++")\">Delete</button></td></tr>"
+		tablehtml+="<td class=\"gottstein\">"+paleocodestore[code]["Gottstein"]+"</td><td contenteditable class=\"comment\">"+paleocodestore[code]["Comment"]+"</td><td contenteditable >"
+		+paleocodestore[code]["Source"]+"</td><td contenteditable >"+paleocodestore[code]["Epoch"]+"</td><td>"+paleocodestore[code]["Location"]+"</td><td>"
+		+(("Meaning" in paleocodestore[code] && "Concept" in paleocodestore[code])?"<a href=\""+paleocodestore[code]["Concept"]+"\">"+paleocodestore[code]["Meaning"]:"")+"</td><td><button onClick=\"deleteRow("+signcounter+++")\">Delete</button></td></tr>"
 	} 
 	console.log("Table: " + tablehtml);
 	$('#exampleContent').html(tablehtml)

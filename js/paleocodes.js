@@ -9,6 +9,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "",
+	"Concept":"",
 	"Location": ""
 }, {
 	"Sign": "𒀁",
@@ -21,6 +23,8 @@ var paleocodestore = [{
 	"Comment": "EDURU",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "",
+	"Concept":"",
 	"Location": ""
 }, {
 	"Sign": "𒀂",
@@ -33,6 +37,8 @@ var paleocodestore = [{
 	"Comment": "AGAM",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "artificial pond",
+	"Concept":"",
 	"Location": ""
 }, {
 	"Sign": "𒋰",
@@ -45,6 +51,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "",
+	"Concept":"",
 	"Location": ""
 }, {
 	"Sign": "𒌑",
@@ -57,6 +65,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "",
+	"Concept":"",
 	"Location": ""
 }, {
 	"Sign": "𒀾",
@@ -69,6 +79,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": ["wish","curse"],
+	"Concept":"https://www.wikidata.org/wiki/Q241625",
 	"Location": ""
 }, {
 	"Sign": "𒇲",
@@ -81,6 +93,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "",
+	"Concept":"",
 	"Location": ""
 }, {
 	"Sign": "𒁇",
@@ -93,6 +107,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "",
+	"Concept":"",
 	"Location": ""
 }, {
 	"Sign": "𒂃",
@@ -1146,6 +1162,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "potter",
+	"Concept": "https://www.wikidata.org/wiki/Q3400050",
 	"Location": ""
 }, {
 	"Sign": "𒃾",
@@ -1170,6 +1188,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "joy",
+	"Concept": "https://www.wikidata.org/wiki/Q935526",
 	"Location": ""
 }, {
 	"Sign": "𒅕",
@@ -1242,6 +1262,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "three",
+	"Concept": "https://www.wikidata.org/wiki/Q201",
 	"Location": ""
 }, {
 	"Sign": "𒑗",
@@ -1278,6 +1300,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "meadow",
+	"Concept": "https://www.wikidata.org/wiki/Q7777019",
 	"Location": ""
 }, {
 	"Sign": "𒑙",
@@ -1302,6 +1326,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "left hand",
+	"Concept": "https://www.wikidata.org/wiki/Q24206676",
 	"Location": ""
 }, {
 	"Sign": "𒆐",
@@ -1350,6 +1376,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "an insect",
+	"Concept": "https://www.wikidata.org/wiki/Q1390",
 	"Location": ""
 }, {
 	"Sign": "𒁁",
@@ -1410,6 +1438,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "needle",
+	"Concept": "https://www.wikidata.org/wiki/Q142690",
 	"Location": ""
 }, {
 	"Sign": "𒁓",
@@ -1506,6 +1536,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "festival",
+	"Concept": "https://www.wikidata.org/wiki/Q132241",
 	"Location": ""
 }, {
 	"Sign": "𒂠",
@@ -1566,6 +1598,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "flax",
+	"Concept": "https://www.wikidata.org/wiki/Q47089651",
 	"Location": ""
 }, {
 	"Sign": "𒄥",
@@ -1602,6 +1636,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "disease",
+	"Concept": "https://www.wikidata.org/wiki/Q12136",
 	"Location": ""
 }, {
 	"Sign": "𒃴",
@@ -1638,6 +1674,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "penis",
+	"Concept": "https://www.wikidata.org/wiki/Q58",
 	"Location": ""
 }, {
 	"Sign": "𒆤",
@@ -3462,6 +3500,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "sex appeal",
+	"Concept":"https://www.wikidata.org/wiki/Q7458551",
 	"Location": ""
 }, {
 	"Sign": "𒉄",
@@ -3474,6 +3514,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "carpenter",
+	"Concept":"https://www.wikidata.org/wiki/Q154549",
 	"Location": ""
 }, {
 	"Sign": "𒉇",
@@ -3486,6 +3528,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "forethought",
+	"Concept":"https://www.wikidata.org/wiki/Q309100",
 	"Location": ""
 }, {
 	"Sign": "𒉎",
@@ -3558,6 +3602,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "male",
+	"Concept":"https://www.wikidata.org/wiki/Q6581097",
 	"Location": ""
 }, {
 	"Sign": "𒉭",
@@ -3630,6 +3676,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "strength",
+	"Concept":"https://www.wikidata.org/wiki/Q605035",
 	"Location": ""
 }, {
 	"Sign": "𒊏",
@@ -3678,6 +3726,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "a priest",
+	"Concept":"https://www.wikidata.org/wiki/Q42603",
 	"Location": ""
 }, {
 	"Sign": "𒊮",
@@ -3702,6 +3752,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "wing",
+	"Concept":"https://www.wikidata.org/wiki/Q161358",
 	"Location": ""
 }, {
 	"Sign": "𒊹",
@@ -3726,6 +3778,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "snow",
+	"Concept":"https://www.wikidata.org/wiki/Q7561",
 	"Location": ""
 }, {
 	"Sign": "𒊿",
@@ -3738,6 +3792,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "axe",
+	"Concept":"https://www.wikidata.org/wiki/Q39397",
 	"Location": ""
 }, {
 	"Sign": "𒋀",
@@ -3774,6 +3830,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "exultation",
+	"Concept":"",
 	"Location": ""
 }, {
 	"Sign": "𒋒",
@@ -3786,6 +3844,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "tamarisk",
+	"Concept":"https://www.wikidata.org/wiki/Q164163",
 	"Location": ""
 }, {
 	"Sign": "𒋓",
@@ -3798,6 +3858,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "testicles",
+	"Concept":"https://www.wikidata.org/wiki/Q9384",
 	"Location": ""
 }, {
 	"Sign": "𒋚",
@@ -3822,6 +3884,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "drinking vessel",
+	"Concept":"https://www.wikidata.org/wiki/Q2453629",
 	"Location": ""
 }, {
 	"Sign": "𒋞",
@@ -3954,6 +4018,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "reed shelter",
+	"Concept":"https://www.wikidata.org/wiki/Q7493941",
 	"Location": ""
 }, {
 	"Sign": "𒎗",
@@ -4026,6 +4092,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "head smith",
+	"Concept":"https://www.wikidata.org/wiki/Q1639825",
 	"Location": ""
 }, {
 	"Sign": "𒌦",
@@ -4038,6 +4106,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "land of Sumer",
+	"Concept":"https://www.wikidata.org/wiki/Q35355",
 	"Location": ""
 }, {
 	"Sign": "𒌴",
@@ -4062,6 +4132,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "vessel",
+	"Concept":"https://www.wikidata.org/wiki/Q987767",
 	"Location": ""
 }, {
 	"Sign": "𒌶",
@@ -4134,6 +4206,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "female goat",
+	"Concept":"https://www.wikidata.org/wiki/Q172923",
 	"Location": ""
 }, {
 	"Sign": "𒍜",
@@ -4146,6 +4220,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "flesh",
+	"Concept":"https://www.wikidata.org/wiki/Q13119823",
 	"Location": ""
 }, {
 	"Sign": "𒍠",
@@ -4182,6 +4258,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "gall bladder",
+	"Concept":"https://www.wikidata.org/wiki/Q64386",
 	"Location": ""
 }, {
 	"Sign": "𒍥",
@@ -4230,6 +4308,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "doctor",
+	"Concept":"https://www.wikidata.org/wiki/Q39631",
 	"Location": ""
 }, {
 	"Sign": "𒐈",
@@ -4242,6 +4322,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "3",
+	"Concept":"https://www.wikidata.org/wiki/Q201",
 	"Location": ""
 }, {
 	"Sign": "𒐉",
@@ -4254,6 +4336,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "4",
+	"Concept":"https://www.wikidata.org/wiki/Q202",
 	"Location": ""
 }, {
 	"Sign": "𒐋",
@@ -4266,6 +4350,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "6",
+	"Concept":"https://www.wikidata.org/wiki/Q23488",
 	"Location": ""
 }, {
 	"Sign": "𒐍",
@@ -4278,6 +4364,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "8",
+	"Concept":"https://www.wikidata.org/wiki/Q23355",
 	"Location": ""
 }, {
 	"Sign": "𒐍",
@@ -4290,6 +4378,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "9",
+	"Concept":"https://www.wikidata.org/wiki/Q19108",
 	"Location": ""
 }, {
 	"Sign": "𒐕",
@@ -4302,6 +4392,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "40",
+	"Concept":"https://www.wikidata.org/wiki/Q42317",
 	"Location": ""
 }, {
 	"Sign": "𒐖",
@@ -4410,6 +4502,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "50",
+	"Concept":"https://www.wikidata.org/wiki/Q712519",
 	"Location": ""
 }, {
 	"Sign": "𒐑",
@@ -4422,6 +4516,8 @@ var paleocodestore = [{
 	"Comment": "",
 	"Source": "",
 	"Epoch": "",
+	"Meaning": "60",
+	"Concept":"https://www.wikidata.org/wiki/Q79998",
 	"Location": ""
 }, {
 	"Sign": "𒐒",
