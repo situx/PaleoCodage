@@ -42,6 +42,12 @@ function htmlTableToJSON(filename,ext){
         selectionEnd=$('#canvasinput').prop('selectionEnd')
         strokeParser(document.getElementById('canvasinput').value)
 	}
+	
+	function paintCharacterBlur(){
+        selectionStart=0
+        selectionEnd=0
+        strokeParser(document.getElementById('canvasinput').value)
+	}
 </script>
 <link rel="stylesheet" type="text/css" href="css/paleocodage.css" />
 </head>
@@ -59,7 +65,7 @@ function htmlTableToJSON(filename,ext){
 			<div class="left col-sm-5">
 				<canvas id="myCanvas" width="300" height="100" style="border:1px solid #d3d3d3;">Your browser does not support the HTML5 canvas tag.</canvas><img id="canvasImg"/>		<br/>
 				
-				Stroke Order Input: <input type="text" id="canvasinput" onKeyUp="paintCharacter()" onClick="paintCharacter()" onSelect="paintCharacter()"/>		<br/>
+				Stroke Order Input: <input type="text" id="canvasinput" onKeyUp="paintCharacter()" onClick="paintCharacter()" onSelect="paintCharacter()" onBlur="paintCharacterBlur()"/>		<br/>
 				Assign Sign Name: <input type="text" id="signnameinput"/><button id="addsigntotable" onclick="addSignToTable(document.getElementById('signnameinput').value,document.getElementById('canvasinput').value)">Add Sign</button><br/>
 				<button id="clearcanvas" onClick="clearCanvas()">Clear Canvas</button><button id="refreshsvg" onClick="createOpenFont('examples')">Refresh Font</button>
 				<button id="simplify" onclick="simplifyPaleoCode(document.getElementById('canvasinput').value)">Simplify</button><!--<button id="activatekeyboard" onclick="activateKeyboard()">Keyboard</button>--><br/>

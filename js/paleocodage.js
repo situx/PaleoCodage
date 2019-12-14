@@ -842,7 +842,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
         if(i==selectionStart){
             previousColor=document.getElementById("strokeColor").value
         }
-        if(i>=selectionStart && i<=selectionEnd){
+        if(i>=selectionStart && i<=selectionEnd && selectionStart!=selectionEnd){
             strokeColor="red"
             console.log("change to red")
         }
