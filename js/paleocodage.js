@@ -749,6 +749,19 @@ console.log("substringgraph")
 	console.log(similar);
 }
 
+function similarityDiceCoefficientGraph(threshold=0.8){
+	for(js in paleocodelist){
+		for(js2 in paleocodelist){
+			if(paleocodelist[js2]!=paleocodelist[js]){
+				simi=stringSimilarity.compareTwoStrings(paleocodelist[js2], paleocodelist[js])
+				if(simi>=threshold){
+					similar[paleocodelist[js2]][paleocodelist[js]]={"charname":charnamelist[js2].replace("_cunei",""),"code":paleocodelist[js2]}
+				}
+			}
+		}
+	}
+}
+
 function paleoCodageToOpenTypePath(paleoCode){
         //ot=true;
         ctx3=new opentype.Path();
