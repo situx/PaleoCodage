@@ -16,12 +16,15 @@ var charNameToPaleoCode={}
 var paleoCodeToCharName={}
 var heads=[]
 var lines=[]
+var previousColor=""
 var strokelength=30;
 var wedgelength=10;
 var headdraw=[];
 var multiplier=1.5;
 var roundbracket=0
 var bracket=false
+var selectionStart=0
+var selectionEnd=0
 var globalCenterPoint;
 var rotationconstant=15
 var opentypescale=15
@@ -897,6 +900,18 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
     for (var i = 0; i < input.length; i++) {	
 		var isuppercase=(input.charAt(i) == input.charAt(i).toUpperCase())
 		var winkelhaken=(input.charAt(i)=="w" || input.charAt(i)=="W")
+        console.log(i+" - "+selectionStart+" - "+selectionEnd)
+        if(i==selectionStart){
+            previousColor=document.getElementById("strokeColor").value
+        }
+        if(i>=selectionStart && i<=selectionEnd && selectionStart!=selectionEnd){
+            strokeColor="red"
+            console.log("change to red")
+        }
+        if(i==selectionEnd+1){
+            console.log("change to "+previousColor)
+            strokeColor=previousColor;
+        }
 		//console.log(winkelhaken)
         switch(input.charAt(i)){
                 case "a":
@@ -920,9 +935,13 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 						scalemultiplierForStrokeLength=1
 						//console.log(curposx+" - "+curposy)
 						console.log("Draw HTML")
-                        if(!svgonly)
+                        if(!svgonly){
+                            ctx.beginPath();
                             drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
-						if(!recursiverotation && !doNotDraw){
+                            ctx.closePath();
+                        }
+                        strokeColor=previousColor
+                        if(!recursiverotation && !doNotDraw){
                             //console.log(curposx+" - "+curposy)
 							console.log("Draw SVG")
 							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,!svgonly);
@@ -1584,7 +1603,6 @@ function clearCanvas(strokeParser){
 }
 
 function showCharacter(character){
-		console.log(document.getElementById('A_button').textContent)
         strokeParser(character,false,false)
         document.getElementById('canvasinput').value=character
 }
@@ -1594,4 +1612,3 @@ function appendCharacter(character,input){
 		input.value=input.value+character
         strokeParser(input.value,false,false)
 }
-
