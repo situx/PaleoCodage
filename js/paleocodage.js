@@ -363,12 +363,14 @@ function buildSubstitution() {
 	var paleocodelist=[]
 	var charnamelist=[]
 	 var alphabetToFontCode={}
+	     var svglist=[]
 /**
  * Builds SVG images and the OT font
  * @param {string} list - ID of the character list.
  */
 function createOpenFont(list){
-    var svglist=[]
+	var svglist2=[]
+	svglist=[]
 	var codepointlist=[]
 	var counterr=0
 	var maxxarray=[]
@@ -389,8 +391,9 @@ function createOpenFont(list){
         elem.html(svghtml)
 		svghtml=svghtml.substring(svghtml.indexOf('d="')+3,svghtml.indexOf('"',svghtml.indexOf('d="')+3))
 		svghtml=svghtml.replace(/\.5/g,'')
+		svglist.push(svghtml)
 		console.log(svghtml)
-		svglist.push(ctx3)
+		svglist2.push(ctx3)
 		counterr++;
 
 	});
@@ -445,9 +448,9 @@ function createOpenFont(list){
       glyphs.push(createOpenTypeGlyph(String.fromCharCode(i),"0x"+i.toString(16),"",0));
       alphabetToFontCode[String.fromCharCode(i)]=coun++
     }
-	for(svg in svglist){
-	    if(svg<charnamelist.length && svg<=codepointlist.length && svg<svglist.length){
-			gly=createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist[svg],maxxarray[svg])
+	for(svg in svglist2){
+	    if(svg<charnamelist.length && svg<=codepointlist.length && svg<svglist2.length){
+			gly=createOpenTypeGlyph(charnamelist[svg],codepointlist[svg],svglist2[svg],maxxarray[svg])
 			gly.path.fill=fillColor;
 			gly.path.stroke=strokeColor;
             glyphs.push(gly)
@@ -528,6 +531,7 @@ function createOpenFont(list){
         //document.getElementById('jsonFont').innerHTML=stringify(font)
     clearCanvas();
 	substringgraph();
+	
 }
 
     function createGlyphCanvas(glyph, size) {
@@ -726,7 +730,8 @@ function simplifyInput(input){
 }
 var similar={}
 function substringgraph(){
-console.log("substringgraph")
+console.log("substringgraph")	
+	similar={}
     for(js in paleocodelist){
             for(js2 in paleocodelist){
                 if(paleocodelist[js2]!=paleocodelist[js] && paleocodelist[js2].includes(paleocodelist[js])){
@@ -734,16 +739,73 @@ console.log("substringgraph")
 						if(similar[paleocodelist[js]]==undefined){
 							similar[paleocodelist[js]]=[]
 						}
-						similar[paleocodelist[js]][paleocodelist[js]]={"charname":charnamelist[js2].replace("_cunei",""),"code":paleocodelist[js2]}
+						similar[paleocodelist[js]][paleocodelist[js2]]={"charname":charnamelist[js2].replace("_cunei",""),"code":paleocodelist[js2],"svg":svglist[js2]}
                 }else if(paleocodelist[js2]!=paleocodelist[js] && paleocodelist[js].includes(paleocodelist[js2])){
 						if(similar[paleocodelist[js2]]==undefined){
 							similar[paleocodelist[js2]]=[]
 						}
-						similar[paleocodelist[js2]][paleocodelist[js]]={"charname":charnamelist[js].replace("_cunei",""),"code":paleocodelist[js]}
+						similar[paleocodelist[js2]][paleocodelist[js]]={"charname":charnamelist[js].replace("_cunei",""),"code":paleocodelist[js],"svg":svglist[js]}
 				}
             }
     }
 	console.log(similar);
+}
+
+function similarityDiceCoefficientGraph(threshold=0.8){
+	similar={}
+	for(js in paleocodelist){
+		for(js2 in paleocodelist){
+			if(paleocodelist[js2]!=paleocodelist[js]){
+				simi=stringSimilarity.compareTwoStrings(paleocodelist[js2], paleocodelist[js])
+				if(simi>=threshold){
+					if(similar[paleocodelist[js2]]==undefined){
+						similar[paleocodelist[js2]]=[]
+					}
+					similar[paleocodelist[js2]][paleocodelist[js]]={"charname":charnamelist[js].replace("_cunei",""),"code":paleocodelist[js],"svg":svglist[js]}
+				}
+			}
+		}
+	}
+	//console.log(similar);
+	//console.log(svglist)
+}
+
+function similarityLevenshteinDistanceGraph(threshold=0.8){
+	similar={}
+	for(js in paleocodelist){
+		for(js2 in paleocodelist){
+			if(paleocodelist[js2]!=paleocodelist[js]){
+				simi=levdistance(paleocodelist[js2], paleocodelist[js])
+				if(simi>=threshold){
+					if(similar[paleocodelist[js2]]==undefined){
+						similar[paleocodelist[js2]]=[]
+					}
+					similar[paleocodelist[js2]][paleocodelist[js]]={"charname":charnamelist[js].replace("_cunei",""),"code":paleocodelist[js],"svg":svglist[js]}
+				}
+			}
+		}
+	}
+	//console.log(similar);
+	//console.log(svglist)
+	//console.log(JSON.stringify(similar))
+}
+
+function levdistance(string1, string2) {
+  if (!string1 || string1.length === 0) {
+    return string2.length;
+  }
+  if (!string2 || string2.length === 0) {
+    return string1.length;
+  }
+  let [head1, ...tail1] = string1;
+  let [head2, ...tail2] = string2;
+  if (head1 === head2) {
+    return levdistance(tail1, tail2);
+  }
+  const l1 = levdistance(string1, tail2);
+  const l2 = levdistance(tail1, string2);
+  const l3 = levdistance(tail1, tail2);
+  return 1 + Math.min(l1, l2, l3);
 }
 
 function paleoCodageToOpenTypePath(paleoCode){
@@ -1193,10 +1255,22 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 		$('#similarspan').html(trimstr(output,100))
 	}else if(input in similar){
 			var output="Similar["+Object.keys(similar[input]).length+"]: "
+			lengthcounter=0
+			origlength=30
+			maxlength=origlength
 			for(simchar in similar[input]){
-				output+="<a href=#"+similar[input][simchar]["charname"]+">"+similar[input][simchar]["charname"]+"</a>,"
+				output+="<span><a href=#"+similar[input][simchar]["charname"]+">"+similar[input][simchar]["charname"]+"</a> ( <svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"25\" height=\"25\"><g transform=\"scale(0.3)\"><path fill=\"#000000\" stroke=\"#000000\" paint-order=\"fill stroke markers\" d=\""+similar[input][simchar]["svg"]+"\"></path></g></svg> )</span>,"
+				maxlength-=1
+				if(maxlength>0){
+					lengthcounter=output.length
+				}
 			}
-			$('#similarspan').html(trimstr(output,500))
+			if(origlength<similar[input].length){
+				$('#similarspan').html(trimstr(output,lengthcounter)+" (...) ")
+			}else{
+				$('#similarspan').html(trimstr(output,lengthcounter))
+			}
+			
 	}
 	paleoCodeToOpenTypePath[input]=ctx3;
 }
@@ -1514,3 +1588,10 @@ function showCharacter(character){
         strokeParser(character,false,false)
         document.getElementById('canvasinput').value=character
 }
+
+function appendCharacter(character,input){
+		console.log(character)
+		input.value=input.value+character
+        strokeParser(input.value,false,false)
+}
+
