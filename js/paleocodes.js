@@ -3446,7 +3446,7 @@ var paleocodestore = [{
 	"Code point": "U+12239",
 	"Transliteration": "MUSZ3",
 	"Borger": "153",
-	"PaleoCode": "XXX",
+	"PaleoCode": ":LB'a'-<:::c>sf_-a",
 	"SVG": "",
 	"Gottstein": "",
 	"Comment": "",
