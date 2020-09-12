@@ -987,7 +987,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     if(bracket==0){
                         smaller=true;
                     }
-                        break;
+                    break;
                 case "-":
                     if(bracket==0){
                         scaleop=1;
