@@ -1375,6 +1375,7 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
 				}
+				smaller=false
 			}else{
                 if(ot){
                		length=opentypescale*(strokelength*localscale);
