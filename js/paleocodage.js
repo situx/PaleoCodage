@@ -937,14 +937,14 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 						console.log("Draw HTML")
                         if(!svgonly){
                             ctx.beginPath();
-                            drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
+                            drawWedgeGeneric(curposx,curposy,ctx,true,isuppercase,curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false,recursive);
                             ctx.closePath();
                         }
                         strokeColor=previousColor
                         if(!recursiverotation && !doNotDraw){
                             //console.log(curposx+" - "+curposy)
 							console.log("Draw SVG")
-							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,!svgonly);
+							drawWedgeGeneric(curposx,curposy,ctx2,true,isuppercase,curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,!svgonly,recursive);
 							/* curposx+=(2*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
 						curposxot+=(2*opentypescale)*(horizontalspaceop==0?1:horizontalspaceop)
 						curposy=startposy*scalemultiplier;
@@ -957,7 +957,7 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 							//}
 							ot=true; //mirror=!mirror;
 							console.log("Draw OT")
-							drawWedgeGeneric(curposxot,curposyot,ctx3,true,isuppercase,recursive||curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false);
+							drawWedgeGeneric(curposxot,curposyot,ctx3,true,isuppercase,recursive||curlybrace,operatorToLocalRot[input.charAt(i)],operatorToPositioning[input.charAt(i)],operatorToScaling[input.charAt(i)],winkelhaken,false,recursive);
                             //if(svgonly){
                                 scalemultiplier=1
 								scalemultiplierForStrokeLength=scalemultiplier
@@ -990,7 +990,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     break;
                 case "-":
                     if(bracket==0){
-                        scaleop=1;
+						if(!curlybrace)
+							scaleop=1;
                         curposx+=(10*scalemultiplier)*(horizontalspaceop==0?1:horizontalspaceop);
 						curposxot+=(10*opentypescale)*(horizontalspaceop==0?1:horizontalspaceop)
 						curposy=startposy*scalemultiplier;
@@ -1007,7 +1008,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
                 case ":": 
                         if(bracket==0){
-                            scaleop=1;
+							if(!curlybrace)
+								scaleop=1;
                             curposy+=(7*scalemultiplier)*(verticalspaceop==0?1:verticalspaceop);
 							curposyot+=(7*opentypescale)*(verticalspaceop==0?1:verticalspaceop);
                         }
@@ -1019,7 +1021,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
                 case "'":
                     if(bracket==0){
-                        scaleop=1;
+						if(!curlybrace)
+							scaleop=1;
                         curposy=10*scalemultiplier;
 						curposyot=10*opentypescale
                     }
@@ -1032,7 +1035,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
 				case "~": 
                     if(bracket==0){
-                        scaleop=1;
+						if(!curlybrace)
+							scaleop=1;
                         curposx-=10*scalemultiplier;
                         curposy=10*scalemultiplier;
                         curposyot=(10*opentypescale)
@@ -1041,7 +1045,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
                 case "/": 
                     if(bracket==0){
-                        scaleop=1;
+						if(!curlybrace)
+							scaleop=1;
                         curposy+=3.5*scalemultiplier;
                         curposyot+=(3.5*opentypescale)
                     }
@@ -1053,14 +1058,16 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
                 case ";":
                     if(bracket==0){
-                        scaleop=1;
+						if(!curlybrace)
+							scaleop=1;
                         curposy+=strokelength;
                         curposyot+=(strokelength*opentypescale)
                     }
                         break;
                 case ".": 
                     if(bracket==0){
-                        scaleop=1;
+						if(!curlybrace)
+							scaleop=1;
                         curposy+=7*scalemultiplier;
                         curposx+=7*scalemultiplier;
                         curposyot+=(7*scalemultiplier*opentypescale)
@@ -1077,12 +1084,13 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                             rot+=rotationconstant;
                         }
                         break;
-/*                case "\": 
+                case "\"": 
                     if(bracket==0){    
-                        scaleop=1;
+						if(!curlybrace)
+							scaleop=1;
                         curposy-=3.5*scalemultiplier;
                     }
-                        break; */
+                        break; 
                 case ",": 
                         if(bracket==0){    
                             curposy-=7*scalemultiplier;
@@ -1093,7 +1101,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
                 case "_": 
                     if(bracket==0){
-                        scaleop=1;
+						if(!curlybrace)
+							scaleop=1;
                         curposx+=strokelength;
                         curposy=startposy*scalemultiplier;
 						curposyot=startposy*opentypescale;
@@ -1102,7 +1111,8 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                         break;
                 case " ": 
                     if(bracket==0){
-                        scaleop=1;
+						if(!curlybrace)
+							scaleop=1;
                         curposx+=1.5*strokelength*scalemultiplier;
 						curposxot+=(1.5*strokelength*scalemultiplier*opentypescale)
 						curposy=startposy*scalemultiplier;
@@ -1146,6 +1156,12 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
                     curlybrace=true;
                 break;
                 case "}":
+					smaller=false;
+					smallop=1;
+					scaleop=1;
+					mirror=false;
+                    rot=0;
+					halfangle=false;
                     curlybrace=false;
                 break;
                 case "(":
@@ -1252,9 +1268,10 @@ function strokeParser(input,svgonly,recursive,rotationcheck){
 							strokeParser(charNameToPaleoCode[charnamebuffer],svgonly,true)
 						}
 					}
-
                     bracketpositions[bracketpositions.length-1]["end"]=i+1;
 					smaller=false;
+					smallop=1;
+					scaleop=1;
 					mirror=false;
                     rot=0;
 					halfangle=false;
@@ -1340,7 +1357,7 @@ function getCoordinatesFromSVGPath(svgpath){
 	return svgpathresult;
 }
 
-function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localrot,localmov,localscale,winkelhaken,uselastresult){
+function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localrot,localmov,localscale,winkelhaken,uselastresult,recursive){
         if(strokeparse==false)
             curposx+=10
 		pointarray=[]
@@ -1375,7 +1392,8 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 					start+=localmov[0]*length
 					starty+=localmov[1]*length
 				}
-				smaller=false
+				if(!recursive && !keepconfig)
+					smaller=false
 			}else{
                 if(ot){
                		length=opentypescale*(strokelength*localscale);
@@ -1439,7 +1457,8 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 					//console.log("pointarray after run with offset:");
 					//console.log(pointarray);
 				}
-				headresizing=false;
+				if(!recursive && !keepconfig)
+					headresizing=false;
 				
 				//referencearray=scalePointArray(referencearray,scalemultiplier,start,starty)
 				referencearray.push({"x":start, "y":starty+lineLength*scalemultiplier})
