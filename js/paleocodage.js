@@ -1549,6 +1549,8 @@ function drawWedgeGeneric(start,starty,canvas,strokeparse,big,keepconfig,localro
 				canvas.stroke();
 			}
 		}
+	smallop=1;
+	scaleop=1;
 }
 
 function drawSeal(start,starty,canvas,strokeparse,big,keepconfig,half,filled,localrot,localmov,localscale){
