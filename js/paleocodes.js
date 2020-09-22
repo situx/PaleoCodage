@@ -3398,7 +3398,7 @@ var paleocodestore = [{
 	"Code point": "U+12229",
 	"Transliteration": "MES",
 	"Borger": "486",
-	"PaleoCode": "XXX",
+	"PaleoCode": "::a-:sb:::sb--LB::sa:::LB-::sa-::sa-::sa-::sa-::sa-a",
 	"SVG": "",
 	"Gottstein": "",
 	"Comment": "",
