@@ -68,6 +68,8 @@ var horizontalspaceop=0;
 var verticalspaceop=0;
 var font;
 var rot=0;
+var reconstructed=false;
+var broken=false;
 //var mirror=false;
 var ctx2width=170
 var ctx2height=80
