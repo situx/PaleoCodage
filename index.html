@@ -492,6 +492,10 @@ $('#canvasinput').keyboard({
 			}
 			return false;
 		},
+    	display: {
+      		// including a colon in the url breaks the image :(
+      		'a': '<svg width="40" height="40" viewBox="0 0 14 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M0 6 L12 6 L6 18 L0 6 M6 18 L6 42 Z"></path><title>Horizontal Stroke (a)</title></svg>'
+    	},
 	usePreview: false // no preveiw
 });
 }
