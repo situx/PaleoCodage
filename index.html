@@ -477,9 +477,9 @@ $('#canvasinput').keyboard({
 	customLayout: {
 			'normal' : [
 				'1 2 3 4 5 6 7 8 9 0 {bksp}',
-				'A B C D E F W X Y',
-				'{a} {b} {c} {d} {e} {f} {w} x y',
-				'sa sb sc sd se sf sx sy',
+				'{A} {B} {C} {D} {E} {F} {W} {X} {Y}',
+				'{a} {b} {c} {d} {e} {f} {w} {x} {y}',
+				'{sa} {sb} {sc} {sd} {se} {sf} {sx} {sy}',
 				'- _ : ; . , [ ] ( ) !',
 
 			]
@@ -494,13 +494,33 @@ $('#canvasinput').keyboard({
 		},
     	display: {
       		// including a colon in the url breaks the image :(
+		A: 'A:<svg width="40" height="40" viewBox="0 0 14 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M0 0 L12 0 L6 12 L0 0 M6 12 L6 48"></path><title>Big (A)</title></svg>',
       		a: 'a:<svg width="40" height="40" viewBox="0 0 14 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M0 6 L12 6 L6 18 L0 6 M6 18 L6 42 Z"></path><title>Horizontal Stroke (a)</title></svg>',
-    		b: 'b:<svg width="40" height="40" viewBox="0 0 56 14" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M5.5 10 L5.5 0 L15.5 5 L5.5 10 M15.5 5 L45.5 5 Z"></path><title>Vertical Stroke (b)</title></svg>',
+    		sa: 'sa:<svg width="40" height="40" viewBox="0 0 14 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M0 12 L12 12 L6 24 L0 12 M6 24 L6 36 Z"></path><title>Small (sa)</title></svg>',
+		B: 'B:<svg width="40" height="40" viewBox="0 0 56 14" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M0 10 L0 0 L10 5 L0 10 M10 5 L55 5"></path><title>Big (B)</title></svg>',
+		b: 'b:<svg width="40" height="40" viewBox="0 0 56 14" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M5.5 10 L5.5 0 L15.5 5 L5.5 10 M15.5 5 L45.5 5 Z"></path><title>Vertical Stroke (b)</title></svg>',
+		sb: 'sb:<svg width="40" height="40" viewBox="0 0 56 14" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M10.5 10 L10.5 0 L20.5 5 L10.5 10 M20.5 5 L35.5 5 Z"></path><title>Small (sb)</title></svg>',
+		C: 'C:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M4.52 14.59 L11.59 7.52 L15.13 18.13 L4.52 14.59 M15.13 18.13 L46.95 49.95 Z"></path><title>Big (C)</title></svg>',
 		c: 'c:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M9.32 18.89 L16.39 11.82 L19.93 22.43 L9.32 18.89 M19.93 22.43 L41.14 43.64 Z"></path><title>Diagonal Stroke1 (c)</title></svg>',
+		sc: 'sc:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M11.63 24.45 L18.7 17.38 L22.23 27.98 L11.63 24.45 M22.23 27.98 L32.84 38.59 Z"></path><title>Small (sc)</title></svg>',
+		D: 'D:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M11.59 49.48 L4.52 42.41 L15.13 38.87 L11.59 49.48 M15.13 38.87 L46.95 7.05 Z"></path><title>Big (D)</title></svg>',
 		d: 'd:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M15.39 44.18 L8.32 37.11 L18.93 33.57 L15.39 44.18 M18.93 33.57 L40.14 12.36 Z"></path><title>Diagonal Stroke2 (d)</title></svg>',
+		sd: 'sd:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M18.7 38.62 L11.63 31.55 L22.23 28.02 L18.7 38.62 M22.23 28.02 L32.84 17.41 Z"></path><title>Small (sd)</title></svg>',
+		E: 'E:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M47.23 42.41 L40.16 49.48 L36.62 38.87 L47.23 42.41 M36.62 38.87 L4.8 7.05 Z"></path><title>Big (E)</title></svg>',
 		e: 'e:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M40.18 36.61 L33.11 43.68 L29.57 33.07 L40.18 36.61 M29.57 33.07 L8.36 11.86 Z"></path><title>Diagonal Stroke3 (e)</title></svg>',
+		se: 'se:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M32.87 31.55 L25.8 38.62 L22.27 28.02 L32.87 31.55 M22.27 28.02 L11.66 17.41 Z"></path><title>Small (se)</title></svg>',
+		F: 'f:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M40.16 7.02 L47.23 14.09 L36.62 17.63 L40.16 7.02 M36.62 17.63 L4.8 49.45 Z"></path><title>Big (F)</title></svg>',
 		f: 'f:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M33.11 11.82 L40.18 18.89 L29.57 22.43 L33.11 11.82 M29.57 22.43 L8.36 43.64 Z"></path><title>Diagonal Stroke4 (f)</title></svg>',
-		w: 'w:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M28 14.67 L14.67 28 L28 41.33 L28 14.67 Z"></path><title>Winkelhaken (w)</title></svg>'
+		sf: 'sf:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M25.8 17.38 L32.87 24.45 L22.27 27.98 L25.8 17.38 M22.27 27.98 L11.66 38.59 Z"></path><title>Small (sf)</title></svg>',
+		W: '<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M30.33 10.89 L12.56 28.67 L30.33 46.44 L30.33 10.89 Z"></path><title>Big (W)</title></svg>',
+		w: 'w:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M28 14.67 L14.67 28 L28 41.33 L28 14.67 Z"></path><title>Winkelhaken (w)</title></svg>',
+		sw: 'sw:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M24.67 19.45 L15.78 28.33 L24.67 37.22 L24.67 19.45 Z"></path><title>Small (sw)</title></svg>',
+		x: 'x:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M 28, 30 m -15, 0 a 15,15 0 1,0 30,0 a 15,15 0 1,0 -30,0"></path><title>Seal (x)</title></svg>',
+		X: 'X:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M 32, 30 m -25, 0 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0"></path><title>Big (X)</title></svg>',
+		sx: 'sx:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M 28, 30 m -10, 0 a 10,10 0 1,0 20,0 a 10,10 0 1,0 -20,0"></path><title>Small (sx)</title></svg>',
+		y: 'Y:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><g transform="rotate(-90.1 30 30)"><path fill="currentColor" stroke="currentColor" d="M 15, 20 a 15,15 0 1,0 30,0"></path></g><title>Seal (Half) (y)</title></svg>',
+		Y: 'Y:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><g transform="rotate(-90.1 30 30)"><path fill="currentColor" stroke="currentColor" d="M 10, 20 a 20,20 0 1,0 40,0"></path></g><title>Big (Y)</title></svg>',
+		sy: 'sy:<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><g transform="rotate(-90.1 30 30)"><path fill="currentColor" stroke="currentColor" d="M 20, 20 a 10,10 0 1,0 20,0"></path></g><title>Small (sy)</title></svg>'
 	},
 	usePreview: false // no preveiw
 });
