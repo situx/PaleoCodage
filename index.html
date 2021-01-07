@@ -388,6 +388,7 @@ function addSignToTable(signname,paleocode){
 					|| (which >36 && which <41)  // LEFT  UP  RIGHT  DOWN 
 					|| which == 46 	// DEL	
 					|| which == 48
+					|| which == 49
 					|| (which == 55 && key!=7) 	// 7 /
 					|| (which == 56 && key!=8) 	// 8 (
 					|| (which == 57 && key!=9)	// 9 )
@@ -400,7 +401,6 @@ function addSignToTable(signname,paleocode){
 					|| which == 110 	// NUM,
 					|| which == 111 	// NUM/
 					|| which == 163 
-					|| which == 161 
 					|| which == 171 	// *~
 					|| which == 173 	// - _
 					|| (which >=186 && which <=192)   // x  ,;  x  .:  x 
@@ -478,7 +478,7 @@ $('#canvasinput').keyboard({
 				'A B C D E F X Y',
 				'a b c d e f x y',
 				'sa sb sc sd se sf sx sy',
-				'- _ : ; . , [ ] ( )',
+				'- _ : ; . , [ ] ( ) !',
 
 			]
 		},
@@ -493,6 +493,7 @@ $('#canvasinput').keyboard({
 	usePreview: false // no preveiw
 });
 }
+activateKeyboard();
 </script>
 </body>
 </html>
