@@ -329,6 +329,8 @@ function addSignToTable(signname,paleocode){
 			}
 			console.log(which)
 			console.log(key)
+		        if((typeof e.target) === 'undefined')
+				return
 			var carpos=e.target.selectionStart
 			var inbracket=false;
 			var infactorbracket=false;
