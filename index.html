@@ -477,9 +477,9 @@ $('#canvasinput').keyboard({
 	customLayout: {
 			'normal' : [
 				'1 2 3 4 5 6 7 8 9 0 {bksp}',
-				'A B C D E F X Y',
-				'{a} b c d e f x y',
-				'sa sb sc sd se {sf:essf} sx sy',
+				'A B C D E F W X Y',
+				'{a} {b} {c} {d} {e} {f} {w} x y',
+				'sa sb sc sd se sf sx sy',
 				'- _ : ; . , [ ] ( ) !',
 
 			]
@@ -494,8 +494,14 @@ $('#canvasinput').keyboard({
 		},
     	display: {
       		// including a colon in the url breaks the image :(
-      		a: '<svg width="40" height="40" viewBox="0 0 14 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M0 6 L12 6 L6 18 L0 6 M6 18 L6 42 Z"></path><title>Horizontal Stroke (a)</title></svg>'
-    	},
+      		a: '<svg width="40" height="40" viewBox="0 0 14 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M0 6 L12 6 L6 18 L0 6 M6 18 L6 42 Z"></path><title>Horizontal Stroke (a)</title></svg>',
+    		b: '<svg width="40" height="40" viewBox="0 0 56 14" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M5.5 10 L5.5 0 L15.5 5 L5.5 10 M15.5 5 L45.5 5 Z"></path><title>Vertical Stroke (b)</title></svg>',
+		c: '<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M9.32 18.89 L16.39 11.82 L19.93 22.43 L9.32 18.89 M19.93 22.43 L41.14 43.64 Z"></path><title>Diagonal Stroke1 (c)</title></svg>',
+		d: '<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M15.39 44.18 L8.32 37.11 L18.93 33.57 L15.39 44.18 M18.93 33.57 L40.14 12.36 Z"></path><title>Diagonal Stroke2 (d)</title></svg>',
+		e: '<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M40.18 36.61 L33.11 43.68 L29.57 33.07 L40.18 36.61 M29.57 33.07 L8.36 11.86 Z"></path><title>Diagonal Stroke3 (e)</title></svg>',
+		f: '<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M33.11 11.82 L40.18 18.89 L29.57 22.43 L33.11 11.82 M29.57 22.43 L8.36 43.64 Z"></path><title>Diagonal Stroke4 (f)</title></svg>',
+		w: '<svg width="40" height="40" viewBox="0 0 56 56" class="staticsvg"><path fill="currentColor" stroke="currentColor" d="M28 14.67 L14.67 28 L28 41.33 L28 14.67 Z"></path><title>Winkelhaken (w)</title></svg>'
+	},
 	usePreview: false // no preveiw
 });
 }
